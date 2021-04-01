@@ -52,18 +52,22 @@ const App: React.FC = () => (
           </Route>
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
+          {/* Explore Tab - Benita */}
           <IonTabButton tab="tab1" href="/tab1">
             <IonIcon icon={triangle} />
             <IonLabel>Explore</IonLabel>
           </IonTabButton>
+          {/* Search Tab - Benita */}
           <IonTabButton tab="tab2" href="/tab2">
             <IonIcon icon={ellipse} />
             <IonLabel>Search</IonLabel>
           </IonTabButton>
-          <IonTabButton tab="tab3" href="/tab3">
+          {/* Upload Tab - Paul */}
+          <IonTabButton tab="tab3" onClick={() => {/* Start Modal for source */}}>
             <IonIcon md={cameraSharp} ios={cameraOutline} />
             <IonLabel>Upload</IonLabel>
           </IonTabButton>
+          {/* Profile Tab - Jonas */}
           <IonTabButton tab="tab3" href="/tab3">
             <IonIcon icon={square} />
             <IonLabel>User</IonLabel>
