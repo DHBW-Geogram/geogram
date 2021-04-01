@@ -1,19 +1,17 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 
-
-
-const Tab1: React.FC = () => {
+const Galerie: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Tab 1</IonTitle>
+          <IonTitle>Galerie</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Tab 1</IonTitle>
+            <IonTitle size="large">Galerie</IonTitle>
           </IonToolbar>
         </IonHeader>
 
@@ -24,4 +22,4 @@ const Tab1: React.FC = () => {
   );
 };
 
-export default Tab1;
+export default Galerie;

@@ -1,6 +1,8 @@
 import { Redirect, Route } from 'react-router-dom';
 import {
   IonApp,
+  IonFab,
+  IonFabButton,
   IonIcon,
   IonLabel,
   IonRouterOutlet,
@@ -9,7 +11,7 @@ import {
   IonTabs,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { cameraOutline, cameraSharp, ellipse, square, triangle } from 'ionicons/icons';
+import { arrowForwardCircle, cameraOutline, cameraSharp, ellipse, square, triangle } from 'ionicons/icons';
 import Tab1 from './pages/Tab1';
 import Tab2 from './pages/Tab2';
 import Tab3 from './pages/Tab3';
@@ -32,50 +34,76 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import React, { useState } from 'react';
+import UploadSelectionModal from './components/UploadSelectionModal/UploadSelectionModal';
+import Camera from './pages/Camera/Camera';
+import Galerie from './pages/Galerie/Galerie';
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonTabs>
-        <IonRouterOutlet>
-          <Route exact path="/tab1">
-            <Tab1 />
-          </Route>
-          <Route exact path="/tab2">
-            <Tab2 />
-          </Route>
-          <Route path="/tab3">
-            <Tab3 />
-          </Route>
-          <Route exact path="/">
-            <Redirect to="/tab1" />
-          </Route>
-        </IonRouterOutlet>
-        <IonTabBar slot="bottom">
-          {/* Explore Tab - Benita */}
-          <IonTabButton tab="tab1" href="/tab1">
-            <IonIcon icon={triangle} />
-            <IonLabel>Explore</IonLabel>
-          </IonTabButton>
-          {/* Search Tab - Benita */}
-          <IonTabButton tab="tab2" href="/tab2">
-            <IonIcon icon={ellipse} />
-            <IonLabel>Search</IonLabel>
-          </IonTabButton>
-          {/* Upload Tab - Paul */}
-          <IonTabButton tab="tab3" onClick={() => {/* Start Modal for source */}}>
-            <IonIcon md={cameraSharp} ios={cameraOutline} />
-            <IonLabel>Upload</IonLabel>
-          </IonTabButton>
-          {/* Profile Tab - Jonas */}
-          <IonTabButton tab="tab3" href="/tab3">
-            <IonIcon icon={square} />
-            <IonLabel>User</IonLabel>
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
-    </IonReactRouter>
-  </IonApp>
-);
+const App: React.FC = () => {
+
+  const [showActionSheet, setShowActionSheet] = useState(false);
+
+  return (
+      <IonApp>
+      <IonReactRouter>
+        <IonTabs>
+          <IonRouterOutlet>
+            <Route exact path="/tab1">
+              <Tab1 />
+            </Route>
+            <Route exact path="/tab2">
+              <Tab2 />
+            </Route>
+            <Route path="/tab3">
+              <Tab3 />
+            </Route>
+            <Route path="/camera">
+              <Camera />
+            </Route>
+            <Route path="/galerie">
+              <Galerie />
+            </Route>
+            <Route exact path="/">
+              <Redirect to="/tab1" />
+            </Route>
+          </IonRouterOutlet>
+          <IonTabBar slot="bottom">
+            {/* Explore Tab - Benita */}
+            <IonTabButton tab="tab1" href="/tab1">
+              <IonIcon icon={triangle} />
+              <IonLabel>Explore</IonLabel>
+            </IonTabButton>
+            {/* Search Tab - Benita */}
+            <IonTabButton tab="tab2" href="/tab2">
+              <IonIcon icon={ellipse} />
+              <IonLabel>Search</IonLabel>
+            </IonTabButton>
+            {/* Profile Tab - Jonas */}
+            <IonTabButton tab="tab3" href="/tab3">
+              <IonIcon icon={square} />
+              <IonLabel>User</IonLabel>
+            </IonTabButton>
+          </IonTabBar>
+        </IonTabs>
+
+            {/* Upload Component - Paul */}
+            {
+              true &&
+              <>
+                  <IonFab style={{marginBottom: "4.5rem", marginRight: "0.5rem"}} vertical="bottom" horizontal="end" slot="fixed" onClick={ () => {setShowActionSheet(true)}}>
+                    <IonFabButton>
+                      <IonIcon md={cameraSharp} ios={cameraOutline} />
+                    </IonFabButton>
+                  </IonFab>
+                  <UploadSelectionModal active={showActionSheet} setShowActionSheet={setShowActionSheet}/>
+              </>
+            }
+
+      </IonReactRouter>
+    </IonApp>
+
+  );
+
+};
 
 export default App;
