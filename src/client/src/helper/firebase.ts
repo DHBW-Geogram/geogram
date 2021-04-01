@@ -16,13 +16,13 @@ let db = fb.firestore();
 fb.auth();
 
 // [START auth_state_listener]
-fb.auth().onAuthStateChanged((user) => {
+fb.auth().onAuthStateChanged((user: any) => {
     if (user) {
-        var uid = user.uid;
+        var uid: any = user.uid;
         localStorage.setItem("uid", uid);
         console.log("RES:",fb.auth())
     } else {
-        localStorage.removeItem("uid", uid);
+        localStorage.removeItem("uid");
     }
 });
 // [END auth_state_listener]
