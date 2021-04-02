@@ -33,7 +33,6 @@ const UploadSelectionModal: React.FC<{active: boolean, setShowActionSheet: Dispa
                 icon: cameraOutline,
                 handler: () => {
                     setSelectedRoute("camera")
-                    takePhoto();
                 },
             },
             {
