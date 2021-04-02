@@ -4,12 +4,13 @@ import {
 import { cameraOutline, closeOutline, imageOutline } from "ionicons/icons";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { Redirect } from "react-router";
-import { usePhotoGallery } from "../../hooks/usePhotoGallery";
+import { Photo, usePhotoGallery } from "../../hooks/usePhotoGallery";
 
 
 const UploadSelectionModal: React.FC<{active: boolean, setShowActionSheet: Dispatch<SetStateAction<boolean>>}> = ({active, setShowActionSheet}) => {
 
   const [selectedRoute, setSelectedRoute] = useState("");
+  const [image, setImage] = useState<Photo>();
   
   const { takePhoto } = usePhotoGallery();
 
@@ -17,11 +18,10 @@ const UploadSelectionModal: React.FC<{active: boolean, setShowActionSheet: Dispa
       <>
 
         {
-            selectedRoute === "camera" && <Redirect to="/camera"/>
-        }
-
-        {
-            selectedRoute === "galerie" && <Redirect to="/galerie"/>
+            selectedRoute === "upload" && <Redirect to={{
+                pathname: "/upload",
+                state: { image }
+            }}/>
         }
 
         <IonActionSheet
@@ -32,16 +32,25 @@ const UploadSelectionModal: React.FC<{active: boolean, setShowActionSheet: Dispa
                 text: "Camera",
                 icon: cameraOutline,
                 handler: () => {
-                    setSelectedRoute("camera")
+                    takePhoto()
+                    .then(image => {
+                        // User took image
+                        setImage(image);
+                        setSelectedRoute("upload")
+                    })
+                    .catch(err => {
+                        // User Aborted Camera
+                        console.log(err)
+                    })
                 },
             },
-            {
-                text: "Galerie",
-                icon: imageOutline,
-                handler: () => {
-                    setSelectedRoute("galerie")
-                },
-            },
+            // {
+            //     text: "Galerie",
+            //     icon: imageOutline,
+            //     handler: () => {
+            //         setSelectedRoute("galerie")
+            //     },
+            // },
             {
                 text: "Close",
                 icon: closeOutline,

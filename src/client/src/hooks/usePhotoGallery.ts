@@ -9,42 +9,49 @@ const PHOTO_STORAGE = "photos";
 
 export function usePhotoGallery() {
 
-  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [photo, setPhoto] = useState<Photo>();
   const { getPhoto } = useCamera();
   const { deleteFile, readFile, writeFile } = useFilesystem();
   const { get, set } = useStorage();
 
   useEffect(() => {
-    const loadSaved = async () => {
-      const photosString = await get(PHOTO_STORAGE);
-      const photosInStorage = (photosString ? JSON.parse(photosString) : []) as Photo[];
-      // If running on the web...
-      if (!isPlatform('hybrid')) {
-        for (let photo of photosInStorage) {
-          const file = await readFile({
-            path: photo.filepath,
-            directory: FilesystemDirectory.Data
-          });
-          // Web platform only: Load the photo as base64 data
-          photo.webviewPath = `data:image/jpeg;base64,${file.data}`;
-        }
-      }
-      setPhotos(photosInStorage);
-    };
-    loadSaved();
+    // const loadSaved = async () => {
+    //   const photosString = await get(PHOTO_STORAGE);
+    //   const photosInStorage = (photosString ? JSON.parse(photosString) : []) as Photo[];
+    //   // If running on the web...
+    //   if (!isPlatform('hybrid')) {
+    //     for (let photo of photosInStorage) {
+    //       const file = await readFile({
+    //         path: photo.filepath,
+    //         directory: FilesystemDirectory.Data
+    //       });
+    //       // Web platform only: Load the photo as base64 data
+    //       photo.webviewPath = `data:image/jpeg;base64,${file.data}`;
+    //     }
+    //   }
+    //   setPhotos(photosInStorage);
+    // };
+    // loadSaved();
   }, [get, readFile]);
+  
 
   const takePhoto = async () => {
+    // Access camera photo
     const cameraPhoto = await getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
       quality: 100
     });
+    // Create filename based on date
     const fileName = new Date().getTime() + '.jpeg';
+    // Save image
     const savedFileImage = await savePicture(cameraPhoto, fileName);
-    const newPhotos = [savedFileImage, ...photos];
-    setPhotos(newPhotos);
-    set(PHOTO_STORAGE, JSON.stringify(newPhotos));
+    // Set image into state
+    setPhoto(savedFileImage);
+    // Store Image to storage
+    set(PHOTO_STORAGE, JSON.stringify(savedFileImage));
+
+    return savedFileImage;
   };
 
   const savePicture = async (photo: CameraPhoto, fileName: string): Promise<Photo> => {
@@ -83,24 +90,23 @@ export function usePhotoGallery() {
   };
 
   const deletePhoto = async (photo: Photo) => {
-    // Remove this photo from the Photos reference data array
-    const newPhotos = photos.filter(p => p.filepath !== photo.filepath);
+    // // Remove this photo from the Photos reference data array
+    // const newPhotos = photos.filter(p => p.filepath !== photo.filepath);
 
-    // Update photos array cache by overwriting the existing photo array
-    set(PHOTO_STORAGE, JSON.stringify(newPhotos));
+    // // Update photos array cache by overwriting the existing photo array
+    // set(PHOTO_STORAGE, JSON.stringify(newPhotos));
 
-    // delete photo file from filesystem
-    const filename = photo.filepath.substr(photo.filepath.lastIndexOf('/') + 1);
-    await deleteFile({
-      path: filename,
-      directory: FilesystemDirectory.Data
-    });
-    setPhotos(newPhotos);
+    // // delete photo file from filesystem
+    // const filename = photo.filepath.substr(photo.filepath.lastIndexOf('/') + 1);
+    // await deleteFile({
+    //   path: filename,
+    //   directory: FilesystemDirectory.Data
+    // });
+    // setPhotos(newPhotos);
   };
 
   return {
-    deletePhoto,
-    photos,
+    photo,
     takePhoto
   };
 }

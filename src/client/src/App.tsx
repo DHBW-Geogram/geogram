@@ -36,8 +36,7 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import React, { useState } from 'react';
 import UploadSelectionModal from './components/UploadSelectionModal/UploadSelectionModal';
-import Camera from './pages/Camera/Camera';
-import Galerie from './pages/Galerie/Galerie';
+import Upload from './pages/Upload/Upload';
 
 const App: React.FC = () => {
 
@@ -57,15 +56,10 @@ const App: React.FC = () => {
             <Route path="/tab3">
               <Tab3 />
             </Route>
-            <Route path="/camera">
-              <Camera />
-            </Route>
-            <Route path="/galerie">
-              <Galerie />
-            </Route>
             <Route exact path="/">
               <Redirect to="/tab1" />
             </Route>
+            <Route path="/upload" render={(props) => <Upload {...props}/>}/>
           </IonRouterOutlet>
           <IonTabBar slot="bottom">
             {/* Explore Tab - Benita */}
