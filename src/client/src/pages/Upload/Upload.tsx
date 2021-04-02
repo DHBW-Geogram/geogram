@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-undef */
-import { IonButton, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonImg, IonInput, IonItem, IonLabel, IonPage, IonRow, IonTextarea, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButton, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonImg, IonInput, IonItem, IonLabel, IonPage, IonRow, IonTextarea, IonTitle, IonToast, IonToolbar } from '@ionic/react';
 import { useCamera } from '@ionic/react-hooks/camera';
 import { camera } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
@@ -7,11 +7,15 @@ import { Photo, usePhotoGallery } from '../../hooks/usePhotoGallery';
 
 const Upload: React.FC<any> = (props) => {
   
+  // image provided by props
   const [image, setImage] = useState<Photo>();
 
   // Form data
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
+
+  // Toast message
+  const [toast, setToast] = useState("")
 
   useEffect(() => {
     
@@ -20,6 +24,25 @@ const Upload: React.FC<any> = (props) => {
     }
 
   },[props.location.state])
+
+  const upload = () => {
+
+    if(title !== "" && description !== "" && image !== undefined){
+      // upload process
+
+      
+
+    }else{
+      if(title === ""){
+        setToast("Please fill out the title field!");
+      }else if(description === ""){
+        setToast("Please fill out the description field!");
+      }else{
+        setToast("Error occured!");
+      }
+    }
+
+  }
 
   return (
     <IonPage>
@@ -52,19 +75,26 @@ const Upload: React.FC<any> = (props) => {
                 <IonRow>
                   <IonCol size="12">
                     <IonItem>
-                      <IonLabel position="floating">Title</IonLabel>
-                      <IonTextarea value={title} onIonChange={(e) => {setTitle(e.detail.value!)}}/>
+                      <IonLabel position="floating">Description</IonLabel>
+                      <IonTextarea value={description} onIonChange={(e) => {setDescription(e.detail.value!)}}/>
                     </IonItem>
                   </IonCol>
                 </IonRow>
                 <IonRow>
                   <IonCol>
-                    <IonButton onClick={() => {}}>Submit</IonButton>
+                    <IonButton onClick={upload}>Submit</IonButton>
                   </IonCol>
                 </IonRow>
               </IonGrid>
             </>
         }
+
+        <IonToast
+          isOpen={toast !== ""}
+          onDidDismiss={() => setToast("")}
+          message={toast}
+          duration={1500}
+        />
 
       </IonContent>
     </IonPage>
