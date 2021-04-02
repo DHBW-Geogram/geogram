@@ -7,11 +7,14 @@ import { usePhotoGallery } from '../../hooks/usePhotoGallery';
 
 const Camera: React.FC = () => {
   
-  const { takePhoto } = usePhotoGallery();
+  const { takePhoto, photos } = usePhotoGallery();
 
   useEffect(() => {
     
-    takePhoto();
+    takePhoto().then( () => {
+      console.log(photos)
+    });
+
 
   }, [])
 
