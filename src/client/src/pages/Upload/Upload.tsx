@@ -30,7 +30,7 @@ const Upload: React.FC<any> = (props) => {
     if(title !== "" && description !== "" && image !== undefined){
       // upload process
 
-      
+      // wait for api
 
     }else{
       if(title === ""){
