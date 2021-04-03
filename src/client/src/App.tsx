@@ -11,10 +11,10 @@ import {
   IonTabs,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { arrowForwardCircle, cameraOutline, cameraSharp, ellipse, square, triangle } from 'ionicons/icons';
+import { arrowForwardCircle, cameraOutline, cameraSharp, ellipse, square, triangle,  personCircleOutline} from 'ionicons/icons';
 import Tab1 from './pages/Tab1';
 import Tab2 from './pages/Tab2';
-import Tab3 from './pages/Tab3';
+import Tab3 from './pages/Profile/Tab3';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -74,8 +74,8 @@ const App: React.FC = () => {
             </IonTabButton>
             {/* Profile Tab - Jonas */}
             <IonTabButton tab="tab3" href="/tab3">
-              <IonIcon icon={square} />
-              <IonLabel>User</IonLabel>
+              <IonIcon icon={personCircleOutline} />
+              <IonLabel>Profile</IonLabel>
             </IonTabButton>
           </IonTabBar>
         </IonTabs>
