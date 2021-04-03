@@ -1,13 +1,10 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import {MapContainer, TileLayer, Marker, Popup, GeoJSON} from "react-leaflet";
+import {MapContainer, TileLayer, Marker, Popup} from "react-leaflet";
 import { GeogramPosition } from "../../model/GeogramPosition";
 import 'leaflet/dist/leaflet.css';
+import './LocationMap.css'
 
 const LocationMap: React.FC<{location: GeogramPosition}> = ({location}) => {
-
-    useEffect(() => {
-        
-    })
 
   return (
     <MapContainer center={[location.coords.latitude, location.coords.longitude]} zoom={13} scrollWheelZoom={false} style={{height: "20vh", width: "100vh"}}>
@@ -17,7 +14,7 @@ const LocationMap: React.FC<{location: GeogramPosition}> = ({location}) => {
     />
     <Marker position={[location.coords.latitude, location.coords.longitude]}>
       <Popup>
-        A pretty CSS3 popup. <br /> Easily customizable.
+        Current Position.
       </Popup>
     </Marker>
   </MapContainer>
