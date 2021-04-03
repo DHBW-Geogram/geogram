@@ -50,7 +50,7 @@ export function usePhotoGallery() {
     setPhoto(savedFileImage);
     // Store Image to storage
     set(PHOTO_STORAGE, JSON.stringify(savedFileImage));
-
+    // return result
     return savedFileImage;
   };
 
@@ -69,7 +69,7 @@ export function usePhotoGallery() {
         setPhoto(savedFileImage);
         // Store Image to storage
         set(PHOTO_STORAGE, JSON.stringify(savedFileImage));
-    
+        // return result
         return savedFileImage;
   }
 
