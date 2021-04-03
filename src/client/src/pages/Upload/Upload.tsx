@@ -4,6 +4,13 @@ import { useCamera } from '@ionic/react-hooks/camera';
 import { camera } from 'ionicons/icons';
 import React, { useEffect, useState } from 'react';
 import { Photo, usePhotoGallery } from '../../hooks/usePhotoGallery';
+import { Plugins} from "@capacitor/core";
+import { GeogramPosition } from '../../model/GeogramPosition';
+import LocationMap from '../../components/LocationMap/LocationMap';
+
+
+const { Geolocation} = Plugins;
+
 
 const Upload: React.FC<any> = (props) => {
   
@@ -14,6 +21,9 @@ const Upload: React.FC<any> = (props) => {
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
 
+  // Geoinformation
+  const [location, setLocation] = useState<GeogramPosition>();
+
   // Toast message
   const [toast, setToast] = useState("")
 
@@ -22,6 +32,23 @@ const Upload: React.FC<any> = (props) => {
     if(props.location.state !== undefined){
       setImage(props.location.state.image)
     }
+
+    // get current geolocation
+    Geolocation.getCurrentPosition()
+    .then(location => {
+      setLocation({
+        coords: {
+          accuracy: location.coords.accuracy,
+          altitude: location.coords.altitude,
+          altitudeAccuracy: location.coords.altitudeAccuracy,
+          heading: location.coords.heading,
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          speed: location.coords.speed
+        },
+        timestamp: location.timestamp
+      })
+    })
 
   },[props.location.state])
 
@@ -78,6 +105,19 @@ const Upload: React.FC<any> = (props) => {
                       <IonLabel position="floating">Description</IonLabel>
                       <IonTextarea value={description} onIonChange={(e) => {setDescription(e.detail.value!)}}/>
                     </IonItem>
+                  </IonCol>
+                </IonRow>
+                <IonRow>
+                  <IonCol size="12">
+                    Current Position: Latitude: {location?.coords.latitude.toString()}, Longitude: {location?.coords.longitude.toString()} 
+                  </IonCol>
+                </IonRow>
+                <IonRow>
+                  <IonCol size="12">
+                    {
+                      location && 
+                        <LocationMap location={location}/>
+                    }
                   </IonCol>
                 </IonRow>
                 <IonRow>
