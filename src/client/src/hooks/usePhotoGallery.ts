@@ -3,7 +3,7 @@ import { useCamera } from '@ionic/react-hooks/camera';
 import { useFilesystem, base64FromPath } from '@ionic/react-hooks/filesystem';
 import { useStorage } from '@ionic/react-hooks/storage';
 import { isPlatform } from '@ionic/react';
-import { CameraResultType, CameraSource, CameraPhoto, Capacitor, FilesystemDirectory } from "@capacitor/core";
+import { CameraResultType, CameraSource, CameraPhoto, Capacitor, FilesystemDirectory, CameraDirection } from "@capacitor/core";
 
 const PHOTO_STORAGE = "photos";
 
@@ -53,6 +53,25 @@ export function usePhotoGallery() {
 
     return savedFileImage;
   };
+
+  const takePhotoFromGalerie = async() => {
+        // Access galerie photo
+        const cameraPhoto = await getPhoto({
+          resultType: CameraResultType.Uri,
+          source: CameraSource.Photos,
+          quality: 100
+        });
+        // Create filename based on date
+        const fileName = new Date().getTime() + '.jpeg';
+        // Save image
+        const savedFileImage = await savePicture(cameraPhoto, fileName);
+        // Set image into state
+        setPhoto(savedFileImage);
+        // Store Image to storage
+        set(PHOTO_STORAGE, JSON.stringify(savedFileImage));
+    
+        return savedFileImage;
+  }
 
   const savePicture = async (photo: CameraPhoto, fileName: string): Promise<Photo> => {
     let base64Data: string;
