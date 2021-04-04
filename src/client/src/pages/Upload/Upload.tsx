@@ -7,6 +7,7 @@ import { Photo, usePhotoGallery } from '../../hooks/usePhotoGallery';
 import { Plugins} from "@capacitor/core";
 import { GeogramPosition } from '../../model/GeogramPosition';
 import LocationMap from '../../components/LocationMap/LocationMap';
+import axios from "axios"
 
 
 const { Geolocation} = Plugins;
@@ -52,12 +53,28 @@ const Upload: React.FC<any> = (props) => {
 
   },[props.location.state])
 
-  const upload = () => {
+  const upload = async() => {
 
     if(title !== "" && description !== "" && image !== undefined){
       // upload process
 
+      var formData = new FormData();
+
+      if(image.webviewPath !== undefined){
+
+        let img = await axios.get(image.webviewPath);
+
+        formData.append("myImage", img.data)
+        axios.post('http://localhost:5000/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then(res => console.log("Result: ", res));
+
+      }
+
       // wait for api
+      // cleanup of input fields
 
     }else{
       if(title === ""){
