@@ -50,9 +50,28 @@ export function usePhotoGallery() {
     setPhoto(savedFileImage);
     // Store Image to storage
     set(PHOTO_STORAGE, JSON.stringify(savedFileImage));
-
+    // return result
     return savedFileImage;
   };
+
+  const takePhotoFromGalerie = async() => {
+        // Access galerie photo
+        const cameraPhoto = await getPhoto({
+          resultType: CameraResultType.Uri,
+          source: CameraSource.Photos,
+          quality: 100
+        });
+        // Create filename based on date
+        const fileName = new Date().getTime() + '.jpeg';
+        // Save image
+        const savedFileImage = await savePicture(cameraPhoto, fileName);
+        // Set image into state
+        setPhoto(savedFileImage);
+        // Store Image to storage
+        set(PHOTO_STORAGE, JSON.stringify(savedFileImage));
+        // return result
+        return savedFileImage;
+  }
 
   const savePicture = async (photo: CameraPhoto, fileName: string): Promise<Photo> => {
     let base64Data: string;
@@ -107,7 +126,8 @@ export function usePhotoGallery() {
 
   return {
     photo,
-    takePhoto
+    takePhoto,
+    takePhotoFromGalerie
   };
 }
 

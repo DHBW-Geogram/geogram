@@ -12,7 +12,7 @@ const UploadSelectionModal: React.FC<{active: boolean, setShowActionSheet: Dispa
   const [selectedRoute, setSelectedRoute] = useState("");
   const [image, setImage] = useState<Photo>();
   
-  const { takePhoto } = usePhotoGallery();
+  const { takePhoto, takePhotoFromGalerie } = usePhotoGallery();
 
   return (
       <>
@@ -44,13 +44,17 @@ const UploadSelectionModal: React.FC<{active: boolean, setShowActionSheet: Dispa
                     })
                 },
             },
-            // {
-            //     text: "Galerie",
-            //     icon: imageOutline,
-            //     handler: () => {
-            //         setSelectedRoute("galerie")
-            //     },
-            // },
+            {
+                text: "Galerie",
+                icon: imageOutline,
+                handler: () => {
+                    takePhotoFromGalerie()
+                    .then(image => {
+                        setImage(image);
+                        setSelectedRoute("upload");
+                    })
+                },
+            },
             {
                 text: "Close",
                 icon: closeOutline,
