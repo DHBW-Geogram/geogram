@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const ejs = require('ejs');
 const path = require('path');
+const cors = require('cors')
 
 // Set The Storage Engine
 const storage = multer.diskStorage({
@@ -38,6 +39,8 @@ function checkFileType(file, cb){
 
 // Init app
 const app = express();
+
+app.use(cors())
 
 // EJS
 app.set('view engine', 'ejs');

@@ -8,6 +8,9 @@ import { Plugins} from "@capacitor/core";
 import { GeogramPosition } from '../../model/GeogramPosition';
 import LocationMap from '../../components/LocationMap/LocationMap';
 import axios from "axios"
+import { db } from '../../helper/firebase';
+import { v4 as uuidv4 } from 'uuid';
+import { Redirect } from 'react-router';
 
 
 const { Geolocation} = Plugins;
@@ -56,8 +59,8 @@ const Upload: React.FC<any> = (props) => {
   const upload = async() => {
 
     if(title !== "" && description !== "" && image !== undefined){
-      // upload process
 
+      // upload process: image -> image server
       var formData = new FormData();
 
       if(image.webviewPath !== undefined){
@@ -69,7 +72,23 @@ const Upload: React.FC<any> = (props) => {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
-        }).then(res => console.log("Result: ", res));
+        }).then((res:any) => {
+
+          // upload process: image url + data -> firestore
+          //const url = res.url;
+
+          db.collection("images").doc(uuidv4()).set({
+            user: "userid",
+            location: location,
+            //url: url,
+            title: title,
+            description: description
+          })
+          
+          .then(res => console.log("Successfully added item to firebase"))
+          .catch(err => console.log("Error while adding data to firebase"))
+
+        }).catch(err => console.log("Error while fetching data from Image Server"));
 
       }
 
