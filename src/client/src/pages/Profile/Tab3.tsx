@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonAvatar, IonImg, IonLabel, IonGrid, IonRow, IonCol, IonTextarea} from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonAvatar, IonImg, IonLabel, IonGrid, IonRow, IonCol, IonButton, IonModal, IonButtons, IonInput} from '@ionic/react';
 import React, {useState} from "react";
 
 const Tab3: React.FC = () => {
@@ -7,6 +7,11 @@ const Tab3: React.FC = () => {
     src: string;
     text: string;
   };
+
+  const [EditProfile, setEditProfile] = useState<boolean>(false);
+  const [birthday, setbirthday] = useState<string>();
+  const [username, setUsername] = useState<string>();
+  const [email, setEmail] = useState<string>();
 
   const profileName: String = "Jonny Black";
   const bio: String = "Hier steht meine Biografie schön beschrieben...";
@@ -55,7 +60,36 @@ const Tab3: React.FC = () => {
               </IonItem>
             </IonCol>
           </IonRow>
+          <IonRow>
+            <IonCol style={{textAlign: "center"}}>
+              <IonButton shape="round" fill="outline" color="primary" onClick={ () => setEditProfile(true)}>Edit Profile</IonButton>
+            </IonCol>
+          </IonRow>
         </IonGrid>
+        <IonModal isOpen={EditProfile}>
+          <IonHeader>
+            <IonToolbar>
+              <IonButtons slot="end">
+                <IonButton onClick={ () => setEditProfile(false)}>Close</IonButton>
+              </IonButtons>
+              <IonTitle>Edit Profile</IonTitle>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent fullscreen>
+            <IonItem>
+              <IonLabel position="floating">Username</IonLabel>
+              <IonInput value={username} type="text"></IonInput>
+            </IonItem>
+            <IonItem>
+              <IonLabel position="stacked">Birthday</IonLabel>
+              <IonInput value={birthday} type="date"></IonInput>
+            </IonItem>
+            <IonItem>
+              <IonLabel position="floating">E-Mail</IonLabel>
+              <IonInput value={email} type="email"></IonInput>
+            </IonItem>
+          </IonContent>
+        </IonModal>
       </IonContent>
     </IonPage>
   );
