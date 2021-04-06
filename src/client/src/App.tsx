@@ -1,4 +1,5 @@
 import { Redirect, Route } from 'react-router-dom';
+import React, { useContext } from "react";
 import {
   IonApp,
   IonIcon,
@@ -13,7 +14,6 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import MainTabs from './pages/auth/MainTabs';
 import FirstPage from './pages/auth/FirstPage';
-
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -33,35 +33,10 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
-
-
-
-const PrivateRoutes = () => {
-  return (
-    <IonReactRouter>
-      <IonRouterOutlet>
-        {/****** AUTH CREATE ACCOUNT */}
-        <Route path="/login" component={Login} exact={true} />
-        <Route path="/register" component={Register} exact={true} />
-        <Route path="/" render={() => <Redirect to="/login" />} />
-      </IonRouterOutlet>
-    </IonReactRouter>
-  );
-};
-const PublicRoutes = () => {
-  return (
-    <IonReactRouter>
-      <Route path="/tabs" component={MainTabs} />
-      <Route path="/" render={() => <Redirect to="/tabs/home" />} />
-    </IonReactRouter>
-  );
-};
-
-
-
-
 const App: React.FC = () => {   
   
+
+
   return(
   <IonApp>
     <IonReactRouter>

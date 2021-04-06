@@ -1,11 +1,52 @@
 
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon, IonInput, IonItem, IonLabel, IonCol, IonGrid, IonRow } from "@ionic/react";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon, IonInput, IonItem, IonLabel, IonCol, IonGrid, IonRow, IonAlert } from "@ionic/react";
 import { chevronBackOutline, logInOutline, personAddOutline } from "ionicons/icons";
-import React, {useState} from "react";
-import { fb, db } from "../../helper/firebase";
+import React, {useCallback, useEffect, useState} from "react";
+import { fb, db, auth } from "../../helper/firebase";
 import './Register.css'
+import "firebase/auth";
+import { useHistory, useLocation } from "react-router-dom";
+import { useStoreActions } from "easy-peasy";
 
-const Register: React.FC = () => (
+
+const Register: React.FC = () => {
+
+    const [email, setEmail] = useState("");    
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [alertText, setAlertText] = useState('')
+    const history = useHistory();
+    const location = useLocation(); 
+   
+    // useEffect(() => {
+    //     if(auth.currentUser) history.push('/');
+    // },[history, location]);
+
+   const onEmailNameChange = useCallback((e) =>
+   setEmail(e.detail?.value), []);
+   const onPasswordChange = useCallback((e) =>
+   setPassword(e.detail?.value), []);
+   const onConfirmPasswordChange = useCallback((e) =>
+   setConfirmPassword(e.detail?.value), []);
+
+
+    const onSignUpClick = useCallback(() => {
+        if(email.length === 0) setAlertText("Email Required");
+        else if(password.length === 0) setAlertText("Password Required");
+        else if(password.length < 6) setAlertText("Password to short 6");
+        else if(confirmPassword !== password) setAlertText("Password Don't Match");
+        else{
+            auth.createUserWithEmailAndPassword(email, password).then((response) => {
+                console.log('Sign Up Works')
+                history.push('/mainTabs')
+            }).catch(err => setAlertText(err.message))
+            
+        }
+    },[confirmPassword, password, email.length]);
+
+    const onDismiss = useCallback(() => setAlertText(''), []);
+
+   return(
     <IonPage>
         <IonHeader>
             <IonToolbar>
@@ -33,30 +74,47 @@ const Register: React.FC = () => (
                 <br/>
                 <IonItem>
                     <IonLabel position="floating">Email</IonLabel>
-                    <IonInput></IonInput>
+                    <IonInput onIonChange={onEmailNameChange}
+                    type="email"
+                    value={email}
+                    ></IonInput>
                 </IonItem>
                 <br/>
                 <IonItem>
                     <IonLabel position="floating">Password</IonLabel>
-                    <IonInput></IonInput>
+                    <IonInput onIonChange={onPasswordChange}
+                    type="password"
+                    value={password}
+                    >                        
+                    </IonInput>
                 </IonItem>
                 <br/>
                 <IonItem>
                     <IonLabel position="floating">Confirm Password </IonLabel>
-                    <IonInput></IonInput>
+                    <IonInput onIonChange={onConfirmPasswordChange}
+                    value={confirmPassword}
+                    type="password" ></IonInput>
                 </IonItem> 
                 <br/>
                 <div className="SignInButton">
-                    <IonButton routerLink="/mainTabs">
+                    <IonButton  onClick={onSignUpClick}>
                         Register
                     <IonIcon icon={personAddOutline}/>
                     </IonButton>
                 </div>
 
             </IonGrid>
+            <IonAlert
+                isOpen={alertText.length > 0}
+                onDidDismiss={onDismiss}
+                message={alertText}
+                buttons={['OK']}
+
+            />
         </IonContent>
     </IonPage>
 );
-  
+};
+
   export default Register;
   
