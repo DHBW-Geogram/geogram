@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonAvatar, IonImg, IonLabel, IonGrid, IonRow, IonCol, IonButton, IonModal, IonButtons, IonInput} from '@ionic/react';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonAvatar, IonImg, IonLabel, IonGrid, IonRow, IonCol, IonButton, IonModal, IonButtons, IonInput, IonTextarea} from '@ionic/react';
 import React, {useState} from "react";
 
 const Tab3: React.FC = () => {
@@ -10,11 +10,9 @@ const Tab3: React.FC = () => {
 
   const [EditProfile, setEditProfile] = useState<boolean>(false);
   const [birthday, setbirthday] = useState<string>();
-  const [username, setUsername] = useState<string>();
+  const [username, setUsername] = useState<string>("Jonny Black");
   const [email, setEmail] = useState<string>();
-
-  const profileName: String = "Jonny Black";
-  const bio: String = "Hier steht meine Biografie schön beschrieben...";
+  const[bio, setBio] = useState<string>("Hier steht meine Biografie schön beschrieben...");
 
   const Item1: Item = {src: 'http://placekitten.com/g/200/300', text: 'Picture'};
 
@@ -51,7 +49,7 @@ const Tab3: React.FC = () => {
               <IonItem>
                 <IonGrid style={{paddingLeft: "0px"}}>
                   <IonRow>
-                    <IonCol><IonLabel style={{fontSize: "20px"}}>{profileName}</IonLabel></IonCol>
+                    <IonCol><IonLabel style={{fontSize: "20px"}}>{username}</IonLabel></IonCol>
                   </IonRow>
                   <IonRow>
                     <IonCol><IonLabel className="ion-text-wrap" style={{fontSize: "15px"}}>{bio}</IonLabel></IonCol>
@@ -70,7 +68,7 @@ const Tab3: React.FC = () => {
           <IonHeader>
             <IonToolbar>
               <IonButtons slot="end">
-                <IonButton onClick={ () => setEditProfile(false)}>Close</IonButton>
+                <IonButton color="primary" onClick={ () => setEditProfile(false)}>Close</IonButton>
               </IonButtons>
               <IonTitle>Edit Profile</IonTitle>
             </IonToolbar>
@@ -78,7 +76,7 @@ const Tab3: React.FC = () => {
           <IonContent fullscreen>
             <IonItem>
               <IonLabel position="floating">Username</IonLabel>
-              <IonInput value={username} type="text"></IonInput>
+              <IonInput value={username} type="text" onIonChange={e => setUsername(e.detail.value!)}></IonInput>
             </IonItem>
             <IonItem>
               <IonLabel position="stacked">Birthday</IonLabel>
@@ -88,6 +86,20 @@ const Tab3: React.FC = () => {
               <IonLabel position="floating">E-Mail</IonLabel>
               <IonInput value={email} type="email"></IonInput>
             </IonItem>
+            <IonItem>
+              <IonLabel position="stacked">Biography</IonLabel>
+              <IonTextarea value={bio} onIonChange={e => setBio(e.detail.value!)}></IonTextarea>
+            </IonItem>
+            <IonGrid>
+            <IonRow>
+              <IonCol style={{textAlign: "center"}}>
+                <IonButton expand="block" shape="round" fill="outline" color="primary" onClick={ () => setEditProfile(false)}>Cancel</IonButton>
+              </IonCol>
+              <IonCol style={{textAlign: "center"}}>
+                <IonButton expand="block" shape="round" fill="outline" color="primary" onClick={ () => setEditProfile(false)}>Save</IonButton>
+              </IonCol>
+            </IonRow>
+            </IonGrid>
           </IonContent>
         </IonModal>
       </IonContent>
