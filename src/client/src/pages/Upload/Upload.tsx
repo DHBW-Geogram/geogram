@@ -87,37 +87,61 @@ const Upload: React.FC<any> = (props) => {
           });
 
         formData.append("myImage", file.data);   
-         
-        
-        axios
-          .post("http://localhost:5000/upload1", formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            }
-          })
-          .then((res: any) => {
-            // upload process: image url + data -> firestore
-            //const url = res.url;
-            console.log("Result from Image server: ", res);
+
+        let res = await axios.post("http://localhost:5000/upload1", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          }
+        })
+
+        if(res.data.file !== undefined){
 
             db.collection("images")
               .doc(uuidv4())
               .set({
                 user: "userid",
                 location: location,
-                url: res,
+                url: `${process.env.REACT_APP_IMAGE_SERVER_URL}/${res.data.file}`,
                 title: title,
                 description: description,
               })
               .then((res) => {
-                console.log("Successfully added item to firebase");
-                setTimeout( () => setRedirect("tab1"),3000)
+                setToast("Successfully added item to firebase");
+                setTimeout( () => setRedirect("tab1"), 1000)
               })
               .catch((err) => setToast("Error while adding data to firebase"));
-          })
-          .catch((err) =>
-            setToast("Error while fetching data from Image Server")
-          );
+
+        }
+
+        // axios
+        //   .post("http://localhost:5000/upload1", formData, {
+        //     headers: {
+        //       "Content-Type": "multipart/form-data",
+        //     }
+        //   })
+        //   .then((res: any) => {
+        //     // upload process: image url + data -> firestore
+        //     //const url = res.url;
+        //     console.log("Result from Image server: ", res);
+
+        //     db.collection("images")
+        //       .doc(uuidv4())
+        //       .set({
+        //         user: "userid",
+        //         location: location,
+        //         url: res.data.file,
+        //         title: title,
+        //         description: description,
+        //       })
+        //       .then((res) => {
+        //         setToast("Successfully added item to firebase");
+        //         setTimeout( () => setRedirect("tab1"), 1000)
+        //       })
+        //       .catch((err) => setToast("Error while adding data to firebase"));
+        //   })
+        //   .catch((err) =>
+        //     setToast("Error while fetching data from Image Server")
+        //   );
       }
 
       // wait for api
