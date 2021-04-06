@@ -71,6 +71,23 @@ app.post('/upload', (req, res) => {
   });
 });
 
+app.post('/upload1', (req, res) => {
+  console.log("Upload1")
+  upload(req, res, (err) => {
+    if(err){
+      res.json({file: undefined})
+    } else {
+      if(req.file == undefined){
+        res.json({file: undefined})
+      } else {
+        res.json({
+          file: `uploads/${req.file.filename}`
+        });
+      }
+    }
+  });
+});
+
 const port = 5000;
 
 app.listen(port, () => console.log(`Server started on port ${port}`));
