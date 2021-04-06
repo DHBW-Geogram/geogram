@@ -1,17 +1,9 @@
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonInput, IonButton, IonItem, IonLabel, IonIcon, IonButtons, IonGrid } from "@ionic/react";
 import { chevronBackOutline, logInOutline } from "ionicons/icons";
-import React from "react";
-import { Redirect, Route } from "react-router";
-import { Router } from "workbox-routing/Router";
-import Tab1 from "./Tab1";
-
-import { Link, RouteComponentProps } from 'react-router-dom';
+import React, {useState} from "react";
 import './Login.css'
-import { IonReactRouter } from "@ionic/react-router";
-import MainTabs from "./MainTabs";
 
 const Login: React.FC = () => {
-    
  
     
     return (    
