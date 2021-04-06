@@ -18,22 +18,34 @@ import {
   IonTitle,
   IonToast,
   IonToolbar,
+  isPlatform,
 } from "@ionic/react";
 import { useCamera } from "@ionic/react-hooks/camera";
 import { camera } from "ionicons/icons";
 import React, { useEffect, useState } from "react";
 import { Photo, usePhotoGallery } from "../../hooks/usePhotoGallery";
-import { FilesystemDirectory, FilesystemEncoding, Plugins } from "@capacitor/core";
+import { useFilesystem, base64FromPath } from '@ionic/react-hooks/filesystem';
+import {
+  FilesystemDirectory,
+  FilesystemEncoding,
+  Plugins,
+} from "@capacitor/core";
 import { GeogramPosition } from "../../model/GeogramPosition";
 import LocationMap from "../../components/LocationMap/LocationMap";
 import axios from "axios";
 import { db } from "../../helper/firebase";
 import { v4 as uuidv4 } from "uuid";
 import { Redirect } from "react-router";
+import { useStorage } from '@ionic/react-hooks/storage';
 
 const { Geolocation, Filesystem } = Plugins;
 
 const Upload: React.FC<any> = (props) => {
+
+  const { get } = useStorage();
+  const { deleteFile, readFile, writeFile } = useFilesystem();
+  const {convertBlobToBase64} = usePhotoGallery();
+
   // image provided by props
   const [image, setImage] = useState<Photo>();
 
@@ -49,6 +61,9 @@ const Upload: React.FC<any> = (props) => {
 
   // Redirect
   const [redirect, setRedirect] = useState("");
+
+  // Debug
+  const [log, setLog] = useState("");
 
   useEffect(() => {
     if (props.location.state !== undefined) {
@@ -74,23 +89,20 @@ const Upload: React.FC<any> = (props) => {
 
   const upload = async () => {
 
-    if(location === undefined){
-
-        setLocation({
-          coords: {
-            accuracy: 0,
-            altitude: 0,
-            altitudeAccuracy: 0,
-            heading: 0,
-            latitude: 0,
-            longitude: 0,
-            speed: 0,
-          },
-          timestamp: Date.now(),
-        });
-
+    if (location === undefined) {
+      setLocation({
+        coords: {
+          accuracy: 0,
+          altitude: 0,
+          altitudeAccuracy: 0,
+          heading: 0,
+          latitude: 0,
+          longitude: 0,
+          speed: 0,
+        },
+        timestamp: Date.now(),
+      });
     }
-
 
     if (title !== "" && description !== "" && image !== undefined) {
 
@@ -98,42 +110,55 @@ const Upload: React.FC<any> = (props) => {
       var formData = new FormData();
 
       if (image.webviewPath !== undefined) {
-      
-        const file = await Filesystem.readFile({
-            path: image.filepath,
-            directory: FilesystemDirectory.Data,
-            encoding: FilesystemEncoding.UTF8
-          });
 
-        formData.append("myImage", file.data);   
+        let file:any;
 
-        let res = await axios.post(`${process.env.REACT_APP_IMAGE_SERVER_URL}/upload1`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          }
-        })
+        file = await Filesystem.readFile({
+          path: image.filepath,
+          directory: FilesystemDirectory.Data,
+          encoding: FilesystemEncoding.UTF8,
+        });
 
-        if(res.data.file !== undefined){
+        formData.append("myImage", file.data);
 
+        let res: any = undefined;
+
+        try {
+          res = await axios.post(
+            `${process.env.REACT_APP_IMAGE_SERVER_URL}/upload1`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+        } catch (e) {}
+
+        if (res.data.file !== undefined) {
           let imageId: string = uuidv4();
 
-            db.collection("images")
-              .doc(imageId)
-              .set({
-                id: imageId,
-                timestamp: Date.now(),
-                user: "userid",
-                location: location,
-                url: `${process.env.REACT_APP_IMAGE_SERVER_URL}/${res.data.file}`,
-                title: title,
-                description: description,
-              })
-              .then((res) => {
-                setToast("Successfully added item to firebase");
-                setTimeout( () => setRedirect("tab1"), 1000)
-              })
-              .catch((err) => setToast("Error while adding data to firebase"));
-
+          db.collection("images")
+            .doc(imageId)
+            .set({
+              id: imageId,
+              timestamp: Date.now(),
+              user: "userid",
+              location: location,
+              url: `${process.env.REACT_APP_IMAGE_SERVER_URL}/${res.data.file}`,
+              title: title,
+              description: description,
+            })
+            .then((res) => {
+              setToast("Successfully added item to firebase");
+              setTimeout(() => setRedirect("tab1"), 1000);
+            })
+            .catch((err) => setToast("Error while adding data to firebase"));
+        } else {
+          setToast(
+            "Error while adding data to image server: " +
+              process.env.REACT_APP_IMAGE_SERVER_URL
+          );
         }
       }
 
@@ -211,6 +236,14 @@ const Upload: React.FC<any> = (props) => {
               <IonRow>
                 <IonCol>
                   <IonButton onClick={upload}>Submit</IonButton>
+                </IonCol>
+              </IonRow>
+              <IonRow>
+                <IonCol size="12">
+                  <IonItem>
+                    <IonLabel position="floating">Log</IonLabel>
+                    <IonTextarea value={log} />
+                  </IonItem>
                 </IonCol>
               </IonRow>
             </IonGrid>
