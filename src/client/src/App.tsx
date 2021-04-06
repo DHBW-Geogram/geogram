@@ -9,10 +9,10 @@ import {
   IonTabs,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import MainTabs from './pages/MainTabs';
-import FirstPage from './pages/FirstPage';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
+import MainTabs from './pages/auth/MainTabs';
+import FirstPage from './pages/auth/FirstPage';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';

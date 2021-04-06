@@ -2,7 +2,7 @@
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon, IonInput, IonItem, IonLabel, IonCol, IonGrid, IonRow } from "@ionic/react";
 import { chevronBackOutline, logInOutline, personAddOutline } from "ionicons/icons";
 import React, {useState} from "react";
-import { fb, db } from "../helper/firebase";
+import { fb, db } from "../../helper/firebase";
 import './Register.css'
 
 const Register: React.FC = () => (

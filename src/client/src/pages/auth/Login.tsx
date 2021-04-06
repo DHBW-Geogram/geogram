@@ -2,7 +2,7 @@ import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonInput, IonButt
 import { chevronBackOutline, logInOutline } from "ionicons/icons";
 import React, {useState} from "react";
 import './Login.css'
-import { fb, db } from "../helper/firebase";
+import { fb, db } from "../../helper/firebase";
 
 const Login: React.FC = () => {
  
