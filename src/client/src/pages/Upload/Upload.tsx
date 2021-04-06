@@ -96,9 +96,13 @@ const Upload: React.FC<any> = (props) => {
 
         if(res.data.file !== undefined){
 
+          let imageId: string = uuidv4();
+
             db.collection("images")
-              .doc(uuidv4())
+              .doc(imageId)
               .set({
+                id: imageId,
+                timestamp: Date.now(),
                 user: "userid",
                 location: location,
                 url: `${process.env.REACT_APP_IMAGE_SERVER_URL}/${res.data.file}`,
