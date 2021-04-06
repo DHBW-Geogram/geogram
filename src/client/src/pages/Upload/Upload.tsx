@@ -23,7 +23,7 @@ import { useCamera } from "@ionic/react-hooks/camera";
 import { camera } from "ionicons/icons";
 import React, { useEffect, useState } from "react";
 import { Photo, usePhotoGallery } from "../../hooks/usePhotoGallery";
-import { Plugins } from "@capacitor/core";
+import { FilesystemDirectory, FilesystemEncoding, Plugins } from "@capacitor/core";
 import { GeogramPosition } from "../../model/GeogramPosition";
 import LocationMap from "../../components/LocationMap/LocationMap";
 import axios from "axios";
@@ -31,7 +31,7 @@ import { db } from "../../helper/firebase";
 import { v4 as uuidv4 } from "uuid";
 import { Redirect } from "react-router";
 
-const { Geolocation } = Plugins;
+const { Geolocation, Filesystem } = Plugins;
 
 const Upload: React.FC<any> = (props) => {
   // image provided by props
@@ -79,16 +79,21 @@ const Upload: React.FC<any> = (props) => {
       var formData = new FormData();
 
       if (image.webviewPath !== undefined) {
+      
+        const file = await Filesystem.readFile({
+            path: image.filepath,
+            directory: FilesystemDirectory.Data,
+            encoding: FilesystemEncoding.UTF8
+          });
+
+        formData.append("myImage", file.data);   
+         
         
-        let img = await axios.get(image.webviewPath);
-
-        formData.append("myImage", image.webviewPath);
-
         axios
           .post("http://localhost:5000/upload1", formData, {
             headers: {
               "Content-Type": "multipart/form-data",
-            },
+            }
           })
           .then((res: any) => {
             // upload process: image url + data -> firestore
