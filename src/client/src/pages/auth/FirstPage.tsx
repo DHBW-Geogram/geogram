@@ -1,11 +1,7 @@
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonInput, IonButton, IonItem, IonLabel, IonIcon, IonText, IonCol, IonGrid, IonRow } from "@ionic/react";
 import { logInOutline, personAddOutline } from "ionicons/icons";
 import React from "react";
-import { Route } from "react-router";
-import { Router } from "workbox-routing/Router";
-import Tab1 from "./Tab1";
 
-import { Link, RouteComponentProps } from 'react-router-dom';
 
 import './FirstPage.css';
 

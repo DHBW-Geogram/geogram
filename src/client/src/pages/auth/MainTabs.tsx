@@ -1,11 +1,10 @@
-import { IonTabs, IonRouterOutlet, IonTabBar, IonTabButton, IonIcon, IonLabel, IonPage, IonApp } from "@ionic/react";
-import { IonReactRouter } from "@ionic/react-router";
+import { IonTabs, IonRouterOutlet, IonTabBar, IonTabButton, IonIcon, IonLabel } from "@ionic/react";
 import { triangle, ellipse, square } from "ionicons/icons";
 import React from "react";
 import { Redirect, Route } from "react-router";
-import Tab1 from "./Tab1";
-import Tab2 from "./Tab2";
-import Tab3 from "./Tab3";
+import Tab1 from "../Tab1";
+import Tab2 from "../Tab2";
+import Tab3 from "../Tab3";
 
 
 
