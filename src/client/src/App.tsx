@@ -11,10 +11,7 @@ import {
   IonTabs,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { arrowForwardCircle, cameraOutline, cameraSharp, ellipse, square, triangle } from 'ionicons/icons';
-import Tab1 from './pages/Tab1';
-import Tab2 from './pages/Tab2';
-import Tab3 from './pages/Tab3';
+import { arrowForwardCircle, cameraOutline, cameraSharp, ellipse, square, search, home} from 'ionicons/icons';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -37,6 +34,9 @@ import './theme/variables.css';
 import React, { useState } from 'react';
 import UploadSelectionModal from './components/UploadSelectionModal/UploadSelectionModal';
 import Upload from './pages/Upload/Upload';
+import Explore from './pages/Explore';
+import Search from './pages/Search';
+import Tab3 from './pages/Tab3';
 
 const App: React.FC = () => {
 
@@ -47,29 +47,29 @@ const App: React.FC = () => {
       <IonReactRouter>
         <IonTabs>
           <IonRouterOutlet>
-            <Route exact path="/tab1">
-              <Tab1 />
+            <Route exact path="/explore">
+              <Explore />
             </Route>
-            <Route exact path="/tab2">
-              <Tab2 />
+            <Route exact path="/search">
+              <Search />
             </Route>
             <Route path="/tab3">
               <Tab3 />
             </Route>
             <Route exact path="/">
-              <Redirect to="/tab1" />
+              <Redirect to="/explore" />
             </Route>
             <Route path="/upload" render={(props) => <Upload {...props}/>}/>
           </IonRouterOutlet>
           <IonTabBar slot="bottom">
             {/* Explore Tab - Benita */}
-            <IonTabButton tab="tab1" href="/tab1">
-              <IonIcon icon={triangle} />
+            <IonTabButton tab="explore" href="/explore">
+              <IonIcon icon={home} />
               <IonLabel>Explore</IonLabel>
             </IonTabButton>
             {/* Search Tab - Benita */}
-            <IonTabButton tab="tab2" href="/tab2">
-              <IonIcon icon={ellipse} />
+            <IonTabButton tab="search" href="/search">
+              <IonIcon icon={search} />
               <IonLabel>Search</IonLabel>
             </IonTabButton>
             {/* Profile Tab - Jonas */}
