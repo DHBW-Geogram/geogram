@@ -32,7 +32,6 @@ const Search: React.FC = () => {
 }
 
   function filterItems() {
-      console.log("filtered",filteredPictures);
     setFilteredPictures(
       allPictures.filter((picture: Picture) =>
         picture.title.startsWith(searchText)
