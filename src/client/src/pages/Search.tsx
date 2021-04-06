@@ -11,6 +11,7 @@ import {
 } from "@ionic/react";
 import { db } from "../helper/firebase";
 import { Picture } from "../model/Picture";
+import { responsesAreSame } from "workbox-broadcast-update";
 
 const Search: React.FC = () => {
   const [searchText, setSearchText] = useState("");
@@ -19,20 +20,19 @@ const Search: React.FC = () => {
   const [filteredPictures, setFilteredPictures] = useState<Array<Picture>>([]);
 
   useEffect(() => {
-    let ref = db.collection("images");
-
-    let unsubscribe = ref.onSnapshot((querySnapshot: any) => {
-      let typedDocs: Picture[] = [];
-      querySnapshot.forEach((doc: any) => typedDocs.push(doc.data()));
-      setAllPictures(typedDocs);
-    });
-
-    return () => {
-      unsubscribe();
-    };
+        fetchImages();
   }, []);
 
+  const fetchImages=async() =>{
+      console.log(allPictures);
+    const ref = db.collection("images");
+    const data = await ref.get();let typedDocs: Picture[] = [];
+    data.docs.forEach((doc: any) => typedDocs.push(doc.data()));
+    setAllPictures(typedDocs)
+}
+
   function filterItems() {
+      console.log("filtered",filteredPictures);
     setFilteredPictures(
       allPictures.filter((picture: Picture) =>
         picture.title.startsWith(searchText)
@@ -52,12 +52,13 @@ const Search: React.FC = () => {
           value={searchText}
           onIonChange={(e) => {
             setSearchText(e.detail.value!);
-            {filterItems.bind(this)};
+            {filterItems()};
           }}
           showCancelButton="never"
         ></IonSearchbar>
         <IonList>
           {filteredPictures.map((picture: Picture) => {
+              console.log(allPictures);
             return <IonItem>{picture.title}</IonItem>;
           })}
         </IonList>
