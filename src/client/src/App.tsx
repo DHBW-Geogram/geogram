@@ -80,13 +80,13 @@ const PrivateRoutes = () => {
             
             <Route path="/upload" render={(props) => <Upload {...props}/>}/>
             <Route exact path="/login">
-                <Redirect to="/tab1" />
+                <Redirect to="/explore" />
               </Route> 
               <Route exact path="/register">
-                <Redirect to="/tab1" />
+                <Redirect to="/explore" />
               </Route> 
               <Route exact path="/home">
-                <Redirect to="/tab1" />
+                <Redirect to="/explore" />
               </Route> 
           </IonRouterOutlet>
           <IonTabBar slot="bottom">
