@@ -33,33 +33,48 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-import { UserContext } from './helper/firebase';
 import Tab1 from './pages/Tab1';
 import Tab2 from './pages/Tab2';
 import Tab3 from './pages/Tab3';
+import { UserContext } from '.';
+
+
+const PublicRoutes = () => {
+  return (
+    <IonReactRouter>
+    
+        {/****** AUTH CREATE ACCOUNT */}
+        <Route path="/home" component={FirstPage} exact={true} />
+        <Route path="/login" component={Login} exact={true} />
+        <Route path="/register" component={Register} exact={true} />
+        <Route path="/" render={() => <Redirect to="/home" />} />
+      
+    </IonReactRouter>
+  );
+};
+const PrivateRoutes = () => {
+  return (
+    <IonReactRouter>      
+      <Route path="/tabs" component={MainTabs} />
+      <Route path="/tab2" component={Tab2} />
+      <Route path="/" render={() => <Redirect to="/tabs" />} />    
+    </IonReactRouter>
+  );
+};
+
 
 
 
 const App: React.FC = () => {   
-  
-  
+
+    const user = useContext(UserContext);
+    
  return(
    <IonApp>
-    
-     <IonReactRouter>
-       <IonRouterOutlet>
-         <Route  exact path="/home" component={FirstPage}/>
-         <Route  exact path="/login" component={Login}/>
-         <Route  exact path="/register" component={Register}/>
-         <Route  exact path="/tabs"  component={MainTabs}/>
-         <Route  exact path="/tab1" component={Tab1}/>
-         <Route  exact path="/tab2" component={Tab2}/>
-         <Route  exact path="/tab3" component={Tab3}/>
-         {/* <Route exact path="/tabs" render={() => <Redirect to="/tab1" />} /> */}
-        
-         <Route exact path="/" render={() => <Redirect to="/home" />} />
-       </IonRouterOutlet>      
-     </IonReactRouter>    
+
+    {user ? <PrivateRoutes /> : <PublicRoutes />}
+
+  
    </IonApp>
  );
  };
