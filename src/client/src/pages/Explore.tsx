@@ -57,6 +57,8 @@ const Explore: React.FC = (props) => {
       });
     });
 
+    initialLoad();
+
     let ref = db.collection("images");
 
     let unsubscribe = ref.onSnapshot(onCollectionUpdate);
@@ -65,6 +67,14 @@ const Explore: React.FC = (props) => {
       unsubscribe();
     };
   }, []);
+
+  const initialLoad = async () => {
+    const ref = db.collection("images");
+    const data = await ref.get();
+    let typedDocs: Picture[] = [];
+    data.docs.forEach((doc: any) => typedDocs.push(doc.data()));
+    setPictures(typedDocs);
+  };
 
   const onCollectionUpdate = (querySnapshot: any) => {
     let typedDocs: Picture[] = [];
@@ -103,15 +113,15 @@ const Explore: React.FC = (props) => {
       </IonHeader>
 
       <IonContent fullscreen>
-          <IonRefresher
-            slot="fixed"
-            onIonRefresh={doRefresh}
-            pullFactor={0.5}
-            pullMin={100}
-            pullMax={200}
-          >
-            <IonRefresherContent></IonRefresherContent>
-          </IonRefresher>
+        <IonRefresher
+          slot="fixed"
+          onIonRefresh={doRefresh}
+          pullFactor={0.5}
+          pullMin={100}
+          pullMax={200}
+        >
+          <IonRefresherContent></IonRefresherContent>
+        </IonRefresher>
         <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">Explore</IonTitle>
