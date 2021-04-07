@@ -32,9 +32,8 @@ const Login: React.FC = () => {
     else if(password.length === 0) setAlertText("Password Required");
     else{
         auth
-            .signInWithEmailAndPassword(email,password).then(() => {           
-            history.push('/tabs')
-        }).catch(err => setAlertText(err.message));
+            .signInWithEmailAndPassword(email,password)
+            .catch(err => setAlertText(err.message));
     }       
 },[email.length, password.length]);   
               

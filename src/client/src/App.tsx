@@ -13,7 +13,6 @@ import {
 import { IonReactRouter } from '@ionic/react-router';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
-import MainTabs from './pages/auth/MainTabs';
 import FirstPage from './pages/auth/FirstPage';
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -37,6 +36,7 @@ import Tab1 from './pages/Tab1';
 import Tab2 from './pages/Tab2';
 import Tab3 from './pages/Tab3';
 import { UserContext } from '.';
+import { ellipse, square, triangle } from 'ionicons/icons';
 
 
 const PublicRoutes = () => {
@@ -52,13 +52,49 @@ const PublicRoutes = () => {
     </IonReactRouter>
   );
 };
+
 const PrivateRoutes = () => {
   return (
-    <IonReactRouter>      
-      <Route path="/tabs" component={MainTabs} />
-      <Route path="/tab2" component={Tab2} />
-      <Route path="/" render={() => <Redirect to="/tabs" />} />    
-    </IonReactRouter>
+    <IonReactRouter>
+    <IonTabs>    
+          <IonRouterOutlet>
+        
+            <Route exact path="/tab1">  
+              <Tab1 />    
+            </Route>
+        
+              <Route exact path="/tab2">
+              <Tab2 />
+            </Route>
+
+            <Route path="/tab3">
+              <Tab3 />
+            </Route>
+
+             <Route exact path="/login">
+                <Redirect to="/tab1" />
+              </Route> 
+              <Route exact path="/register">
+                <Redirect to="/tab1" />
+              </Route> 
+          </IonRouterOutlet>
+
+          <IonTabBar slot="bottom">
+            <IonTabButton tab="tab1" href="/tab1">
+              <IonIcon icon={triangle} />
+              <IonLabel>Tab 1</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="tab2" href="/tab2">
+              <IonIcon icon={ellipse} />
+              <IonLabel>Tab 2</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="tab3" href="/tab3">
+              <IonIcon icon={square} />
+              <IonLabel>Tab 3</IonLabel>
+            </IonTabButton>
+          </IonTabBar>
+      </IonTabs>
+      </IonReactRouter>
   );
 };
 

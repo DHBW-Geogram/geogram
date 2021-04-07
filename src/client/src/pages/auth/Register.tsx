@@ -35,10 +35,8 @@ const Register: React.FC = () => {
         else if(password.length < 6) setAlertText("Password to short 6");
         else if(confirmPassword !== password) setAlertText("Password Don't Match");
         else{            
-            auth.createUserWithEmailAndPassword(email, password).then(() => {
-                history.push('/tabs')
-            }).catch(err => setAlertText(err.message))
-            
+            auth.createUserWithEmailAndPassword(email, password)            
+            .catch(err => setAlertText(err.message))            
         }
     },[confirmPassword, password, email.length]);
 

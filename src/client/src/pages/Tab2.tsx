@@ -11,11 +11,8 @@ const Tab2: React.FC = () => {
     const onSignOutClick = useCallback(() => {
 
     	 auth.signOut() 
-
+        
       },[]);
-
-
-
 
   return (
     <IonPage>
