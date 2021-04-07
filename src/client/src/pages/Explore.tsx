@@ -15,17 +15,19 @@ import {
   IonImg,
   IonRefresher,
   IonRefresherContent,
+  IonText,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { db } from "../helper/firebase";
 import { evaluateLocation } from "../hooks/evaluateLocation";
 import { Plugins } from "@capacitor/core";
 import { GeogramPosition } from "../model/GeogramPosition";
-import { Picture } from "../model/Picture";
+import { Image } from "../model/Image";
 import { pin } from "ionicons/icons";
 import React from "react";
 import { RefresherEventDetail } from "@ionic/core";
 import { chevronDownCircleOutline } from "ionicons/icons";
+import { sortImageArray } from "../hooks/sortImageArray";
 
 const { Geolocation } = Plugins;
 const FILTER = 15;
@@ -34,11 +36,11 @@ const Explore: React.FC = (props) => {
   // Geoinformation
   const [location, setLocation] = useState<GeogramPosition>();
 
-  //Pictures to update
-  const [updatedPictures, setUpdatedPictures] = useState<Array<Picture>>([]);
+  //images to update
+  const [updatedImages, setUpdatedImages] = useState<Array<Image>>([]);
 
-  //Pictures to display
-  const [pictures, setPictures] = useState<Array<Picture>>([]);
+  //images to display
+  const [images, setImages] = useState<Array<Image>>([]);
 
   useEffect(() => {
     // get current geolocation
@@ -71,18 +73,21 @@ const Explore: React.FC = (props) => {
   const initialLoad = async () => {
     const ref = db.collection("images");
     const data = await ref.get();
-    let typedDocs: Picture[] = [];
+    let typedDocs: Image[] = [];
     data.docs.forEach((doc: any) => typedDocs.push(doc.data()));
-    setPictures(typedDocs);
+    typedDocs = typedDocs.sort((a, b) => {
+      return sortImageArray(a,b);
+    });
+    setImages(typedDocs);
   };
 
   const onCollectionUpdate = (querySnapshot: any) => {
-    let typedDocs: Picture[] = [];
+    let typedDocs: Image[] = [];
 
     querySnapshot.forEach((doc: any) => typedDocs.push(doc.data()));
 
     if (location !== undefined) {
-      setUpdatedPictures(
+      setUpdatedImages(
         evaluateLocation(
           FILTER,
           typedDocs,
@@ -96,9 +101,9 @@ const Explore: React.FC = (props) => {
   function doRefresh(event: CustomEvent<RefresherEventDetail>) {
     console.log("Begin async operation");
 
-    if(updatedPictures.length !== 0)
+    if(updatedImages.length !== 0)
     {
-      setPictures(updatedPictures);
+      setImages(updatedImages);
     } 
 
     setTimeout(() => {
@@ -131,23 +136,25 @@ const Explore: React.FC = (props) => {
           </IonToolbar>
         </IonHeader>
 
-        {pictures.map((picture) => {
+        {images.map((image) => {
           return (
             <IonCard>
               <IonItem>
                 <IonIcon icon={pin} slot="start" />
                 <IonLabel>
-                  {picture.location.coords.latitude}{" "}
-                  {picture.location.coords.longitude}
+                  {image.location.coords.latitude}{" "}
+                  {image.location.coords.longitude}
                 </IonLabel>
               </IonItem>
               <IonCardHeader>
-                <IonCardSubtitle>{picture.user}</IonCardSubtitle>
-                <IonCardTitle>{picture.title}</IonCardTitle>
+                <IonCardSubtitle>{image.user}</IonCardSubtitle>
+                <IonCardTitle>{image.title}</IonCardTitle>
               </IonCardHeader>
 
               <IonCardContent>
-                <IonImg src={picture.url}></IonImg>
+                <IonImg src={image.url}></IonImg>
+                <br />
+                <IonText>{image.description}</IonText>
               </IonCardContent>
             </IonCard>
           );

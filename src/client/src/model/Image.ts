@@ -1,4 +1,4 @@
-export interface Picture {
+export interface Image {
   description: string;
   location: {
     coords: {
@@ -16,4 +16,5 @@ export interface Picture {
   url: string;
   user: string;
   distance: number | undefined;
+  timestamp: number;
 }

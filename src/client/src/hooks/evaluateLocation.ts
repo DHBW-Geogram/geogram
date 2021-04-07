@@ -20,16 +20,17 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { list } from "ionicons/icons";
-import { Picture } from "../model/Picture";
+import { Image } from "../model/Image";
 import { distanceInKm } from "./evaluateDistance";
+import { sortImageArray } from "./sortImageArray";
 
 export function evaluateLocation(
   range: number,
-  images: Picture[],
+  images: Image[],
   lat: number,
   long: number
-): Picture[] {
-  let pictures: Picture[] = [];
+): Image[] {
+  let pictures: Image[] = [];
 
   images.map((image) => {
     let distance: number = distanceInKm(
@@ -44,23 +45,11 @@ export function evaluateLocation(
     }
   });
 
-  pictures.sort((a, b) => {
-    if (a.distance !== undefined && b.distance !== undefined) {
-      if (a.distance > b.distance) {
-        return 1;
-      } else if (a.distance < b.distance) {
-        return -1;
-      } else {
-        return 0;
-      }
-    } else {
-      return 0;
-    }
+  pictures = pictures.sort((a, b) => {
+    return sortImageArray(a,b);
   });
 
   console.log(pictures);
 
   return pictures;
 }
-
-

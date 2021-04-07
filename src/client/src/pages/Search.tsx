@@ -28,7 +28,7 @@ import {
   IonText,
 } from "@ionic/react";
 import { db } from "../helper/firebase";
-import { Picture } from "../model/Picture";
+import { Image } from "../model/Image";
 import { pin } from "ionicons/icons";
 import { responsesAreSame } from "workbox-broadcast-update";
 import { Plugins } from "@capacitor/core";
@@ -38,11 +38,11 @@ import { distanceInKm } from "../hooks/evaluateDistance";
 const { Geolocation } = Plugins;
 
 const Search: React.FC = () => {
-  const [allPictures, setAllPictures] = useState<Array<Picture>>([]);
-  const [filteredPictures, setFilteredPictures] = useState<Array<Picture>>([]);
+  const [allimages, setAllimages] = useState<Array<Image>>([]);
+  const [filteredImages, setFilteredImages] = useState<Array<Image>>([]);
   const [filter, setFilter] = useState("Location");
   const [showPopup, setShowPopup] = useState(false);
-  const [popPic, setPopPic] = useState<Picture>();
+  const [popPic, setPopPic] = useState<Image>();
   // Geoinformation
   const [location, setLocation] = useState<GeogramPosition>();
 
@@ -64,41 +64,41 @@ const Search: React.FC = () => {
     });
 
     fetchImages();
-    setFilteredPictures(allPictures);
+    setFilteredImages(allimages);
   }, []);
 
   const fetchImages = async () => {
-    console.log(allPictures);
+    console.log(allimages);
     const ref = db.collection("images");
     const data = await ref.get();
-    let typedDocs: Picture[] = [];
+    let typedDocs: Image[] = [];
     data.docs.forEach((doc: any) => typedDocs.push(doc.data()));
-    setAllPictures(typedDocs);
+    setAllimages(typedDocs);
   };
 
   function filterItems(searchText: string) {
     console.log("filtering", searchText);
 
     if (searchText === "" || searchText === null || searchText === undefined) {
-      setFilteredPictures(allPictures);
+      setFilteredImages(allimages);
     } else if (filter === "Location") {
-      setFilteredPictures(
-        allPictures.filter(
-          (picture: Picture) =>
-            picture.location.coords.latitude.toPrecision(2) ===
+      setFilteredImages(
+        allimages.filter(
+          (image: Image) =>
+            image.location.coords.latitude.toPrecision(2) ===
             Number(searchText).toPrecision(2)
         )
       );
     } else if (filter === "Title") {
-      setFilteredPictures(
-        allPictures.filter((picture: Picture) =>
-          picture.title.startsWith(searchText)
+      setFilteredImages(
+        allimages.filter((image: Image) =>
+          image.title.startsWith(searchText)
         )
       );
     } else if (filter === "User") {
-      setFilteredPictures(
-        allPictures.filter((picture: Picture) =>
-          picture.user.startsWith(searchText)
+      setFilteredImages(
+        allimages.filter((image: Image) =>
+          image.user.startsWith(searchText)
         )
       );
     }
@@ -161,7 +161,7 @@ const Search: React.FC = () => {
 
         <IonGrid>
           <IonRow>
-            {filteredPictures.map((p: Picture) => {
+            {filteredImages.map((p: Image) => {
               return (
                 <IonCol size="4">
                   <IonImg
@@ -176,7 +176,7 @@ const Search: React.FC = () => {
                       width: "100%",
                     }}
                   ></IonImg>
-                  <p style={{position:"absolute", bottom:"-10px", right:"10px", backgroundColor:"rgba(0,0,0,0.5)"}}>
+                  <p style={{position:"absolute", bottom:"-10px", right:"10px", backgroundColor:"rgba(0,0,0,0.5)", borderRadius:"5px"}}>
                     {getDistance(
                       p.location.coords.latitude,
                       p.location.coords.longitude
@@ -206,6 +206,8 @@ const Search: React.FC = () => {
 
             <IonCardContent>
               <IonImg src={popPic?.url}></IonImg>
+              <br />
+              <IonText>{popPic?.description}</IonText>
             </IonCardContent>
           </IonCard>
         </IonPopover>
