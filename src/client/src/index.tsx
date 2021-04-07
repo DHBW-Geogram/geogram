@@ -6,8 +6,6 @@ import reportWebVitals from './reportWebVitals';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import React, { createContext, useEffect, useState } from "react";
 import firebase, { auth } from "./helper/firebase";
-
-
 defineCustomElements(window);
 
 export const UserContext = createContext<firebase.User | null>(null);
