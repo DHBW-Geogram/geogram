@@ -14,7 +14,7 @@ const MainTabs: React.FC = () => {
 
 
     return (
-      <IonReactRouter>   
+      
         <IonTabs>    
           <IonRouterOutlet>
         
@@ -50,7 +50,7 @@ const MainTabs: React.FC = () => {
             </IonTabButton>
           </IonTabBar>
       </IonTabs>
-    </IonReactRouter>
+   
  
       );
 };

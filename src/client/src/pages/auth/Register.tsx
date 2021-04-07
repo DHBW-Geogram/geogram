@@ -16,7 +16,6 @@ const Register: React.FC = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [alertText, setAlertText] = useState('')
     const history = useHistory();
-    const location = useLocation(); 
    
     // useEffect(() => {
     //     if(auth.currentUser) history.push('/');
@@ -35,7 +34,7 @@ const Register: React.FC = () => {
         else if(password.length === 0) setAlertText("Password Required");
         else if(password.length < 6) setAlertText("Password to short 6");
         else if(confirmPassword !== password) setAlertText("Password Don't Match");
-        else{
+        else{            
             auth.createUserWithEmailAndPassword(email, password).then(() => {
                 history.push('/tabs')
             }).catch(err => setAlertText(err.message))

@@ -5,7 +5,7 @@ import './Login.css'
 import { fb, db, auth } from "../../helper/firebase";
 
 import "firebase/auth";
-import { Link, Redirect, useHistory, useLocation } from "react-router-dom";
+import { Link, Redirect, useHistory } from "react-router-dom";
 
 import { useStoreActions } from "easy-peasy";
 
@@ -16,7 +16,6 @@ const Login: React.FC = () => {
      const [password, setPassword] = useState("");
      const [alertText, setAlertText] = useState('')
      const history = useHistory(); 
-     const location = useLocation(); 
      
     //  useEffect(() => {
     //     if(auth.currentUser) history.push('/');
@@ -32,7 +31,8 @@ const Login: React.FC = () => {
     if(email.length === 0) setAlertText("Email Required");
     else if(password.length === 0) setAlertText("Password Required");
     else{
-        auth.signInWithEmailAndPassword(email,password).then(() => {           
+        auth
+            .signInWithEmailAndPassword(email,password).then(() => {           
             history.push('/tabs')
         }).catch(err => setAlertText(err.message));
     }       

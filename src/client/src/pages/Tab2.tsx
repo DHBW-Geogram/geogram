@@ -1,8 +1,22 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonButton, IonButtons, IonContent, IonHeader, IonItem, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { useCallback } from 'react';
 import ExploreContainer from '../components/ExploreContainer';
+import { auth } from '../helper/firebase';
 import './Tab2.css';
 
 const Tab2: React.FC = () => {
+
+
+
+    const onSignOutClick = useCallback(() => {
+
+    	 auth.signOut() 
+
+      },[]);
+
+
+
+
   return (
     <IonPage>
       <IonHeader>
@@ -16,6 +30,9 @@ const Tab2: React.FC = () => {
             <IonTitle size="large">Tab 2</IonTitle>
           </IonToolbar>
         </IonHeader>
+        <IonItem>
+        <IonButtons onClick={onSignOutClick} >Signout</IonButtons>
+        </IonItem>
         <ExploreContainer name="Tab 2 page" />
       </IonContent>
     </IonPage>
@@ -23,3 +40,6 @@ const Tab2: React.FC = () => {
 };
 
 export default Tab2;
+
+
+
