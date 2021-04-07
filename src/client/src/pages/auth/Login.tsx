@@ -7,7 +7,6 @@ import { fb, db, auth } from "../../helper/firebase";
 import "firebase/auth";
 import { Link, Redirect, useHistory, useLocation } from "react-router-dom";
 
-import { useStoreActions } from "easy-peasy";
 
 const Login: React.FC = () => {
 
