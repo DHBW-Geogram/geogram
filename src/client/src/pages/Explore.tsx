@@ -84,13 +84,12 @@ const Explore: React.FC = (props) => {
   };
 
   function doRefresh(event: CustomEvent<RefresherEventDetail>) {
-    console.log('Begin async operation');
-  
+    console.log("Begin async operation");
 
     setPictures(updatedPictures);
 
     setTimeout(() => {
-      console.log('Async operation has ended');
+      console.log("Async operation has ended");
       event.detail.complete();
     }, 2000);
   }
@@ -104,11 +103,15 @@ const Explore: React.FC = (props) => {
       </IonHeader>
 
       <IonContent fullscreen>
-      <IonContent>
-      <IonRefresher slot="fixed" onIonRefresh={doRefresh} pullFactor={0.5} pullMin={100} pullMax={200}>
-        <IonRefresherContent></IonRefresherContent>
-      </IonRefresher>
-    </IonContent>
+          <IonRefresher
+            slot="fixed"
+            onIonRefresh={doRefresh}
+            pullFactor={0.5}
+            pullMin={100}
+            pullMax={200}
+          >
+            <IonRefresherContent></IonRefresherContent>
+          </IonRefresher>
         <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">Explore</IonTitle>
