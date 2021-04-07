@@ -1,16 +1,22 @@
 import { Redirect, Route } from 'react-router-dom';
+import React, { useContext, useState } from "react";
+import Upload from './pages/Upload/Upload';
 import {
   IonApp,
   IonFab,
   IonFabButton,
   IonIcon,
   IonLabel,
+  IonLoading,
   IonRouterOutlet,
   IonTabBar,
   IonTabButton,
   IonTabs,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
+import FirstPage from './pages/auth/FirstPage';
 import { arrowForwardCircle, cameraOutline, cameraSharp, ellipse, square, triangle } from 'ionicons/icons';
 import Tab1 from './pages/Tab1';
 import Tab2 from './pages/Tab2';
@@ -34,17 +40,29 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-import React, { useState } from 'react';
+
+import { UserContext } from '.';
 import UploadSelectionModal from './components/UploadSelectionModal/UploadSelectionModal';
-import Upload from './pages/Upload/Upload';
 
-const App: React.FC = () => {
 
-  const [showActionSheet, setShowActionSheet] = useState(false);
-
+const PublicRoutes = () => {
   return (
-      <IonApp>
-      <IonReactRouter>
+    <IonReactRouter>
+    
+        {/****** AUTH CREATE ACCOUNT */}
+        <Route path="/home" component={FirstPage} exact={true} />
+        <Route path="/login" component={Login} exact={true} />
+        <Route path="/register" component={Register} exact={true} />
+        <Route path="/" render={() => <Redirect to="/home" />} />
+      
+    </IonReactRouter>
+  );
+};
+
+const PrivateRoutes = () => {
+  const [showActionSheet, setShowActionSheet] = useState(false);
+  return (
+    <IonReactRouter>
         <IonTabs>
           <IonRouterOutlet>
             <Route exact path="/tab1">
@@ -94,10 +112,26 @@ const App: React.FC = () => {
             }
 
       </IonReactRouter>
-    </IonApp>
-
   );
-
 };
 
+
+
+
+const App: React.FC = () => {   
+
+    const user = useContext(UserContext);
+    
+ return(
+   <IonApp>
+
+    {user ? <PrivateRoutes /> : <PublicRoutes />}
+
+  
+   </IonApp>
+ );
+ };
+
 export default App;
+
+

@@ -1,4 +1,5 @@
 import firebase from "firebase";
+import React, { createContext, FC, useEffect, useState } from "react";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCuOUn1kd_QKs91UYx2Pv015QYAwNfpkWg",
@@ -13,14 +14,17 @@ let fb = firebase.initializeApp(firebaseConfig);
 let db = fb.firestore();
 
 // AUTH //
-fb.auth();
+export const auth = fb.auth();
+
+export default firebase;
+
 
 // [START auth_state_listener]
-fb.auth().onAuthStateChanged((user: any) => {
+auth.onAuthStateChanged((user: any) => {
     if (user) {
         var uid: any = user.uid;
         localStorage.setItem("uid", uid);
-        console.log("RES:",fb.auth())
+        console.log("RES:",auth)
     } else {
         localStorage.removeItem("uid");
     }
