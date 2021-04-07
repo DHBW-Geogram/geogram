@@ -15,23 +15,8 @@ export function usePhotoGallery() {
   const { get, set } = useStorage();
 
   useEffect(() => {
-    // const loadSaved = async () => {
-    //   const photosString = await get(PHOTO_STORAGE);
-    //   const photosInStorage = (photosString ? JSON.parse(photosString) : []) as Photo[];
-    //   // If running on the web...
-    //   if (!isPlatform('hybrid')) {
-    //     for (let photo of photosInStorage) {
-    //       const file = await readFile({
-    //         path: photo.filepath,
-    //         directory: FilesystemDirectory.Data
-    //       });
-    //       // Web platform only: Load the photo as base64 data
-    //       photo.webviewPath = `data:image/jpeg;base64,${file.data}`;
-    //     }
-    //   }
-    //   setPhotos(photosInStorage);
-    // };
-    // loadSaved();
+
+
   }, [get, readFile]);
   
 
@@ -53,6 +38,15 @@ export function usePhotoGallery() {
     // return result
     return savedFileImage;
   };
+
+  const convertBlobToBase64 = async(blob: Blob): Promise<string>  => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = () => resolve(reader.result as string);
+      reader.readAsDataURL(blob);
+    });
+  }
 
   const takePhotoFromGalerie = async() => {
         // Access galerie photo
@@ -95,7 +89,7 @@ export function usePhotoGallery() {
       // Details: https://ionicframework.com/docs/building/webview#file-protocol
       return {
         filepath: savedFile.uri,
-        webviewPath: Capacitor.convertFileSrc(savedFile.uri),
+        webviewPath: Capacitor.convertFileSrc(savedFile.uri), 
       };
     }
     else {
@@ -103,35 +97,23 @@ export function usePhotoGallery() {
       // already loaded into memory
       return {
         filepath: fileName,
-        webviewPath: photo.webPath
+        webviewPath: photo.webPath,
+        data: base64Data
       };
     }
   };
 
-  const deletePhoto = async (photo: Photo) => {
-    // // Remove this photo from the Photos reference data array
-    // const newPhotos = photos.filter(p => p.filepath !== photo.filepath);
-
-    // // Update photos array cache by overwriting the existing photo array
-    // set(PHOTO_STORAGE, JSON.stringify(newPhotos));
-
-    // // delete photo file from filesystem
-    // const filename = photo.filepath.substr(photo.filepath.lastIndexOf('/') + 1);
-    // await deleteFile({
-    //   path: filename,
-    //   directory: FilesystemDirectory.Data
-    // });
-    // setPhotos(newPhotos);
-  };
 
   return {
     photo,
     takePhoto,
-    takePhotoFromGalerie
+    takePhotoFromGalerie,
+    convertBlobToBase64
   };
 }
 
 export interface Photo {
   filepath: string;
   webviewPath?: string;
+  data?: string;
 }
