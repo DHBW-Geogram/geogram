@@ -31,6 +31,7 @@ export function evaluateLocation(
   long: number
 ): Image[] {
   let pictures: Image[] = [];
+  console.log(range);
 
   images.map((image) => {
     let distance: number = distanceInKm(

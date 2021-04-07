@@ -16,6 +16,10 @@ import {
   IonRefresher,
   IonRefresherContent,
   IonText,
+  IonButton,
+  IonPopover,
+  IonList,
+  IonListHeader,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { db } from "../helper/firebase";
@@ -23,14 +27,13 @@ import { evaluateLocation } from "../hooks/evaluateLocation";
 import { Plugins } from "@capacitor/core";
 import { GeogramPosition } from "../model/GeogramPosition";
 import { Image } from "../model/Image";
-import { pin } from "ionicons/icons";
+import { pin, funnel } from "ionicons/icons";
 import React from "react";
 import { RefresherEventDetail } from "@ionic/core";
 import { chevronDownCircleOutline } from "ionicons/icons";
 import { sortImageArray } from "../hooks/sortImageArray";
 
 const { Geolocation } = Plugins;
-const FILTER = 15;
 
 const Explore: React.FC = (props) => {
   // Geoinformation
@@ -38,9 +41,23 @@ const Explore: React.FC = (props) => {
 
   //images to update
   const [updatedImages, setUpdatedImages] = useState<Array<Image>>([]);
+  const [allImages, setAllImages] = useState<Array<Image>>([]);
 
   //images to display
   const [images, setImages] = useState<Array<Image>>([]);
+
+  //filter
+  const [filter, setFilter] = useState(15);
+  const [filterArray, setFilterArray] = useState<Array<number>>([]);
+
+  //popup
+  const [showPopup, setShowPopup] = useState<{
+    open: boolean;
+    event: Event | undefined;
+  }>({
+    open: false,
+    event: undefined,
+  });
 
   useEffect(() => {
     // get current geolocation
@@ -59,6 +76,7 @@ const Explore: React.FC = (props) => {
       });
     });
 
+    setFilterArray([5, 10, 15, 20]);
     initialLoad();
 
     let ref = db.collection("images");
@@ -70,41 +88,59 @@ const Explore: React.FC = (props) => {
     };
   }, []);
 
+  //Gets the initally stored pictures from the db
   const initialLoad = async () => {
     const ref = db.collection("images");
     const data = await ref.get();
     let typedDocs: Image[] = [];
     data.docs.forEach((doc: any) => typedDocs.push(doc.data()));
     typedDocs = typedDocs.sort((a, b) => {
-      return sortImageArray(a,b);
+      return sortImageArray(a, b);
     });
-    setImages(typedDocs);
+    setAllImages(typedDocs);
   };
+
+  function filterImages(n: number | undefined) {
+    if (location !== undefined) {
+      if (n !== undefined) {
+        setFilter(n);
+        setUpdatedImages(
+          evaluateLocation(
+            n,
+            allImages,
+            location.coords.latitude,
+            location.coords.longitude
+          )
+        );
+        console.log("updated", updatedImages, "n", n);
+      } else {
+        //Array that shows the new pictures when updated manually to avoid an unwanted scrolling to the top
+        setUpdatedImages(
+          evaluateLocation(
+            filter,
+            allImages,
+            location.coords.latitude,
+            location.coords.longitude
+          )
+        );
+      }
+    }
+  }
 
   const onCollectionUpdate = (querySnapshot: any) => {
     let typedDocs: Image[] = [];
 
     querySnapshot.forEach((doc: any) => typedDocs.push(doc.data()));
-
-    if (location !== undefined) {
-      setUpdatedImages(
-        evaluateLocation(
-          FILTER,
-          typedDocs,
-          location.coords.latitude,
-          location.coords.longitude
-        )
-      );
-    }
+    setAllImages(typedDocs);
+    filterImages(undefined);
   };
 
   function doRefresh(event: CustomEvent<RefresherEventDetail>) {
     console.log("Begin async operation");
 
-    if(updatedImages.length !== 0)
-    {
+    if (updatedImages.length !== 0) {
       setImages(updatedImages);
-    } 
+    }
 
     setTimeout(() => {
       console.log("Async operation has ended");
@@ -117,6 +153,63 @@ const Explore: React.FC = (props) => {
       <IonHeader>
         <IonToolbar>
           <IonTitle>Explore</IonTitle>
+          <IonText slot="end">{filter}km</IonText>
+          <IonIcon
+            icon={funnel}
+            slot="end"
+            onClick={(e) => setShowPopup({ open: true, event: e.nativeEvent })}
+          />
+          <IonPopover
+            isOpen={showPopup.open}
+            event={showPopup.event}
+            onDidDismiss={(e) =>
+              setShowPopup({ open: false, event: undefined })
+            }
+          >
+            <IonList>
+              <IonListHeader>Range Filter</IonListHeader>
+              <IonItem
+                button={true}
+                onClick={(e) => {
+                  filterImages(5);
+                  setShowPopup({ open: false, event: undefined });
+                }}
+                detail
+              >
+                5km
+              </IonItem>
+              <IonItem
+                button={true}
+                onClick={(e) => {
+                  filterImages(10);
+                  setShowPopup({ open: false, event: undefined });
+                }}
+                detail
+              >
+                10km
+              </IonItem>
+              <IonItem
+                button={true}
+                onClick={(e) => {
+                  filterImages(15);
+                  setShowPopup({ open: false, event: undefined });
+                }}
+                detail
+              >
+                15km
+              </IonItem>
+              <IonItem
+                button={true}
+                onClick={(e) => {
+                  filterImages(20);
+                  setShowPopup({ open: false, event: undefined });
+                }}
+                detail
+              >
+                20km
+              </IonItem>
+            </IonList>
+          </IonPopover>
         </IonToolbar>
       </IonHeader>
 
