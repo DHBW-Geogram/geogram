@@ -96,7 +96,10 @@ const Explore: React.FC = (props) => {
   function doRefresh(event: CustomEvent<RefresherEventDetail>) {
     console.log("Begin async operation");
 
-    setPictures(updatedPictures);
+    if(updatedPictures.length !== 0)
+    {
+      setPictures(updatedPictures);
+    } 
 
     setTimeout(() => {
       console.log("Async operation has ended");
