@@ -32,9 +32,8 @@ const Login: React.FC = () => {
     if(email.length === 0) setAlertText("Email Required");
     else if(password.length === 0) setAlertText("Password Required");
     else{
-        auth.signInWithEmailAndPassword(email,password).then((response) => {
-            console.log('It Works', response)
-            history.push('/mainTabs')
+        auth.signInWithEmailAndPassword(email,password).then(() => {           
+            history.push('/tabs')
         }).catch(err => setAlertText(err.message));
     }       
 },[email.length, password.length]);   
@@ -46,7 +45,7 @@ const onDismiss = useCallback(() => setAlertText(''), []);
         <IonHeader>
             <IonToolbar>
                 <IonButtons slot="start">
-                    <IonButton color="primary" routerLink="/firstPage">
+                    <IonButton color="primary" routerLink="/home">
                         <IonIcon  icon={chevronBackOutline}/>
                     </IonButton>
                 </IonButtons>

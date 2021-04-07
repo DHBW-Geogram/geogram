@@ -1,12 +1,12 @@
 
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon, IonInput, IonItem, IonLabel, IonCol, IonGrid, IonRow, IonAlert } from "@ionic/react";
-import { chevronBackOutline, logInOutline, personAddOutline } from "ionicons/icons";
-import React, {useCallback, useEffect, useState} from "react";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon, IonInput, IonItem, IonLabel, IonGrid, IonRow, IonAlert } from "@ionic/react";
+import { chevronBackOutline, personAddOutline } from "ionicons/icons";
+import React, {useCallback, useState} from "react";
 import { fb, db, auth } from "../../helper/firebase";
 import './Register.css'
 import "firebase/auth";
 import { useHistory, useLocation } from "react-router-dom";
-import { useStoreActions } from "easy-peasy";
+
 
 
 const Register: React.FC = () => {
@@ -36,9 +36,8 @@ const Register: React.FC = () => {
         else if(password.length < 6) setAlertText("Password to short 6");
         else if(confirmPassword !== password) setAlertText("Password Don't Match");
         else{
-            auth.createUserWithEmailAndPassword(email, password).then((response) => {
-                console.log('Sign Up Works')
-                history.push('/mainTabs')
+            auth.createUserWithEmailAndPassword(email, password).then(() => {
+                history.push('/tabs')
             }).catch(err => setAlertText(err.message))
             
         }
@@ -51,7 +50,7 @@ const Register: React.FC = () => {
         <IonHeader>
             <IonToolbar>
                 <IonButtons slot="start">
-                    <IonButton color="primary" routerLink="/firstPage">
+                    <IonButton color="primary" routerLink="/home">
                         <IonIcon  icon={chevronBackOutline}/>
                     </IonButton>
                 </IonButtons>

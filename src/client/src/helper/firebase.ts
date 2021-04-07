@@ -16,7 +16,8 @@ let db = fb.firestore();
 // AUTH //
 export const auth = fb.auth();
 
-    
+export const UserContext = createContext({ user: null }); 
+
 
 // [START auth_state_listener]
 auth.onAuthStateChanged((user: any) => {
