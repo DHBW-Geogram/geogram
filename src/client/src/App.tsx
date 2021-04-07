@@ -77,7 +77,14 @@ const PrivateRoutes = () => {
             <Route exact path="/">
               <Redirect to="/tab1" />
             </Route>
+            
             <Route path="/upload" render={(props) => <Upload {...props}/>}/>
+            <Route exact path="/login">
+                <Redirect to="/tab1" />
+              </Route> 
+              <Route exact path="/register">
+                <Redirect to="/tab1" />
+              </Route> 
           </IonRouterOutlet>
           <IonTabBar slot="bottom">
             {/* Explore Tab - Benita */}
