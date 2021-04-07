@@ -48,7 +48,6 @@ const Explore: React.FC = (props) => {
 
   //filter
   const [filter, setFilter] = useState(15);
-  const [filterArray, setFilterArray] = useState<Array<number>>([]);
 
   //popup
   const [showPopup, setShowPopup] = useState<{
@@ -76,7 +75,6 @@ const Explore: React.FC = (props) => {
       });
     });
 
-    setFilterArray([5, 10, 15, 20]);
     initialLoad();
 
     let ref = db.collection("images");
@@ -90,6 +88,7 @@ const Explore: React.FC = (props) => {
 
   //Gets the initally stored pictures from the db
   const initialLoad = async () => {
+    console.log("Initial load")
     const ref = db.collection("images");
     const data = await ref.get();
     let typedDocs: Image[] = [];
@@ -98,6 +97,8 @@ const Explore: React.FC = (props) => {
       return sortImageArray(a, b);
     });
     setAllImages(typedDocs);
+    setImages(typedDocs);
+    console.log("filter", filter)
   };
 
   function filterImages(n: number | undefined) {
