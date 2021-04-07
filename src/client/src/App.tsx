@@ -1,7 +1,10 @@
 import { Redirect, Route } from 'react-router-dom';
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
+import Upload from './pages/Upload/Upload';
 import {
   IonApp,
+  IonFab,
+  IonFabButton,
   IonIcon,
   IonLabel,
   IonLoading,
@@ -14,6 +17,11 @@ import { IonReactRouter } from '@ionic/react-router';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import FirstPage from './pages/auth/FirstPage';
+import { arrowForwardCircle, cameraOutline, cameraSharp, ellipse, square, triangle } from 'ionicons/icons';
+import Tab1 from './pages/Tab1';
+import Tab2 from './pages/Tab2';
+import Tab3 from './pages/Tab3';
+
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -32,11 +40,9 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-import Tab1 from './pages/Tab1';
-import Tab2 from './pages/Tab2';
-import Tab3 from './pages/Tab3';
+
 import { UserContext } from '.';
-import { ellipse, square, triangle } from 'ionicons/icons';
+import UploadSelectionModal from './components/UploadSelectionModal/UploadSelectionModal';
 
 
 const PublicRoutes = () => {
@@ -54,46 +60,57 @@ const PublicRoutes = () => {
 };
 
 const PrivateRoutes = () => {
+  const [showActionSheet, setShowActionSheet] = useState(false);
   return (
     <IonReactRouter>
-    <IonTabs>    
+        <IonTabs>
           <IonRouterOutlet>
-        
-            <Route exact path="/tab1">  
-              <Tab1 />    
+            <Route exact path="/tab1">
+              <Tab1 />
             </Route>
-        
-              <Route exact path="/tab2">
+            <Route exact path="/tab2">
               <Tab2 />
             </Route>
-
             <Route path="/tab3">
               <Tab3 />
             </Route>
-
-             <Route exact path="/login">
-                <Redirect to="/tab1" />
-              </Route> 
-              <Route exact path="/register">
-                <Redirect to="/tab1" />
-              </Route> 
+            <Route exact path="/">
+              <Redirect to="/tab1" />
+            </Route>
+            <Route path="/upload" render={(props) => <Upload {...props}/>}/>
           </IonRouterOutlet>
-
           <IonTabBar slot="bottom">
+            {/* Explore Tab - Benita */}
             <IonTabButton tab="tab1" href="/tab1">
               <IonIcon icon={triangle} />
-              <IonLabel>Tab 1</IonLabel>
+              <IonLabel>Explore</IonLabel>
             </IonTabButton>
+            {/* Search Tab - Benita */}
             <IonTabButton tab="tab2" href="/tab2">
               <IonIcon icon={ellipse} />
-              <IonLabel>Tab 2</IonLabel>
+              <IonLabel>Search</IonLabel>
             </IonTabButton>
+            {/* Profile Tab - Jonas */}
             <IonTabButton tab="tab3" href="/tab3">
               <IonIcon icon={square} />
-              <IonLabel>Tab 3</IonLabel>
+              <IonLabel>User</IonLabel>
             </IonTabButton>
           </IonTabBar>
-      </IonTabs>
+        </IonTabs>
+
+            {/* Upload Component - Paul */}
+            {
+              true &&
+              <>
+                  <IonFab style={{marginBottom: "4.5rem", marginRight: "0.5rem"}} vertical="bottom" horizontal="end" slot="fixed" onClick={ () => {setShowActionSheet(true)}}>
+                    <IonFabButton>
+                      <IonIcon md={cameraSharp} ios={cameraOutline} />
+                    </IonFabButton>
+                  </IonFab>
+                  <UploadSelectionModal active={showActionSheet} setShowActionSheet={setShowActionSheet}/>
+              </>
+            }
+
       </IonReactRouter>
   );
 };
