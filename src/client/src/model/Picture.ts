@@ -14,6 +14,6 @@ export interface Picture {
   };
   title: string;
   url: string;
-  user: number;
+  user: string;
   distance: number | undefined;
 }

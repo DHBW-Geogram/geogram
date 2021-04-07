@@ -13,21 +13,58 @@ import {
   IonAvatar,
   IonIcon,
   IonListHeader,
+  IonRow,
+  IonCol,
+  IonGrid,
+  IonImg,
+  IonModal,
+  IonButton,
+  IonPopover,
+  IonCard,
+  IonCardHeader,
+  IonCardContent,
+  IonCardSubtitle,
+  IonCardTitle,
+  IonText,
 } from "@ionic/react";
 import { db } from "../helper/firebase";
 import { Picture } from "../model/Picture";
+import { pin } from "ionicons/icons";
 import { responsesAreSame } from "workbox-broadcast-update";
+import { Plugins } from "@capacitor/core";
+import { GeogramPosition } from "../model/GeogramPosition";
+import { distanceInKm } from "../hooks/evaluateDistance";
+
+const { Geolocation } = Plugins;
 
 const Search: React.FC = () => {
   const [allPictures, setAllPictures] = useState<Array<Picture>>([]);
   const [filteredPictures, setFilteredPictures] = useState<Array<Picture>>([]);
-  const [locations, setLocations] = useState<Array<String>>([]);
-  const [titles, setTitles] = useState<Array<String>>([]);
-  const [users, setUsers] = useState<Array<Number>>([]);
+  const [filter, setFilter] = useState("Location");
+  const [showPopup, setShowPopup] = useState(false);
+  const [popPic, setPopPic] = useState<Picture>();
+  // Geoinformation
+  const [location, setLocation] = useState<GeogramPosition>();
 
   useEffect(() => {
+    // get current geolocation
+    Geolocation.getCurrentPosition().then((location) => {
+      setLocation({
+        coords: {
+          accuracy: location.coords.accuracy,
+          altitude: location.coords.altitude,
+          altitudeAccuracy: location.coords.altitudeAccuracy,
+          heading: location.coords.heading,
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          speed: location.coords.speed,
+        },
+        timestamp: location.timestamp,
+      });
+    });
+
     fetchImages();
-    reset();
+    setFilteredPictures(allPictures);
   }, []);
 
   const fetchImages = async () => {
@@ -40,49 +77,46 @@ const Search: React.FC = () => {
   };
 
   function filterItems(searchText: string) {
-    console.log("filtering");
+    console.log("filtering", searchText);
 
     if (searchText === "" || searchText === null || searchText === undefined) {
-      reset();
+      setFilteredPictures(allPictures);
+    } else if (filter === "Location") {
+      setFilteredPictures(
+        allPictures.filter(
+          (picture: Picture) =>
+            picture.location.coords.latitude.toPrecision(2) ===
+            Number(searchText).toPrecision(2)
+        )
+      );
+    } else if (filter === "Title") {
+      setFilteredPictures(
+        allPictures.filter((picture: Picture) =>
+          picture.title.startsWith(searchText)
+        )
+      );
+    } else if (filter === "User") {
+      setFilteredPictures(
+        allPictures.filter((picture: Picture) =>
+          picture.user.startsWith(searchText)
+        )
+      );
     }
-
-    setLocations(
-      allPictures
-        .filter(
-          (picture: Picture) =>
-            picture.location.coords.latitude.toPrecision(2) === Number(searchText).toPrecision(2)
-        )
-        .map(
-          (picture: Picture) =>
-            picture.location.coords.latitude.toPrecision(4) +
-            " " +
-            picture.location.coords.longitude.toPrecision(4)
-        )
-    );
-    setTitles(
-      allPictures
-        .filter((picture: Picture) => picture.title.startsWith(searchText))
-        .map((picture: Picture) => picture.title)
-    );
-    setUsers(
-      allPictures
-        .filter((picture: Picture) => picture.user === Number(searchText))
-        .map((picture: Picture) => picture.user)
-    );
   }
 
-  function reset() {
-    console.log("resetting", allPictures);
-    setLocations(
-      allPictures.map(
-        (picture: Picture) =>
-          picture.location.coords.latitude.toPrecision(4) +
-          " " +
-          picture.location.coords.longitude.toPrecision(4)
-      )
-    );
-    setTitles(allPictures.map((picture: Picture) => picture.title));
-    setUsers(allPictures.map((picture: Picture) => picture.user));
+  function getDistance(lat: number, long: number): number {
+    if (
+      location?.coords.longitude !== undefined &&
+      location?.coords.latitude !== undefined
+    ) {
+      return distanceInKm(
+        location.coords.latitude,
+        location.coords.longitude,
+        lat,
+        long
+      );
+    }
+    return 0;
   }
 
   return (
@@ -101,30 +135,80 @@ const Search: React.FC = () => {
           }}
           showCancelButton="never"
         ></IonSearchbar>
-        <IonListHeader>Locations</IonListHeader>
-        {locations.map((location: String) => {
-          return (
-            <IonChip>
-              <IonLabel>{location}</IonLabel>
-            </IonChip>
-          );
-        })}
-        <IonListHeader>Titles</IonListHeader>
-        {titles.map((title: String) => {
-          return (
-            <IonChip>
-              <IonLabel>{title}</IonLabel>
-            </IonChip>
-          );
-        })}
-        <IonListHeader>Users</IonListHeader>
-        {users.map((user: Number) => {
-          return (
-            <IonChip>
-              <IonLabel>{user}</IonLabel>
-            </IonChip>
-          );
-        })}
+
+        <IonListHeader>Filter: {filter}</IonListHeader>
+        <IonChip
+          onClick={(e) => {
+            setFilter("Location");
+          }}
+        >
+          <IonLabel>Location</IonLabel>
+        </IonChip>
+        <IonChip
+          onClick={(e) => {
+            setFilter("User");
+          }}
+        >
+          <IonLabel>User</IonLabel>
+        </IonChip>
+        <IonChip
+          onClick={(e) => {
+            setFilter("Title");
+          }}
+        >
+          <IonLabel>Title</IonLabel>
+        </IonChip>
+
+        <IonGrid>
+          <IonRow>
+            {filteredPictures.map((p: Picture) => {
+              return (
+                <IonCol size="4">
+                  <IonImg
+                    onClick={(e) => {
+                      setShowPopup(true);
+                      setPopPic(p);
+                    }}
+                    src={p.url}
+                    style={{
+                      objectFit: "cover",
+                      height: "100%",
+                      width: "100%",
+                    }}
+                  ></IonImg>
+                  <p style={{position:"absolute", bottom:"-10px", right:"10px", backgroundColor:"rgba(0,0,0,0.5)"}}>
+                    {getDistance(
+                      p.location.coords.latitude,
+                      p.location.coords.longitude
+                    ).toPrecision(3)}km
+                  </p>
+                </IonCol>
+              );
+            })}
+          </IonRow>
+        </IonGrid>
+        <IonPopover
+          isOpen={showPopup}
+          onDidDismiss={(e) => setShowPopup(false)}
+        >
+          <IonCard>
+            <IonItem>
+              <IonIcon icon={pin} slot="start" />
+              <IonLabel>
+                {popPic?.location.coords.latitude}{" "}
+                {popPic?.location.coords.longitude}
+              </IonLabel>
+            </IonItem>
+            <IonCardHeader>
+              <IonCardSubtitle>{popPic?.user}</IonCardSubtitle>
+              <IonCardTitle>{popPic?.title}</IonCardTitle>
+            </IonCardHeader>
+
+            <IonCardContent>
+              <IonImg src={popPic?.url}></IonImg>
+            </IonCardContent>
+          </IonCard>
+        </IonPopover>
       </IonContent>
     </IonPage>
   );
