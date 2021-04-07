@@ -14,6 +14,5 @@ export function sortImageArray(a: Image, b: Image): number {
       }
     }
   }
-
   return 0;
 }

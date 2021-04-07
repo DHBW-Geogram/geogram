@@ -60,7 +60,11 @@ const Explore: React.FC = (props) => {
 
   useEffect(() => {
     // get current geolocation
-    Geolocation.getCurrentPosition().then((location) => {
+
+    initialLoad();
+
+    async function initialLoad(){
+      let location = await Geolocation.getCurrentPosition();
       setLocation({
         coords: {
           accuracy: location.coords.accuracy,
@@ -73,9 +77,33 @@ const Explore: React.FC = (props) => {
         },
         timestamp: location.timestamp,
       });
-    });
+  
+      console.log("Initial load");
+      const ref = db.collection("images");
+      const data = await ref.get();
+      let typedDocs: Image[] = [];
+      data.docs.forEach((doc: any) => typedDocs.push(doc.data()));
+      typedDocs = typedDocs.sort((a, b) => {
+        return sortImageArray(a, b);
+      });
+  
+      //Sets all images
+      setAllImages(typedDocs);
+      console.log("allImages", typedDocs);
 
-    initialLoad();
+  
+        //evaluates the distance between the images and the current location and sets them as visible images
+        setImages(
+          evaluateLocation(
+            filter,
+            typedDocs,
+            location.coords.latitude,
+            location.coords.longitude
+          )
+        );
+  
+      console.log("filter", filter);
+    }
 
     let ref = db.collection("images");
 
@@ -85,21 +113,6 @@ const Explore: React.FC = (props) => {
       unsubscribe();
     };
   }, []);
-
-  //Gets the initally stored pictures from the db
-  const initialLoad = async () => {
-    console.log("Initial load")
-    const ref = db.collection("images");
-    const data = await ref.get();
-    let typedDocs: Image[] = [];
-    data.docs.forEach((doc: any) => typedDocs.push(doc.data()));
-    typedDocs = typedDocs.sort((a, b) => {
-      return sortImageArray(a, b);
-    });
-    setAllImages(typedDocs);
-    setImages(typedDocs);
-    console.log("filter", filter)
-  };
 
   function filterImages(n: number | undefined) {
     if (location !== undefined) {
