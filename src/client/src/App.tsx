@@ -1,10 +1,13 @@
 import { Redirect, Route } from 'react-router-dom';
+import React, { useContext, useState } from "react";
+import Upload from './pages/Upload/Upload';
 import {
   IonApp,
   IonFab,
   IonFabButton,
   IonIcon,
   IonLabel,
+  IonLoading,
   IonRouterOutlet,
   IonTabBar,
   IonTabButton,
@@ -31,20 +34,35 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-import React, { useState } from 'react';
+
+import { UserContext } from '.';
 import UploadSelectionModal from './components/UploadSelectionModal/UploadSelectionModal';
-import Upload from './pages/Upload/Upload';
 import Explore from './pages/Explore';
 import Search from './pages/Search';
 import Tab3 from './pages/Tab3';
+import FirstPage from './pages/auth/FirstPage';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
 
-const App: React.FC = () => {
 
-  const [showActionSheet, setShowActionSheet] = useState(false);
-
+const PublicRoutes = () => {
   return (
-      <IonApp>
-      <IonReactRouter>
+    <IonReactRouter>
+    
+        {/****** AUTH CREATE ACCOUNT */}
+        <Route path="/home" component={FirstPage} exact={true} />
+        <Route path="/login" component={Login} exact={true} />
+        <Route path="/register" component={Register} exact={true} />
+        <Route path="/" render={() => <Redirect to="/home" />} />
+      
+    </IonReactRouter>
+  );
+};
+
+const PrivateRoutes = () => {
+  const [showActionSheet, setShowActionSheet] = useState(false);
+  return (
+    <IonReactRouter>
         <IonTabs>
           <IonRouterOutlet>
             <Route exact path="/explore">
@@ -94,10 +112,26 @@ const App: React.FC = () => {
             }
 
       </IonReactRouter>
-    </IonApp>
-
   );
-
 };
 
+
+
+
+const App: React.FC = () => {   
+
+    const user = useContext(UserContext);
+    
+ return(
+   <IonApp>
+
+    {user ? <PrivateRoutes /> : <PublicRoutes />}
+
+  
+   </IonApp>
+ );
+ };
+
 export default App;
+
+
