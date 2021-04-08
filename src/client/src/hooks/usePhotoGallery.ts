@@ -28,7 +28,7 @@ export function usePhotoGallery() {
     const cameraPhoto = await getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
-      quality: 100
+      quality: 30
     });
     // Create filename based on date
     const fileName = new Date().getTime() + '.jpeg';
@@ -56,7 +56,7 @@ export function usePhotoGallery() {
         const cameraPhoto = await getPhoto({
           resultType: CameraResultType.Uri,
           source: CameraSource.Photos,
-          quality: 50
+          quality: 30
         });
         // Create filename based on date
         const fileName = new Date().getTime() + '.jpeg';
