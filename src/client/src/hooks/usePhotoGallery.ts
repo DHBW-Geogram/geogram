@@ -23,7 +23,7 @@ export function usePhotoGallery() {
   }, [get, readFile]);
   
 
-  const takePhoto = async () => {
+  const takePhoto = async (): Promise<Photo> => {
     // Access camera photo
     const cameraPhoto = await getPhoto({
       resultType: CameraResultType.Uri,
@@ -51,23 +51,19 @@ export function usePhotoGallery() {
     });
   }
 
-  const takePhotoFromGalerie = async() => {
+  const takePhotoFromGalerie = async(): Promise<Photo> => {
         // Access galerie photo
         const cameraPhoto = await getPhoto({
           resultType: CameraResultType.Uri,
           source: CameraSource.Photos,
           quality: 30
         });
-        // Create filename based on date
-        const fileName = new Date().getTime() + '.jpeg';
-        // Save image
-        const savedFileImage = await savePicture(cameraPhoto, fileName);
-        // Set image into state
-        setPhoto(savedFileImage);
-        // Store Image to storage
-        set(PHOTO_STORAGE, JSON.stringify(savedFileImage));
-        // return result
-        return savedFileImage;
+
+        return {
+          filepath: ""+cameraPhoto.path,
+          webviewPath: cameraPhoto.webPath, 
+          data: cameraPhoto.base64String
+        };
   }
 
   const savePicture = async (photo: CameraPhoto, fileName: string): Promise<Photo> => {
