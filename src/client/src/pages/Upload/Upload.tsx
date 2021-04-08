@@ -122,10 +122,7 @@ const Upload: React.FC<any> = (props) => {
 
         formData.append("myImage", file.data);
 
-        let res: any = undefined;
-
-        try {
-          res = await axios.post(
+        let res: any = await axios.post(
             `${process.env.REACT_APP_IMAGE_SERVER_URL}/upload1`,
             formData,
             {
@@ -134,7 +131,6 @@ const Upload: React.FC<any> = (props) => {
               },
             }
           );
-        } catch (e) {}
 
         if (res.data.file !== undefined) {
           let imageId: string = uuidv4();
