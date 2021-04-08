@@ -6,6 +6,9 @@ import { fb, db, auth } from "../../helper/firebase";
 import './Register.css'
 import "firebase/auth";
 import { useHistory, useLocation } from "react-router-dom";
+import { useContext } from "react";
+import { UserContext } from "../..";
+import firebase from "firebase";
 
 
 
@@ -15,11 +18,11 @@ const Register: React.FC = () => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [alertText, setAlertText] = useState('')
-    const history = useHistory();
+    
    
-    // useEffect(() => {
-    //     if(auth.currentUser) history.push('/');
-    // },[history, location]);
+   
+    const user = useContext(UserContext);
+  
 
    const onEmailNameChange = useCallback((e) =>
    setEmail(e.detail?.value), []);
@@ -35,8 +38,12 @@ const Register: React.FC = () => {
         else if(password.length < 6) setAlertText("Password to short 6");
         else if(confirmPassword !== password) setAlertText("Password Don't Match");
         else{            
-            auth.createUserWithEmailAndPassword(email, password)            
-            .catch(err => setAlertText(err.message))            
+            auth.createUserWithEmailAndPassword(email, password)                 
+            .catch(err => setAlertText(err.message));        
+
+            // Funktionirt nicht
+            // user?.sendEmailVerification();
+            // console.log('verificatipn')   
         }
     },[confirmPassword, password, email.length]);
 
@@ -106,7 +113,7 @@ const Register: React.FC = () => {
                 message={alertText}
                 buttons={['OK']}
 
-            />
+            />             
         </IonContent>
     </IonPage>
 );
