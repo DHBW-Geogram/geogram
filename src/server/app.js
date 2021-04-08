@@ -75,13 +75,19 @@ app.use(express.static('./public'));
 
 app.post('/upload1', (req, res) => {
 
+  console.log("Request on res /upload1")
+
   upload(req, res, (err) => {
 
     // Create new Filename
     let filename = `${uuidv4()}.jpg`;
 
+    console.log(`Created File with name: ${filename}`)
+
     // Export file from body request
     let image = req.body.myImage;
+
+    console.log(`Received Image: ${image}`)
 
     // Set up variables for error handling
     let buffer; 
@@ -99,8 +105,10 @@ app.post('/upload1', (req, res) => {
 
     // Give App Feedback
     if(e){
+      console.log(`Saving image failed:!!`)
       res.json({file: undefined})
     }else{
+      console.log(`Saved image at: /uploads/${filename}`)
       res.json({
         file: `uploads/${filename}`
       });

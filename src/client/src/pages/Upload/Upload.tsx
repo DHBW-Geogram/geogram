@@ -24,7 +24,7 @@ import { useCamera } from "@ionic/react-hooks/camera";
 import { camera } from "ionicons/icons";
 import React, { useEffect, useState } from "react";
 import { Photo, usePhotoGallery } from "../../hooks/usePhotoGallery";
-import { useFilesystem, base64FromPath } from '@ionic/react-hooks/filesystem';
+import { useFilesystem, base64FromPath } from "@ionic/react-hooks/filesystem";
 import {
   FilesystemDirectory,
   FilesystemEncoding,
@@ -36,15 +36,14 @@ import axios from "axios";
 import { db } from "../../helper/firebase";
 import { v4 as uuidv4 } from "uuid";
 import { Redirect } from "react-router";
-import { useStorage } from '@ionic/react-hooks/storage';
+import { useStorage } from "@ionic/react-hooks/storage";
 
 const { Geolocation, Filesystem } = Plugins;
 
 const Upload: React.FC<any> = (props) => {
-
   const { get } = useStorage();
   const { deleteFile, readFile, writeFile } = useFilesystem();
-  const {convertBlobToBase64} = usePhotoGallery();
+  const { convertBlobToBase64 } = usePhotoGallery();
 
   // image provided by props
   const [image, setImage] = useState<Photo>();
@@ -85,9 +84,13 @@ const Upload: React.FC<any> = (props) => {
         timestamp: location.timestamp,
       });
     });
+
+    //disable set Loading
+    props.setLoading(false);
   }, [props.location.state]);
 
   const upload = async () => {
+    props.setLoading(true);
 
     if (location === undefined) {
       setLocation({
@@ -105,13 +108,11 @@ const Upload: React.FC<any> = (props) => {
     }
 
     if (title !== "" && description !== "" && image !== undefined) {
-
       // upload process: image -> image server
       var formData = new FormData();
 
       if (image.webviewPath !== undefined) {
-
-        let file:any;
+        let file: any;
 
         file = await Filesystem.readFile({
           path: image.filepath,
@@ -151,7 +152,10 @@ const Upload: React.FC<any> = (props) => {
             })
             .then((res) => {
               setToast("Successfully added item to firebase");
-              setTimeout(() => setRedirect("tab1"), 1000);
+              setTimeout(() => {
+                setRedirect("tab1");
+                props.setLoading(false);
+              }, 1000);
             })
             .catch((err) => setToast("Error while adding data to firebase"));
         } else {

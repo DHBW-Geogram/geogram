@@ -7,7 +7,7 @@ import { Redirect } from "react-router";
 import { Photo, usePhotoGallery } from "../../hooks/usePhotoGallery";
 
 
-const UploadSelectionModal: React.FC<{active: boolean, setShowActionSheet: Dispatch<SetStateAction<boolean>>}> = ({active, setShowActionSheet}) => {
+const UploadSelectionModal: React.FC<{active: boolean, setShowActionSheet: Dispatch<SetStateAction<boolean>>, setLoading: Dispatch<SetStateAction<boolean>>}> = ({active, setShowActionSheet, setLoading}) => {
 
   const [selectedRoute, setSelectedRoute] = useState("");
   const [image, setImage] = useState<Photo>();
@@ -35,6 +35,7 @@ const UploadSelectionModal: React.FC<{active: boolean, setShowActionSheet: Dispa
                     takePhoto()
                     .then(image => {
                         // User took image
+                        setLoading(true);
                         setImage(image);
                         setSelectedRoute("upload")
                     })
@@ -50,6 +51,7 @@ const UploadSelectionModal: React.FC<{active: boolean, setShowActionSheet: Dispa
                 handler: () => {
                     takePhotoFromGalerie()
                     .then(image => {
+                        setLoading(true)
                         setImage(image);
                         setSelectedRoute("upload");
                     })
