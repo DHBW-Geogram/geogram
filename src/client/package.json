@@ -6,6 +6,7 @@
     "@capacitor/android": "^2.4.7",
     "@capacitor/core": "2.4.7",
     "@capacitor/ios": "^2.4.7",
+    "@ionic-native/fingerprint-aio": "^5.32.0",
     "@ionic/pwa-elements": "^3.0.2",
     "@ionic/react": "^5.5.0",
     "@ionic/react-hooks": "^0.0.8",
@@ -49,12 +50,12 @@
     "workbox-streams": "^5.1.4"
   },
   "scripts": {
+    "1": "ionic cap copy",
+    "2": "ionic cap open android ",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "1": "ionic cap copy",
-    "2": "ionic cap open android "
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [

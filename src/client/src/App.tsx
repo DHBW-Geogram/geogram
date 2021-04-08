@@ -49,10 +49,10 @@ const PublicRoutes = () => {
   return (
     <IonReactRouter>
       {/****** AUTH CREATE ACCOUNT */}
-      <Route path="/home" component={FirstPage} exact={true} />
+      {/* <Route path="/home" component={FirstPage} exact={true} /> */}
       <Route path="/login" component={Login} exact={true} />
       <Route path="/register" component={Register} exact={true} />
-      <Route path="/" render={() => <Redirect to="/home" />} />
+      <Route path="/" render={() => <Redirect to="/login" />} />
     </IonReactRouter>
   );
 };
@@ -85,9 +85,9 @@ const PrivateRoutes = () => {
           <Route exact path="/register">
             <Redirect to="/explore" />
           </Route>
-          <Route exact path="/home">
+          {/* <Route exact path="/home">
             <Redirect to="/explore" />
-          </Route>
+          </Route> */}
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
           {/* Explore Tab - Benita */}
