@@ -14,13 +14,13 @@ import firebase from "firebase";
 
 const Register: React.FC = () => {
 
-    const [email, setEmail] = useState("");    
+    const [email, setEmail] = useState("");
+    const [userFirstName, setuserFirstName] = useState('');
+    const [userLastName, setuserLastName] = useState('');    
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [alertText, setAlertText] = useState('')
     
-   
-   
     const user = useContext(UserContext);
   
 
@@ -30,22 +30,49 @@ const Register: React.FC = () => {
    setPassword(e.detail?.value), []);
    const onConfirmPasswordChange = useCallback((e) =>
    setConfirmPassword(e.detail?.value), []);
+   const onFirstNameChange = useCallback((e) =>
+   setuserFirstName(e.detail?.value), []);
+   const onLastNameChange = useCallback((e) =>
+   setuserLastName(e.detail?.value), []);
+   
+
 
 
     const onSignUpClick = useCallback(() => {
         if(email.length === 0) setAlertText("Email Required");
         else if(password.length === 0) setAlertText("Password Required");
         else if(password.length < 6) setAlertText("Password to short 6");
+        else if(userLastName.length === 0) setAlertText("Secondname Required");
+        else if(userFirstName.length === 0) setAlertText("Firstname Required");
         else if(confirmPassword !== password) setAlertText("Password Don't Match");
         else{            
-            auth.createUserWithEmailAndPassword(email, password)                 
+            auth.createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                
+                var user = userCredential.user;
+
+                //Setup firestore data
+                const data = {
+                  grid: [user?.uid],
+                  userFirstName: userFirstName,
+                  userLastName: userLastName,
+                  email: email,
+                  role: 1,
+                  orientation: "vertical",
+                };
+        
+                db.collection("users")
+                  .doc(auth.currentUser?.uid)
+                  .set(data)
+                   .catch(err => setAlertText(err.message));
+              })                 
             .catch(err => setAlertText(err.message));        
 
             // Funktionirt nicht
             // user?.sendEmailVerification();
             // console.log('verificatipn')   
         }
-    },[confirmPassword, password, email.length]);
+    },[confirmPassword, password, email.length, userFirstName, userLastName, email]);
 
     const onDismiss = useCallback(() => setAlertText(''), []);
 
@@ -67,12 +94,18 @@ const Register: React.FC = () => {
                 <br/>              
                 <IonItem>
                     <IonLabel position="floating">First Name</IonLabel>
-                    <IonInput></IonInput>
+                    <IonInput onIonChange={onFirstNameChange}
+                    type="text"
+                    value={userFirstName}>  
+                    </IonInput>
                 </IonItem>
                 <br/>
                 <IonItem>
                     <IonLabel position="floating">Second Name</IonLabel>
-                    <IonInput></IonInput>
+                    <IonInput onIonChange={onLastNameChange}
+                    type="text"
+                    value={userLastName}>                        
+                    </IonInput>
                 </IonItem>                        
                 <br/>
                 <IonItem>
