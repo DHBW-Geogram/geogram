@@ -51,14 +51,16 @@ const Register: React.FC = () => {
                 
                 var user = userCredential.user;
 
+               
+                 user?.sendEmailVerification();
+                //TODO:alert email verification
+
                 //Setup firestore data
                 const data = {
                   grid: [user?.uid],
                   userFirstName: userFirstName,
                   userLastName: userLastName,
-                  email: email,
-                  role: 1,
-                  orientation: "vertical",
+                  email: email,                  
                 };
         
                 db.collection("users")
@@ -68,9 +70,7 @@ const Register: React.FC = () => {
               })                 
             .catch(err => setAlertText(err.message));        
 
-            // Funktionirt nicht
-            // user?.sendEmailVerification();
-            // console.log('verificatipn')   
+             
         }
     },[confirmPassword, password, email.length, userFirstName, userLastName, email]);
 
