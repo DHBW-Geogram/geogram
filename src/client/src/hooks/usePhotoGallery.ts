@@ -4,6 +4,9 @@ import { useFilesystem, base64FromPath } from '@ionic/react-hooks/filesystem';
 import { useStorage } from '@ionic/react-hooks/storage';
 import { isPlatform } from '@ionic/react';
 import { CameraResultType, CameraSource, CameraPhoto, Capacitor, FilesystemDirectory } from "@capacitor/core";
+import { Plugins } from '@capacitor/core';
+
+const { Filesystem } = Plugins;
 
 const PHOTO_STORAGE = "photos";
 
@@ -103,6 +106,30 @@ export function usePhotoGallery() {
     }
   };
 
+
+  // const download = async(path:string) => {
+  //   const base64Data = await _readAsBase64(path);
+  //   const fileName = `${new Date().getTime()}.jpeg`;
+  //   // const image = await Filesystem.writeFile({
+  //   //   path: fileName,
+  //   //   data: base64Data,
+  //   //   directory: FilesystemDirectory.Documents
+  //   // });
+  //   return base64Data;
+  // }
+  // const _readAsBase64 = async(url: string): Promise<string> => {
+  //   const response = await fetch(url);
+  //   const blob = await response.blob();
+  //   return await _convertBlobToBase64(blob);
+  // }
+  // const _convertBlobToBase64 = async(blob: Blob): Promise<string> => {
+  //   return new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.onerror = () => reject();
+  //     reader.onload = () => resolve(reader.result as string);
+  //     reader.readAsDataURL(blob);
+  //   });
+  // }
 
   return {
     photo,

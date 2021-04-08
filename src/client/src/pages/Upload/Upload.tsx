@@ -119,7 +119,7 @@ const Upload: React.FC<any> = (props) => {
         if(isPlatform("android") || isPlatform("ios")){
           file = {
             ...file,
-            data: await base64FromPath(image.webviewPath!)
+            data: (await base64FromPath(image.webviewPath!)).toString().split(",")[1]
           }
         }else{
           file = await Filesystem.readFile({
@@ -127,6 +127,12 @@ const Upload: React.FC<any> = (props) => {
             directory: FilesystemDirectory.Data,
             encoding: FilesystemEncoding.UTF8,
           });
+        }
+
+        if((await base64FromPath(image.webviewPath!)).toString().split(",")[1] === file.data){
+          setToast("correct!!")
+        }else{
+          setToast("Handy bild != computer bild");
         }
 
         setLog("Got Image data: "+file.data);

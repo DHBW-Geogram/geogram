@@ -73,7 +73,7 @@ app.use(express.static('./public'));
 //   });
 // });
 
-app.post('/upload1', (req, res) => {
+app.post('/upload1', cors() ,(req, res) => {
 
   console.log("Request on res /upload1")
 
