@@ -166,6 +166,13 @@ const Upload: React.FC<any> = (props) => {
             })
             .then((res) => {
               setToast("Successfully added item to firebase");
+
+              // Set back everything
+              setTitle("")
+              setDescription("")
+              setImage(undefined)
+              setLocation(undefined)
+
               setTimeout(() => {
                 setRedirect("explore");
                 props.setLoading(false);
