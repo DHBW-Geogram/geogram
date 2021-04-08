@@ -96,7 +96,9 @@ app.post('/upload1',(req, res) => {
 
   console.log("Request on res /upload1")
 
-  upload(req, res, (err) => {
+  console.log(req.body)
+
+  // upload(req, res, (err) => {
 
     // Create new Filename
     let filename = `${uuidv4()}.jpg`;
@@ -133,7 +135,7 @@ app.post('/upload1',(req, res) => {
       });
     }
 
-  });
+  // });
 });
 
 const port = 5000;

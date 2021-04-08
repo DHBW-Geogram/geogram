@@ -112,16 +112,17 @@ const Upload: React.FC<any> = (props) => {
       var formData = new FormData();
 
       if (image.webviewPath !== undefined) {
-        
         let file: any;
 
         // get image data when on android or ios
-        if(isPlatform("android") || isPlatform("ios")){
+        if (isPlatform("android") || isPlatform("ios")) {
           file = {
             ...file,
-            data: (await base64FromPath(image.webviewPath!)).toString().split(",")[1]
-          }
-        }else{
+            data: (await base64FromPath(image.webviewPath!))
+              .toString()
+              .split(",")[1],
+          };
+        } else {
           file = await Filesystem.readFile({
             path: image.filepath,
             directory: FilesystemDirectory.Data,
@@ -129,26 +130,32 @@ const Upload: React.FC<any> = (props) => {
           });
         }
 
-        if((await base64FromPath(image.webviewPath!)).toString().split(",")[1] === file.data){
-          setToast("correct!!")
-        }else{
+        if (
+          (await base64FromPath(image.webviewPath!))
+            .toString()
+            .split(",")[1] === file.data
+        ) {
+          setToast("correct!!");
+        } else {
           setToast("Handy bild != computer bild");
         }
 
-        setLog("Got Image data: "+file.data);
+        setLog("Got Image data: " + file.data);
 
         // Append file data to form //deprecated //todo
         formData.append("myImage", file.data);
 
-        let res: any = await axios.post(
-            `${process.env.REACT_APP_IMAGE_SERVER_URL}/upload1`,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
+        let res: any = await axios.post(`${process.env.REACT_APP_IMAGE_SERVER_URL}/upload1`,{data: file.data});
+
+        // let res: any = await axios.post(
+        //     `${process.env.REACT_APP_IMAGE_SERVER_URL}/upload1`,
+        //     formData,
+        //     {
+        //       headers: {
+        //         "Content-Type": "multipart/form-data",
+        //       },
+        //     }
+        //   );
 
         if (res.data.file !== undefined) {
           let imageId: string = uuidv4();
@@ -168,10 +175,10 @@ const Upload: React.FC<any> = (props) => {
               setToast("Successfully added item to firebase");
 
               // Set back everything
-              setTitle("")
-              setDescription("")
-              setImage(undefined)
-              setLocation(undefined)
+              setTitle("");
+              setDescription("");
+              setImage(undefined);
+              setLocation(undefined);
 
               setTimeout(() => {
                 setRedirect("explore");
