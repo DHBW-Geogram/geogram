@@ -1,16 +1,30 @@
-import React from 'react';
+
 import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
-
+import React, { createContext, useEffect, useState } from "react";
+import firebase, { auth } from "./helper/firebase";
 defineCustomElements(window);
 
+export const UserContext = createContext<firebase.User | null>(null);
+
+export const UserProvider: React.FC = ({ children }) => {
+    const [user, setUser] = useState<firebase.User | null>(null);
+    
+useEffect(() => {
+    auth.onAuthStateChanged((userAuth) => setUser(userAuth));
+}, []);
+
+return  <UserContext.Provider value={user}> {children}    </UserContext.Provider>;
+};
+
+
 ReactDOM.render(
-  <React.StrictMode>
+  <UserProvider>
     <App />
-  </React.StrictMode>,
+  </UserProvider>,
   document.getElementById('root')
 );
 

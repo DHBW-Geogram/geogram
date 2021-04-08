@@ -7,12 +7,12 @@ import { Redirect } from "react-router";
 import { Photo, usePhotoGallery } from "../../hooks/usePhotoGallery";
 
 
-const UploadSelectionModal: React.FC<{active: boolean, setShowActionSheet: Dispatch<SetStateAction<boolean>>}> = ({active, setShowActionSheet}) => {
+const UploadSelectionModal: React.FC<{active: boolean, setShowActionSheet: Dispatch<SetStateAction<boolean>>, setLoading: Dispatch<SetStateAction<boolean>>}> = ({active, setShowActionSheet, setLoading}) => {
 
   const [selectedRoute, setSelectedRoute] = useState("");
   const [image, setImage] = useState<Photo>();
   
-  const { takePhoto } = usePhotoGallery();
+  const { takePhoto, takePhotoFromGalerie } = usePhotoGallery();
 
   return (
       <>
@@ -35,6 +35,7 @@ const UploadSelectionModal: React.FC<{active: boolean, setShowActionSheet: Dispa
                     takePhoto()
                     .then(image => {
                         // User took image
+                        setLoading(true);
                         setImage(image);
                         setSelectedRoute("upload")
                     })
@@ -44,13 +45,18 @@ const UploadSelectionModal: React.FC<{active: boolean, setShowActionSheet: Dispa
                     })
                 },
             },
-            // {
-            //     text: "Galerie",
-            //     icon: imageOutline,
-            //     handler: () => {
-            //         setSelectedRoute("galerie")
-            //     },
-            // },
+            {
+                text: "Galerie",
+                icon: imageOutline,
+                handler: () => {
+                    takePhotoFromGalerie()
+                    .then(image => {
+                        setLoading(true)
+                        setImage(image);
+                        setSelectedRoute("upload");
+                    })
+                },
+            },
             {
                 text: "Close",
                 icon: closeOutline,

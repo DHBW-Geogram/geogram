@@ -4,6 +4,9 @@ import { useFilesystem, base64FromPath } from '@ionic/react-hooks/filesystem';
 import { useStorage } from '@ionic/react-hooks/storage';
 import { isPlatform } from '@ionic/react';
 import { CameraResultType, CameraSource, CameraPhoto, Capacitor, FilesystemDirectory } from "@capacitor/core";
+import { Plugins } from '@capacitor/core';
+
+const { Filesystem } = Plugins;
 
 const PHOTO_STORAGE = "photos";
 
@@ -15,23 +18,8 @@ export function usePhotoGallery() {
   const { get, set } = useStorage();
 
   useEffect(() => {
-    // const loadSaved = async () => {
-    //   const photosString = await get(PHOTO_STORAGE);
-    //   const photosInStorage = (photosString ? JSON.parse(photosString) : []) as Photo[];
-    //   // If running on the web...
-    //   if (!isPlatform('hybrid')) {
-    //     for (let photo of photosInStorage) {
-    //       const file = await readFile({
-    //         path: photo.filepath,
-    //         directory: FilesystemDirectory.Data
-    //       });
-    //       // Web platform only: Load the photo as base64 data
-    //       photo.webviewPath = `data:image/jpeg;base64,${file.data}`;
-    //     }
-    //   }
-    //   setPhotos(photosInStorage);
-    // };
-    // loadSaved();
+
+
   }, [get, readFile]);
   
 
@@ -40,7 +28,7 @@ export function usePhotoGallery() {
     const cameraPhoto = await getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
-      quality: 100
+      quality: 30
     });
     // Create filename based on date
     const fileName = new Date().getTime() + '.jpeg';
@@ -50,9 +38,37 @@ export function usePhotoGallery() {
     setPhoto(savedFileImage);
     // Store Image to storage
     set(PHOTO_STORAGE, JSON.stringify(savedFileImage));
-
+    // return result
     return savedFileImage;
   };
+
+  const convertBlobToBase64 = async(blob: Blob): Promise<string>  => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = () => resolve(reader.result as string);
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  const takePhotoFromGalerie = async() => {
+        // Access galerie photo
+        const cameraPhoto = await getPhoto({
+          resultType: CameraResultType.Uri,
+          source: CameraSource.Photos,
+          quality: 30
+        });
+        // Create filename based on date
+        const fileName = new Date().getTime() + '.jpeg';
+        // Save image
+        const savedFileImage = await savePicture(cameraPhoto, fileName);
+        // Set image into state
+        setPhoto(savedFileImage);
+        // Store Image to storage
+        set(PHOTO_STORAGE, JSON.stringify(savedFileImage));
+        // return result
+        return savedFileImage;
+  }
 
   const savePicture = async (photo: CameraPhoto, fileName: string): Promise<Photo> => {
     let base64Data: string;
@@ -76,7 +92,7 @@ export function usePhotoGallery() {
       // Details: https://ionicframework.com/docs/building/webview#file-protocol
       return {
         filepath: savedFile.uri,
-        webviewPath: Capacitor.convertFileSrc(savedFile.uri),
+        webviewPath: Capacitor.convertFileSrc(savedFile.uri), 
       };
     }
     else {
@@ -84,34 +100,47 @@ export function usePhotoGallery() {
       // already loaded into memory
       return {
         filepath: fileName,
-        webviewPath: photo.webPath
+        webviewPath: photo.webPath,
+        data: base64Data
       };
     }
   };
 
-  const deletePhoto = async (photo: Photo) => {
-    // // Remove this photo from the Photos reference data array
-    // const newPhotos = photos.filter(p => p.filepath !== photo.filepath);
 
-    // // Update photos array cache by overwriting the existing photo array
-    // set(PHOTO_STORAGE, JSON.stringify(newPhotos));
-
-    // // delete photo file from filesystem
-    // const filename = photo.filepath.substr(photo.filepath.lastIndexOf('/') + 1);
-    // await deleteFile({
-    //   path: filename,
-    //   directory: FilesystemDirectory.Data
-    // });
-    // setPhotos(newPhotos);
-  };
+  // const download = async(path:string) => {
+  //   const base64Data = await _readAsBase64(path);
+  //   const fileName = `${new Date().getTime()}.jpeg`;
+  //   // const image = await Filesystem.writeFile({
+  //   //   path: fileName,
+  //   //   data: base64Data,
+  //   //   directory: FilesystemDirectory.Documents
+  //   // });
+  //   return base64Data;
+  // }
+  // const _readAsBase64 = async(url: string): Promise<string> => {
+  //   const response = await fetch(url);
+  //   const blob = await response.blob();
+  //   return await _convertBlobToBase64(blob);
+  // }
+  // const _convertBlobToBase64 = async(blob: Blob): Promise<string> => {
+  //   return new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.onerror = () => reject();
+  //     reader.onload = () => resolve(reader.result as string);
+  //     reader.readAsDataURL(blob);
+  //   });
+  // }
 
   return {
     photo,
-    takePhoto
+    takePhoto,
+    takePhotoFromGalerie,
+    convertBlobToBase64
   };
 }
 
 export interface Photo {
   filepath: string;
   webviewPath?: string;
+  data?: string;
 }
