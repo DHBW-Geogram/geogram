@@ -153,7 +153,7 @@ const Upload: React.FC<any> = (props) => {
             .then((res) => {
               setToast("Successfully added item to firebase");
               setTimeout(() => {
-                setRedirect("tab1");
+                setRedirect("explore");
                 props.setLoading(false);
               }, 1000);
             })
