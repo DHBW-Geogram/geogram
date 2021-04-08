@@ -112,14 +112,26 @@ const Upload: React.FC<any> = (props) => {
       var formData = new FormData();
 
       if (image.webviewPath !== undefined) {
+        
         let file: any;
 
-        file = await Filesystem.readFile({
-          path: image.filepath,
-          directory: FilesystemDirectory.Data,
-          encoding: FilesystemEncoding.UTF8,
-        });
+        // get image data when on android or ios
+        if(isPlatform("android") || isPlatform("ios")){
+          file = {
+            ...file,
+            data: await base64FromPath(image.webviewPath!)
+          }
+        }else{
+          file = await Filesystem.readFile({
+            path: image.filepath,
+            directory: FilesystemDirectory.Data,
+            encoding: FilesystemEncoding.UTF8,
+          });
+        }
 
+        setLog("Got Image data: "+file.data);
+
+        // Append file data to form //deprecated //todo
         formData.append("myImage", file.data);
 
         let res: any = await axios.post(

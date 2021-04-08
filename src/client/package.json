@@ -52,7 +52,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "1": "ionic cap copy",
+    "2": "ionic cap open android "
   },
   "eslintConfig": {
     "extends": [
