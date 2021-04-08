@@ -9,4 +9,5 @@ export interface GeogramPosition{
         speed: number | undefined;
     },
     timestamp: number;
+    position?: string;
 }
