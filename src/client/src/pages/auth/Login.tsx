@@ -1,5 +1,5 @@
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonInput, IonButton, IonItem, IonLabel, IonIcon, IonButtons, IonGrid, IonAlert } from "@ionic/react";
-import { chevronBackOutline, logInOutline } from "ionicons/icons";
+import { chevronBackOutline, logInOutline, personAddOutline } from "ionicons/icons";
 import React, {useCallback, useEffect, useState} from "react";
 import './Login.css'
 import { fb, db, auth } from "../../helper/firebase";
@@ -13,8 +13,9 @@ const Login: React.FC = () => {
 
     
     const [email, setEmail] = useState("");    
-     const [password, setPassword] = useState("");
-     const [alertText, setAlertText] = useState('')
+    const [password, setPassword] = useState("");
+    const [alertText, setAlertText] = useState('')
+    const [alertPasswordForgotenText, setalertPasswordForgotenText] = useState(false)
      const history = useHistory(); 
      
     //  useEffect(() => {
@@ -39,9 +40,19 @@ const Login: React.FC = () => {
               
 const onDismiss = useCallback(() => setAlertText(''), []);
 
+
+        const onPasswordResetClick = useCallback(() => {
+            	
+           
+        }, [])
+
+
+
+
+
     return (    
     <IonPage>
-        <IonHeader>
+        {/* <IonHeader>
             <IonToolbar>
                 <IonButtons slot="start">
                     <IonButton color="primary" routerLink="/home">
@@ -50,7 +61,7 @@ const onDismiss = useCallback(() => setAlertText(''), []);
                 </IonButtons>
                 <IonTitle>Login</IonTitle>
             </IonToolbar>
-        </IonHeader>
+        </IonHeader> */}
 
         <IonContent fullscreen>
             <IonGrid>
@@ -76,6 +87,14 @@ const onDismiss = useCallback(() => setAlertText(''), []);
                         Login
                         <IonIcon icon={logInOutline}/>
                     </IonButton>
+                    <IonButton  routerLink={'/register'}>
+                        Register
+                        <IonIcon icon={personAddOutline}/>
+                    </IonButton>
+                    <IonButton  onClick={() => setalertPasswordForgotenText(true)} >
+                        Password Reset
+                        <IonIcon />
+                    </IonButton>
                 </div>
             </IonGrid>
         </IonContent>
@@ -84,6 +103,26 @@ const onDismiss = useCallback(() => setAlertText(''), []);
                 onDidDismiss={onDismiss}
                 message={alertText}
                 buttons={['OK']}
+        />
+
+        <IonAlert
+                isOpen={alertPasswordForgotenText}
+                onDidDismiss={() => setalertPasswordForgotenText(false)}
+                message={'Please Type In your Email'}                
+                inputs={[
+                    {
+                      name: 'emailPasswordForgoten',
+                      type: 'email',
+                      placeholder: 'Email'
+                    }
+                ]}
+                buttons={[
+                        {text: 'OK',
+               handler: data => {
+                    auth.sendPasswordResetEmail(data.emailPasswordForgoten)
+                        }
+                    }
+                    ]}
 
             />
     </IonPage>

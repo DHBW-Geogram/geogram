@@ -47,7 +47,7 @@ const Register: React.FC = () => {
         <IonHeader>
             <IonToolbar>
                 <IonButtons slot="start">
-                    <IonButton color="primary" routerLink="/home">
+                    <IonButton color="primary" routerLink="/login">
                         <IonIcon  icon={chevronBackOutline}/>
                     </IonButton>
                 </IonButtons>
