@@ -19,10 +19,11 @@ const Register: React.FC = () => {
     const [userLastName, setuserLastName] = useState('');    
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [userName, setUserName] = useState("");
     const [alertText, setAlertText] = useState('')
-    
-    const user = useContext(UserContext);
-  
+    const [alertEmailVerify, setalertEmailVerify] = useState(false)
+
+   
 
    const onEmailNameChange = useCallback((e) =>
    setEmail(e.detail?.value), []);
@@ -34,17 +35,24 @@ const Register: React.FC = () => {
    setuserFirstName(e.detail?.value), []);
    const onLastNameChange = useCallback((e) =>
    setuserLastName(e.detail?.value), []);
+   const onUsernameChange = useCallback((e) =>
+   setUserName(e.detail?.value), []);
    
 
 
 
     const onSignUpClick = useCallback(() => {
+
+        
+
+        //TODO: Prüfen ob es den Username schon gibt
+
         if(email.length === 0) setAlertText("Email Required");
         else if(password.length === 0) setAlertText("Password Required");
-        else if(password.length < 6) setAlertText("Password to short 6");
+        else if(password.length < 6) setAlertText("Password to short");
         else if(userLastName.length === 0) setAlertText("Secondname Required");
         else if(userFirstName.length === 0) setAlertText("Firstname Required");
-        else if(confirmPassword !== password) setAlertText("Password Don't Match");
+        else if(confirmPassword !== password) setAlertText("Confirm Password");
         else{            
             auth.createUserWithEmailAndPassword(email, password)
             .then((userCredential) => {
@@ -52,12 +60,15 @@ const Register: React.FC = () => {
                 var user = userCredential.user;
 
                
-                 user?.sendEmailVerification();
-                //TODO:alert email verification
+                user?.sendEmailVerification();
+
+                //TODO: alert wird nicht angezeigt
+                setalertEmailVerify(true);
 
                 //Setup firestore data
                 const data = {
                   grid: [user?.uid],
+                  username: userName,
                   userFirstName: userFirstName,
                   userLastName: userLastName,
                   email: email,                  
@@ -91,7 +102,15 @@ const Register: React.FC = () => {
 
         <IonContent fullscreen>
             <IonGrid>  
-                <br/>              
+                <br/>  
+                <IonItem>
+                    <IonLabel position="floating">Username</IonLabel>
+                    <IonInput onIonChange={onUsernameChange}
+                    type="text"
+                    value={userName}>  
+                    </IonInput>
+                </IonItem>
+                <br />            
                 <IonItem>
                     <IonLabel position="floating">First Name</IonLabel>
                     <IonInput onIonChange={onFirstNameChange}
@@ -146,6 +165,13 @@ const Register: React.FC = () => {
                 message={alertText}
                 buttons={['OK']}
 
+            />
+             <IonAlert
+                isOpen={alertEmailVerify}
+                onDidDismiss={() => setalertEmailVerify(false)}
+                header={"Thank you for signing in."}
+                message={"Please verify your email address to finish signing up for Geogram"}                
+                buttons={['OK']}
             />             
         </IonContent>
     </IonPage>
