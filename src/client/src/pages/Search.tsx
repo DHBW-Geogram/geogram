@@ -65,7 +65,21 @@ const Search: React.FC = () => {
 
     fetchImages();
     setFilteredImages(allimages);
+    let ref = db.collection("images");
+
+    let unsubscribe = ref.onSnapshot(onCollectionUpdate);
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
+
+  const onCollectionUpdate = (querySnapshot: any) => {
+    let typedDocs: Image[] = [];
+
+    querySnapshot.forEach((doc: any) => typedDocs.push(doc.data()));
+    setAllimages(typedDocs);
+  };
 
   const fetchImages = async () => {
     console.log(allimages);
@@ -91,15 +105,11 @@ const Search: React.FC = () => {
       );
     } else if (filter === "Title") {
       setFilteredImages(
-        allimages.filter((image: Image) =>
-          image.title.startsWith(searchText)
-        )
+        allimages.filter((image: Image) => image.title.startsWith(searchText))
       );
     } else if (filter === "User") {
       setFilteredImages(
-        allimages.filter((image: Image) =>
-          image.user.startsWith(searchText)
-        )
+        allimages.filter((image: Image) => image.user.startsWith(searchText))
       );
     }
   }
@@ -129,9 +139,7 @@ const Search: React.FC = () => {
       <IonContent fullscreen>
         <IonSearchbar
           onIonChange={(e) => {
-            {
-              filterItems((e.target as HTMLInputElement).value);
-            }
+            filterItems((e.target as HTMLInputElement).value);
           }}
           showCancelButton="never"
         ></IonSearchbar>
@@ -176,11 +184,20 @@ const Search: React.FC = () => {
                       width: "100%",
                     }}
                   ></IonImg>
-                  <p style={{position:"absolute", bottom:"-10px", right:"10px", backgroundColor:"rgba(0,0,0,0.5)", borderRadius:"5px"}}>
+                  <p
+                    style={{
+                      position: "absolute",
+                      bottom: "-10px",
+                      right: "10px",
+                      backgroundColor: "rgba(0,0,0,0.5)",
+                      borderRadius: "5px",
+                    }}
+                  >
                     {getDistance(
                       p.location.coords.latitude,
                       p.location.coords.longitude
-                    ).toPrecision(3)}km
+                    ).toPrecision(3)}
+                    km
                   </p>
                 </IonCol>
               );
