@@ -28,6 +28,5 @@ yarn-error.log*
 .eslintcache
 
 #build
-/android
 /build
 /ios
