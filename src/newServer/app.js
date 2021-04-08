@@ -14,7 +14,29 @@ app.use(express.urlencoded({ extended: false , limit: '50mb'}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 // app.use(express.static('./public'));
-app.use(cors())
+
+const allowedOrigins = [
+  'capacitor://localhost',
+  'ionic://localhost',
+  'http://localhost',
+  'http://localhost:8080',
+  'http://localhost:8100',
+  '*'
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Origin not allowed by CORS'));
+    }
+  }
+}
+
+app.options('*', cors(corsOptions));
+
+// app.use(cors())
 
 app.post('/upload1',(req, res) => {
 
