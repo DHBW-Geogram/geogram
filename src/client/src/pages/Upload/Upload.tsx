@@ -147,12 +147,7 @@ const Upload: React.FC<any> = (props) => {
 
         let res: any = await axios.post(
           `${process.env.REACT_APP_IMAGE_SERVER_URL}/upload1`,
-          { data: file.data },
-          {
-            headers: {
-              "Access-Control-Allow-Origin": "*",
-            },
-          }
+          { data: file.data }
         );
 
         if (res.data.file !== undefined) {
