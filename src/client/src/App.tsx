@@ -12,17 +12,11 @@ import {
   IonTabBar,
   IonTabButton,
   IonTabs,
-} from "@ionic/react";
-import { IonReactRouter } from "@ionic/react-router";
-import {
-  arrowForwardCircle,
-  cameraOutline,
-  cameraSharp,
-  ellipse,
-  square,
-  search,
-  home,
-} from "ionicons/icons";
+} from '@ionic/react';
+import { IonReactRouter } from '@ionic/react-router';
+import { arrowForwardCircle, cameraOutline, cameraSharp, ellipse, square, triangle,  personCircleOutline, search, home, squareOutline,} from 'ionicons/icons';
+import Tab3 from './pages/Profile/Tab3';
+
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -47,7 +41,6 @@ import { UserContext } from ".";
 import UploadSelectionModal from "./components/UploadSelectionModal/UploadSelectionModal";
 import Explore from "./pages/Explore";
 import Search from "./pages/Search";
-import Tab3 from "./pages/Tab3";
 import FirstPage from "./pages/auth/FirstPage";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
@@ -109,8 +102,8 @@ const PrivateRoutes = () => {
           </IonTabButton>
           {/* Profile Tab - Jonas */}
           <IonTabButton tab="tab3" href="/tab3">
-            <IonIcon icon={square} />
-            <IonLabel>User</IonLabel>
+            <IonIcon icon={personCircleOutline} />
+            <IonLabel>Profile</IonLabel>
           </IonTabButton>
         </IonTabBar>
       </IonTabs>
