@@ -54,6 +54,7 @@ const Upload: React.FC<any> = (props) => {
 
   // Geoinformation
   const [location, setLocation] = useState<GeogramPosition>();
+  const [position, setPosition] = useState("")
 
   // Toast message
   const [toast, setToast] = useState("");
@@ -83,6 +84,18 @@ const Upload: React.FC<any> = (props) => {
         },
         timestamp: location.timestamp,
       });
+      // reverse geolocating
+      axios.get(`https://api.opencagedata.com/geocode/v1/json?q=${location?.coords.latitude}+${location?.coords.longitude}&key=bb44e70b618844faba7cb23b580419e0`)
+      .then(res => {
+         setPosition(res.data.results[0].formatted)
+         setLocation((state: any) => {
+           return {
+             ...state,
+             position: res.data.results[0].formatted
+           }
+         })
+      })
+    
     });
 
     //disable set Loading
@@ -108,12 +121,10 @@ const Upload: React.FC<any> = (props) => {
     }
 
     if (title !== "" && description !== "" && image !== undefined) {
-      // upload process: image -> image server
-      var formData = new FormData();
 
       if (image.webviewPath !== undefined) {
-        let file: any;
 
+        let file: any;
         // get image data when on android or ios
         if (isPlatform("android") || isPlatform("ios")) {
           file = {
@@ -130,27 +141,13 @@ const Upload: React.FC<any> = (props) => {
           });
         }
 
-        if (
-          (await base64FromPath(image.webviewPath!))
-            .toString()
-            .split(",")[1] === file.data
-        ) {
-          setToast("correct!!");
-        } else {
-          setToast("Handy bild != computer bild");
-        }
-
-        setLog("Got Image data: " + file.data);
-
-        // Append file data to form //deprecated //todo
-        formData.append("myImage", file.data);
-
         let res: any = await axios.post(
           `${process.env.REACT_APP_IMAGE_SERVER_URL}/upload1`,
           { data: file.data }
         );
 
         if (res.data.file !== undefined) {
+
           let imageId: string = uuidv4();
 
           db.collection("images")
@@ -251,6 +248,11 @@ const Upload: React.FC<any> = (props) => {
                   Current Position: Latitude:{" "}
                   {location?.coords.latitude.toString()}, Longitude:{" "}
                   {location?.coords.longitude.toString()}
+                </IonCol>
+              </IonRow>
+              <IonRow>
+                <IonCol size="12">
+                  City: { position }
                 </IonCol>
               </IonRow>
               <IonRow>
