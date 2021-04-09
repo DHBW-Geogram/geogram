@@ -88,9 +88,11 @@ const Explore: React.FC = (props) => {
       const ref = db.collection("images");
       const data = await ref.get();
 
-      // sort images
+      // load images to typed docs
       let typedDocs: Image[] = [];
       data.docs.forEach((doc: any) => typedDocs.push(doc.data()));
+
+      // sort image array
       typedDocs = typedDocs.sort((a, b) => {
         return sortImageArray(a, b);
       });
@@ -148,9 +150,12 @@ const Explore: React.FC = (props) => {
   }
 
   const onCollectionUpdate = (querySnapshot: any) => {
-    let typedDocs: Image[] = [];
 
+    // load images to local array
+    let typedDocs: Image[] = [];
     querySnapshot.forEach((doc: any) => typedDocs.push(doc.data()));
+
+    // set images new
     setAllImages(typedDocs);
     filterImages(undefined);
   };
@@ -200,7 +205,9 @@ const Explore: React.FC = (props) => {
                   onIonChange={(e) => {
                     setFilter(e.detail.value as number);
                     filterImages(e.detail.value as number);
-                    //setShowPopup({ open: false, event: undefined });
+                  }}
+                  onLostPointerCapture={(e) => {
+                    setShowPopup({ open: false, event: undefined });
                   }}
                 >
                   <IonLabel slot="start">0</IonLabel>
