@@ -150,7 +150,6 @@ const Explore: React.FC = (props) => {
   }
 
   const onCollectionUpdate = (querySnapshot: any) => {
-
     // load images to local array
     let typedDocs: Image[] = [];
     querySnapshot.forEach((doc: any) => typedDocs.push(doc.data()));
@@ -241,8 +240,11 @@ const Explore: React.FC = (props) => {
               <IonItem>
                 <IonIcon icon={pin} slot="start" />
                 <IonLabel>
-                  {image.location.coords.latitude}{" "}
-                  {image.location.coords.longitude}
+                  {image.location.position
+                    ? image.location.position
+                    : image.location.coords.latitude +
+                      " " +
+                      image.location.coords.longitude}
                 </IonLabel>
               </IonItem>
               <IonCardHeader>

@@ -11,6 +11,7 @@ export interface Image {
       speed: number | undefined;
     };
     timestamp: number;
+    position?: string;
   };
   title: string;
   url: string;
