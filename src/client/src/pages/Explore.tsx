@@ -20,6 +20,7 @@ import {
   IonPopover,
   IonList,
   IonListHeader,
+  IonRange,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { db } from "../helper/firebase";
@@ -63,8 +64,11 @@ const Explore: React.FC = (props) => {
 
     initialLoad();
 
-    async function initialLoad(){
+    async function initialLoad() {
+      // get location from gps sensor
       let location = await Geolocation.getCurrentPosition();
+
+      // push location to state
       setLocation({
         coords: {
           accuracy: location.coords.accuracy,
@@ -77,31 +81,33 @@ const Explore: React.FC = (props) => {
         },
         timestamp: location.timestamp,
       });
-  
-      console.log("Initial load");
+
+      console.log("Initial load...");
+
+      // fetch images from firebase
       const ref = db.collection("images");
       const data = await ref.get();
+
+      // sort images
       let typedDocs: Image[] = [];
       data.docs.forEach((doc: any) => typedDocs.push(doc.data()));
       typedDocs = typedDocs.sort((a, b) => {
         return sortImageArray(a, b);
       });
-  
-      //Sets all images
-      setAllImages(typedDocs);
-      console.log("allImages", typedDocs);
 
-  
-        //evaluates the distance between the images and the current location and sets them as visible images
-        setImages(
-          evaluateLocation(
-            filter,
-            typedDocs,
-            location.coords.latitude,
-            location.coords.longitude
-          )
-        );
-  
+      // push images to state
+      setAllImages(typedDocs);
+
+      //evaluates the distance between the images and the current location and sets them as visible images
+      setImages(
+        evaluateLocation(
+          filter,
+          typedDocs,
+          location.coords.latitude,
+          location.coords.longitude
+        )
+      );
+
       console.log("filter", filter);
     }
 
@@ -182,45 +188,24 @@ const Explore: React.FC = (props) => {
           >
             <IonList>
               <IonListHeader>Range Filter</IonListHeader>
-              <IonItem
-                button={true}
-                onClick={(e) => {
-                  filterImages(5);
-                  setShowPopup({ open: false, event: undefined });
-                }}
-                detail
-              >
-                5km
-              </IonItem>
-              <IonItem
-                button={true}
-                onClick={(e) => {
-                  filterImages(10);
-                  setShowPopup({ open: false, event: undefined });
-                }}
-                detail
-              >
-                10km
-              </IonItem>
-              <IonItem
-                button={true}
-                onClick={(e) => {
-                  filterImages(15);
-                  setShowPopup({ open: false, event: undefined });
-                }}
-                detail
-              >
-                15km
-              </IonItem>
-              <IonItem
-                button={true}
-                onClick={(e) => {
-                  filterImages(20);
-                  setShowPopup({ open: false, event: undefined });
-                }}
-                detail
-              >
-                20km
+
+              <IonItem>
+                <IonRange
+                  min={0}
+                  max={100}
+                  snaps={true}
+                  step={5}
+                  pin={true}
+                  value={filter}
+                  onIonChange={(e) => {
+                    setFilter(e.detail.value as number);
+                    filterImages(e.detail.value as number);
+                    //setShowPopup({ open: false, event: undefined });
+                  }}
+                >
+                  <IonLabel slot="start">0</IonLabel>
+                  <IonLabel slot="end">100+</IonLabel>
+                </IonRange>
               </IonItem>
             </IonList>
           </IonPopover>
