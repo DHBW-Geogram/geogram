@@ -11,18 +11,14 @@ import {
   IonItem,
   IonLabel,
   IonGrid,
-  IonRow,
   IonAlert,
 } from "@ionic/react";
 import { chevronBackOutline, personAddOutline } from "ionicons/icons";
 import React, { useCallback, useState } from "react";
-import { fb, db, auth } from "../../helper/firebase";
+import { db, auth } from "../../helper/firebase";
 import "./Register.css";
 import "firebase/auth";
-import { useHistory, useLocation } from "react-router-dom";
-import { useContext } from "react";
-import { UserContext } from "../..";
-import firebase from "firebase";
+
 import { User } from "../../model/User";
 
 const Register: React.FC = () => {
@@ -89,7 +85,8 @@ const Register: React.FC = () => {
             var user = userCredential.user;
             user?.sendEmailVerification();
 
-            setalertEmailVerify(true);
+            //Alert wird nicht angezeigt
+            //setalertEmailVerify(true);
 
             //Setup firestore data
             const data = {
