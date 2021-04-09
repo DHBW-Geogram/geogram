@@ -41,15 +41,12 @@ import { UserContext } from ".";
 import UploadSelectionModal from "./components/UploadSelectionModal/UploadSelectionModal";
 import Explore from "./pages/Explore";
 import Search from "./pages/Search";
-import FirstPage from "./pages/auth/FirstPage";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 
 const PublicRoutes = () => {
   return (
-    <IonReactRouter>
-      {/****** AUTH CREATE ACCOUNT */}
-      {/* <Route path="/home" component={FirstPage} exact={true} /> */}
+    <IonReactRouter>         
       <Route path="/login" component={Login} exact={true} />
       <Route path="/register" component={Register} exact={true} />
       <Route path="/" render={() => <Redirect to="/login" />} />
@@ -84,10 +81,7 @@ const PrivateRoutes = () => {
           </Route>
           <Route exact path="/register">
             <Redirect to="/explore" />
-          </Route>
-          {/* <Route exact path="/home">
-            <Redirect to="/explore" />
-          </Route> */}
+          </Route>        
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
           {/* Explore Tab - Benita */}
