@@ -61,8 +61,8 @@ const Explore: React.FC = (props) => {
   });
 
   useEffect(() => {
-    // get current geolocation
 
+    // get current geolocation
     initialLoad();
 
     async function initialLoad() {
