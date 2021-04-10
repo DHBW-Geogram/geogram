@@ -43,6 +43,7 @@ import Explore from "./pages/Explore";
 import Search from "./pages/Search";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import Exploration from "./pages/Exploration/Exploration";
 
 const PublicRoutes = () => {
   return (
@@ -63,7 +64,7 @@ const PrivateRoutes = () => {
       <IonTabs>
         <IonRouterOutlet>
           <Route exact path="/explore">
-            <Explore />
+            <Exploration />
           </Route>
           <Route exact path="/search">
             <Search />
