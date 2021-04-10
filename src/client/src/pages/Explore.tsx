@@ -33,6 +33,7 @@ import React from "react";
 import { RefresherEventDetail } from "@ionic/core";
 import { chevronDownCircleOutline } from "ionicons/icons";
 import { sortImageArray } from "../hooks/sortImageArray";
+import ExploreCard from "../components/ExploreCard/ExploreCard";
 
 const { Geolocation } = Plugins;
 
@@ -177,7 +178,7 @@ const Explore: React.FC = (props) => {
       <IonHeader>
         <IonToolbar>
           <IonTitle>Explore</IonTitle>
-          <IonText slot="end">{filter}km</IonText>
+          <IonText slot="end">{filter} km</IonText>
           <IonIcon
             icon={funnel}
             slot="end"
@@ -233,33 +234,10 @@ const Explore: React.FC = (props) => {
             <IonTitle size="large">Explore</IonTitle>
           </IonToolbar>
         </IonHeader>
-
-        {images.map((image) => {
-          return (
-            <IonCard>
-              <IonItem>
-                <IonIcon icon={pin} slot="start" />
-                <IonLabel>
-                  {image.location.position
-                    ? image.location.position
-                    : image.location.coords.latitude +
-                      " " +
-                      image.location.coords.longitude}
-                </IonLabel>
-              </IonItem>
-              <IonCardHeader>
-                <IonCardSubtitle>{image.user}</IonCardSubtitle>
-                <IonCardTitle>{image.title}</IonCardTitle>
-              </IonCardHeader>
-
-              <IonCardContent>
-                <IonImg src={image.url}></IonImg>
-                <br />
-                <IonText>{image.description}</IonText>
-              </IonCardContent>
-            </IonCard>
-          );
-        })}
+        {images.length > 0 &&
+          images.map((image) => {
+            return <ExploreCard image={image} />;
+          })}
       </IonContent>
     </IonPage>
   );
