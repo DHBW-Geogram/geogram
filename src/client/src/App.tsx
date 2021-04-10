@@ -64,7 +64,7 @@ const PrivateRoutes = () => {
       <IonTabs>
         <IonRouterOutlet>
           <Route exact path="/explore">
-            <Exploration />
+            <Exploration setLoading={ setLoading } />
           </Route>
           <Route exact path="/search">
             <Search />

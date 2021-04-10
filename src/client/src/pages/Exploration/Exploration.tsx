@@ -15,7 +15,7 @@ import {
   IonListHeader,
   IonRange,
 } from "@ionic/react";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { GeolocationPosition, Plugins } from "@capacitor/core";
 import { pin, funnel } from "ionicons/icons";
 import React from "react";
@@ -30,9 +30,11 @@ import ExploreCard from "../../components/ExploreCard/ExploreCard";
 
 const { Geolocation } = Plugins;
 
-const Explore: React.FC = (props) => {
+const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
+  setLoading,
+}) => {
   // Geoinformation
-  const [location, setLocation] = useState<GeolocationPosition>();
+  const [location, setLocation] = useState<GeolocationPosition | undefined>();
 
   //images to display
   const [images, setImages] = useState<Array<Image>>([]);
@@ -51,29 +53,16 @@ const Explore: React.FC = (props) => {
 
   useEffect(() => {
     (async () => {
-      // get location from gps sensor
-      let location = await Geolocation.getCurrentPosition();
-
       // push location to state
-      setLocation(location);
+      setLocation(await Geolocation.getCurrentPosition());
 
       console.log("Initial load...");
 
-      let data: Image[] = await fetchImages();
-
-      //evaluates the distance between the images and the current location and sets them as visible images
-      setImages(
-        evaluateLocation(
-          filter,
-          data,
-          location.coords.latitude,
-          location.coords.longitude
-        )
-      );
+      setImages(await fetchImages());
     })();
   }, []);
 
-  async function fetchImages(): Promise<Image[]> {
+  async function fetchImages(i?: number): Promise<Image[]> {
     // fetch images from firebase
     const ref = db.collection("images");
     const data = await ref.get();
@@ -87,13 +76,31 @@ const Explore: React.FC = (props) => {
       return sortImageArray(a, b);
     });
 
+    if (location !== undefined) {
+      if (i) {
+        t = evaluateLocation(
+          i,
+          t,
+          location.coords.latitude,
+          location.coords.longitude
+        );
+      } else {
+        t = evaluateLocation(
+          filter,
+          t,
+          location.coords.latitude,
+          location.coords.longitude
+        );
+      }
+    }
+
     return t;
   }
 
   function doRefresh(event: CustomEvent<RefresherEventDetail>) {
     console.log("Begin async operation");
 
-    fetchImages().then(images => setImages(images));
+    fetchImages().then((images) => setImages(images));
 
     setTimeout(() => {
       console.log("Async operation has ended");
@@ -132,6 +139,13 @@ const Explore: React.FC = (props) => {
                   value={filter}
                   onIonChange={(e) => {
                     setFilter(e.detail.value as number);
+                    setLoading(true);
+                    fetchImages(e.detail.value as number)
+                      .then((images) => {
+                        setImages(images);
+                        setLoading(false);
+                      })
+                      .catch((e) => setLoading(false));
                   }}
                   onLostPointerCapture={(e) => {
                     setShowPopup({ open: false, event: undefined });
