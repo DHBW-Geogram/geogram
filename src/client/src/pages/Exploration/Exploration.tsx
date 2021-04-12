@@ -100,7 +100,7 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   function doRefresh(event: CustomEvent<RefresherEventDetail>) {
     console.log("Begin async operation");
 
-    fetchImages().then((images) => setImages(images));
+    fetchImages(filter).then((images) => setImages(images));
 
     setTimeout(() => {
       console.log("Async operation has ended");
