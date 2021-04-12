@@ -6,33 +6,26 @@ import {
   IonTitle,
   IonToolbar,
   IonSearchbar,
-  IonItem,
   IonChip,
   IonLabel,
-  IonIcon,
   IonListHeader,
   IonRow,
   IonCol,
   IonGrid,
   IonImg,
   IonPopover,
-  IonCard,
-  IonCardHeader,
-  IonCardContent,
-  IonCardSubtitle,
-  IonCardTitle,
-  IonText,
 } from "@ionic/react";
 import { db } from "../../helper/firebase";
 import { Image } from "../../model/Image";
-import { pin } from "ionicons/icons";
 import { GeolocationPosition, Plugins } from "@capacitor/core";
 import { distanceInKm } from "../../hooks/evaluateDistance";
+import ExploreCard from "../../components/ExploreCard/ExploreCard";
+import "./Search.css";
 
 const { Geolocation } = Plugins;
 
 const Search: React.FC = () => {
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState("Location");
   const [images, setImages] = useState<Array<Image>>([]);
   const [showPopup, setShowPopup] = useState(false);
   const [popPic, setPopPic] = useState<Image>();
@@ -74,7 +67,6 @@ const Search: React.FC = () => {
 
   function filterItems(searchText: string) {
     console.log("filtering", searchText);
-    let i: Image[] = [];
 
     if (searchText === "" || searchText === null || searchText === undefined) {
       fetchImages().then((res) => {
@@ -82,31 +74,35 @@ const Search: React.FC = () => {
       });
     } else if (filter === "Location") {
       fetchImages().then((res) => {
+        let i: Image[] = [];
         res.forEach((image) => {
           if (image.locationDetails?.[0].formatted.includes(searchText)) {
             i.push(image);
           }
         });
+        setImages(i);
       });
     } else if (filter === "Title") {
       fetchImages().then((res) => {
+        let i: Image[] = [];
         res.forEach((image) => {
           if (image.title.includes(searchText)) {
             i.push(image);
           }
         });
+        setImages(i);
       });
     } else if (filter === "User") {
       fetchImages().then((res) => {
+        let i: Image[] = [];
         res.forEach((image) => {
           if (image.user.includes(searchText)) {
             i.push(image);
           }
         });
+        setImages(i);
       });
     }
-
-    setImages(i);
   }
 
   return (
@@ -126,7 +122,11 @@ const Search: React.FC = () => {
 
         <IonListHeader>Filter: {filter}</IonListHeader>
         <IonChip
-          style={ filter === "Location" ? {backgroundColor: "lightgray", color: "black"} : {}}
+          style={
+            filter === "Location"
+              ? { backgroundColor: "lightgray", color: "black" }
+              : {}
+          }
           onClick={(e) => {
             setFilter("Location");
           }}
@@ -134,7 +134,11 @@ const Search: React.FC = () => {
           <IonLabel>Location</IonLabel>
         </IonChip>
         <IonChip
-         style={ filter === "User" ? {backgroundColor: "lightgray", color: "black"} : {}}
+          style={
+            filter === "User"
+              ? { backgroundColor: "lightgray", color: "black" }
+              : {}
+          }
           onClick={(e) => {
             setFilter("User");
           }}
@@ -142,7 +146,11 @@ const Search: React.FC = () => {
           <IonLabel>User</IonLabel>
         </IonChip>
         <IonChip
-         style={ filter === "Title" ? {backgroundColor: "lightgray", color: "black"} : {}}
+          style={
+            filter === "Title"
+              ? { backgroundColor: "lightgray", color: "black" }
+              : {}
+          }
           onClick={(e) => {
             setFilter("Title");
           }}
@@ -185,28 +193,13 @@ const Search: React.FC = () => {
           </IonRow>
         </IonGrid>
         <IonPopover
+          cssClass="my-pop-over"
+          backdropDismiss={true}
+          showBackdrop={false}
           isOpen={showPopup}
           onDidDismiss={(e) => setShowPopup(false)}
         >
-          <IonCard>
-            <IonItem>
-              <IonIcon icon={pin} slot="start" />
-              <IonLabel>
-                {popPic?.location.coords.latitude}{" "}
-                {popPic?.location.coords.longitude}
-              </IonLabel>
-            </IonItem>
-            <IonCardHeader>
-              <IonCardSubtitle>{popPic?.user}</IonCardSubtitle>
-              <IonCardTitle>{popPic?.title}</IonCardTitle>
-            </IonCardHeader>
-
-            <IonCardContent>
-              <IonImg src={popPic?.url}></IonImg>
-              <br />
-              <IonText>{popPic?.description}</IonText>
-            </IonCardContent>
-          </IonCard>
+          {popPic && <ExploreCard image={popPic} />}
         </IonPopover>
       </IonContent>
     </IonPage>

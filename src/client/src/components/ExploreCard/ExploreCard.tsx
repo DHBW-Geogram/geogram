@@ -20,7 +20,7 @@ interface ContainerProps {
 
 const ExploreCard: React.FC<ContainerProps> = ({ image }) => {
   return (
-    <IonCard>
+    <IonCard className="my-ion-card">
       {/* Coordinated */}
       <IonItem>
         <IonIcon icon={pin} slot="start" />
