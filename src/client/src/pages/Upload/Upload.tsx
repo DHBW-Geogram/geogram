@@ -22,7 +22,7 @@ import {
 } from "@ionic/react";
 import { useCamera } from "@ionic/react-hooks/camera";
 import { camera } from "ionicons/icons";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Photo, usePhotoGallery } from "../../hooks/usePhotoGallery";
 import { useFilesystem, base64FromPath } from "@ionic/react-hooks/filesystem";
 import {
@@ -37,10 +37,14 @@ import { db } from "../../helper/firebase";
 import { v4 as uuidv4 } from "uuid";
 import { Redirect } from "react-router";
 import { useStorage } from "@ionic/react-hooks/storage";
+import { UserContext } from "../..";
 
 const { Geolocation, Filesystem } = Plugins;
 
 const Upload: React.FC<any> = (props) => {
+
+  const user = useContext(UserContext);
+
   const { get } = useStorage();
   const { deleteFile, readFile, writeFile } = useFilesystem();
   const { convertBlobToBase64 } = usePhotoGallery();
@@ -155,7 +159,7 @@ const Upload: React.FC<any> = (props) => {
             .set({
               id: imageId,
               timestamp: Date.now(),
-              user: "userid",
+              user: user?.email,
               location: location,
               url: `${process.env.REACT_APP_IMAGE_SERVER_URL}/${res.data.file}`,
               title: title,
