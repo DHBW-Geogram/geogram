@@ -18,4 +18,5 @@ export interface Image {
   user: string;
   distance: number | undefined;
   timestamp: number;
+  adress: string | undefined;
 }
