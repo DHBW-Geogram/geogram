@@ -17,11 +17,9 @@ import {
 } from "@ionic/react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { GeolocationPosition, Plugins } from "@capacitor/core";
-import { pin, funnel } from "ionicons/icons";
+import { funnel } from "ionicons/icons";
 import React from "react";
 import { RefresherEventDetail } from "@ionic/core";
-import { chevronDownCircleOutline } from "ionicons/icons";
-import { GeogramPosition } from "../../model/GeogramPosition";
 import { Image } from "../../model/Image";
 import { db } from "../../helper/firebase";
 import { sortImageArray } from "../../hooks/sortImageArray";

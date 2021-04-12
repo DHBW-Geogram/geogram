@@ -21,7 +21,6 @@ interface ContainerProps {
 const ExploreCard: React.FC<ContainerProps> = ({ image }) => {
   return (
     <IonCard>
-
       {/* Coordinated */}
       <IonItem>
         <IonIcon icon={pin} slot="start" />
@@ -35,13 +34,17 @@ const ExploreCard: React.FC<ContainerProps> = ({ image }) => {
       </IonItem>
 
       {/* Distance */}
-      {image.distance && (
+      {image.distance ? (
         <IonItem>
           <IonLabel>
-            {`Images was taken: ${image.distance
+            {`${image.distance
               .toString()
-              .slice(0, 4)} km from your position!`}
+              .slice(0, 4)} km away from you`}
           </IonLabel>
+        </IonItem>
+      ) : (
+        <IonItem>
+          <IonLabel>{`Near you`}</IonLabel>
         </IonItem>
       )}
 
@@ -53,7 +56,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image }) => {
       <IonCardContent>
         <IonImg src={image.url}></IonImg>
         <br />
-        <IonText>{image.description}</IonText>
+        <IonText style={{ fontSize: "large" }}>{image.description}</IonText>
       </IonCardContent>
     </IonCard>
   );

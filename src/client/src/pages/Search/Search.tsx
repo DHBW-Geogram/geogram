@@ -7,18 +7,14 @@ import {
   IonToolbar,
   IonSearchbar,
   IonItem,
-  IonList,
   IonChip,
   IonLabel,
-  IonAvatar,
   IonIcon,
   IonListHeader,
   IonRow,
   IonCol,
   IonGrid,
   IonImg,
-  IonModal,
-  IonButton,
   IonPopover,
   IonCard,
   IonCardHeader,
@@ -27,106 +23,90 @@ import {
   IonCardTitle,
   IonText,
 } from "@ionic/react";
-import { db } from "../helper/firebase";
-import { Image } from "../model/Image";
+import { db } from "../../helper/firebase";
+import { Image } from "../../model/Image";
 import { pin } from "ionicons/icons";
-import { responsesAreSame } from "workbox-broadcast-update";
-import { Plugins } from "@capacitor/core";
-import { GeogramPosition } from "../model/GeogramPosition";
-import { distanceInKm } from "../hooks/evaluateDistance";
+import { GeolocationPosition, Plugins } from "@capacitor/core";
+import { distanceInKm } from "../../hooks/evaluateDistance";
 
 const { Geolocation } = Plugins;
 
 const Search: React.FC = () => {
-  const [allimages, setAllimages] = useState<Array<Image>>([]);
-  const [filteredImages, setFilteredImages] = useState<Array<Image>>([]);
-  const [filter, setFilter] = useState("Location");
+  const [filter, setFilter] = useState("");
+  const [images, setImages] = useState<Array<Image>>([]);
   const [showPopup, setShowPopup] = useState(false);
   const [popPic, setPopPic] = useState<Image>();
   // Geoinformation
-  const [location, setLocation] = useState<GeogramPosition>();
+  const [location, setLocation] = useState<GeolocationPosition>();
 
   useEffect(() => {
-    // get current geolocation
-    Geolocation.getCurrentPosition().then((location) => {
-      setLocation({
-        coords: {
-          accuracy: location.coords.accuracy,
-          altitude: location.coords.altitude,
-          altitudeAccuracy: location.coords.altitudeAccuracy,
-          heading: location.coords.heading,
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          speed: location.coords.speed,
-        },
-        timestamp: location.timestamp,
-      });
-    });
+    (async () => {
+      // push location to state
+      setLocation(await Geolocation.getCurrentPosition());
 
-    fetchImages();
-    setFilteredImages(allimages);
-    let ref = db.collection("images");
+      console.log("Initial load...");
 
-    let unsubscribe = ref.onSnapshot(onCollectionUpdate);
-
-    return () => {
-      unsubscribe();
-    };
+      setImages(await fetchImages());
+    })();
   }, []);
 
-  const onCollectionUpdate = (querySnapshot: any) => {
-    let typedDocs: Image[] = [];
-
-    querySnapshot.forEach((doc: any) => typedDocs.push(doc.data()));
-    setAllimages(typedDocs);
-  };
-
-  const fetchImages = async () => {
-    console.log(allimages);
+  async function fetchImages(): Promise<Image[]> {
+    // fetch images from firebase
     const ref = db.collection("images");
     const data = await ref.get();
-    let typedDocs: Image[] = [];
-    data.docs.forEach((doc: any) => typedDocs.push(doc.data()));
-    setAllimages(typedDocs);
-  };
+
+    // load images to typed docs
+    let t: Image[] = [];
+    data.docs.forEach((doc: any) => t.push(doc.data()));
+    t.forEach((element: Image) => {
+      if (location !== undefined && element.distance == undefined) {
+        element.distance = distanceInKm(
+          location?.coords.latitude,
+          location?.coords.longitude,
+          element.location.coords.latitude,
+          element.location.coords.longitude
+        );
+      }
+    });
+
+    return t;
+  }
 
   function filterItems(searchText: string) {
     console.log("filtering", searchText);
+    let i: Image[] = [];
 
     if (searchText === "" || searchText === null || searchText === undefined) {
-      setFilteredImages(allimages);
+      fetchImages().then((res) => {
+        setImages(res);
+      });
     } else if (filter === "Location") {
-      setFilteredImages(
-        allimages.filter(
-          (image: Image) =>
-            image.location.coords.latitude.toPrecision(2) ===
-            Number(searchText).toPrecision(2)
-        )
-      );
+      fetchImages().then((res) => {
+        res.forEach((image) => {
+          if (image.locationDetails?.[0].formatted.includes(searchText)) {
+            i.push(image);
+          }
+        });
+      });
     } else if (filter === "Title") {
-      setFilteredImages(
-        allimages.filter((image: Image) => image.title.startsWith(searchText))
-      );
+      fetchImages().then((res) => {
+        res.forEach((image) => {
+          if (image.title.includes(searchText)) {
+            i.push(image);
+          }
+        });
+      });
     } else if (filter === "User") {
-      setFilteredImages(
-        allimages.filter((image: Image) => image.user.startsWith(searchText))
-      );
+      fetchImages().then((res) => {
+        res.forEach((image) => {
+          if (image.user.includes(searchText)) {
+            i.push(image);
+          }
+        });
+      });
     }
-  }
 
-  function getDistance(lat: number, long: number): number {
-    if (
-      location?.coords.longitude !== undefined &&
-      location?.coords.latitude !== undefined
-    ) {
-      return distanceInKm(
-        location.coords.latitude,
-        location.coords.longitude,
-        lat,
-        long
-      );
-    }
-    return 0;
+    setImages(i);
   }
 
   return (
@@ -169,7 +149,7 @@ const Search: React.FC = () => {
 
         <IonGrid>
           <IonRow>
-            {filteredImages.map((p: Image) => {
+            {images.map((p: Image) => {
               return (
                 <IonCol size="4">
                   <IonImg
@@ -193,10 +173,7 @@ const Search: React.FC = () => {
                       borderRadius: "5px",
                     }}
                   >
-                    {getDistance(
-                      p.location.coords.latitude,
-                      p.location.coords.longitude
-                    ).toPrecision(3)}
+                    {p.distance?.toPrecision(4)}
                     km
                   </p>
                 </IonCol>

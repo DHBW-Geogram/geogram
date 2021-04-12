@@ -12,11 +12,21 @@ import {
   IonTabBar,
   IonTabButton,
   IonTabs,
-} from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
-import { arrowForwardCircle, cameraOutline, cameraSharp, ellipse, square, triangle,  personCircleOutline, search, home, squareOutline,} from 'ionicons/icons';
-import Tab3 from './pages/Profile/Tab3';
-
+} from "@ionic/react";
+import { IonReactRouter } from "@ionic/react-router";
+import {
+  arrowForwardCircle,
+  cameraOutline,
+  cameraSharp,
+  ellipse,
+  square,
+  triangle,
+  personCircleOutline,
+  search,
+  home,
+  squareOutline,
+} from "ionicons/icons";
+import Tab3 from "./pages/Profile/Tab3";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -39,15 +49,14 @@ import "./theme/variables.css";
 
 import { UserContext } from ".";
 import UploadSelectionModal from "./components/UploadSelectionModal/UploadSelectionModal";
-import Explore from "./pages/Explore";
-import Search from "./pages/Search";
+import Search from "./pages/Search/Search";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Exploration from "./pages/Exploration/Exploration";
 
 const PublicRoutes = () => {
   return (
-    <IonReactRouter>         
+    <IonReactRouter>
       <Route path="/login" component={Login} exact={true} />
       <Route path="/register" component={Register} exact={true} />
       <Route path="/" render={() => <Redirect to="/login" />} />
@@ -64,7 +73,7 @@ const PrivateRoutes = () => {
       <IonTabs>
         <IonRouterOutlet>
           <Route exact path="/explore">
-            <Exploration setLoading={ setLoading } />
+            <Exploration setLoading={setLoading} />
           </Route>
           <Route exact path="/search">
             <Search />
@@ -76,13 +85,16 @@ const PrivateRoutes = () => {
             <Redirect to="/explore" />
           </Route>
 
-          <Route path="/upload" render={(props) => <Upload {...props} setLoading={setLoading} />} />
+          <Route
+            path="/upload"
+            render={(props) => <Upload {...props} setLoading={setLoading} />}
+          />
           <Route exact path="/login">
             <Redirect to="/explore" />
           </Route>
           <Route exact path="/register">
             <Redirect to="/explore" />
-          </Route>        
+          </Route>
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
           {/* Explore Tab - Benita */}
