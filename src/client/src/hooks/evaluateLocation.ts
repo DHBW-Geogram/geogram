@@ -42,6 +42,10 @@ export function evaluateLocation(
       image.location.coords.longitude
     );
     image.distance = distance;
+
+    if (distance <= range) {
+      pictures.push(image);
+    }
   });
 
   pictures = pictures.sort((a, b) => {
