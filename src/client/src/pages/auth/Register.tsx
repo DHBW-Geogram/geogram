@@ -22,6 +22,8 @@ import { PasswordCheckService } from "../../hooks/pw-check";
 
 import { User } from "../../model/User";
 import { PasswordCheckStrength } from "../../hooks/pw-check";
+import { checkUsername } from "../../hooks/checkUsername";
+import { checkRegister } from "../../hooks/checkRegister";
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -32,21 +34,20 @@ const Register: React.FC = () => {
   const [userName, setUserName] = useState("");
   const [alertText, setAlertText] = useState("");
   const [alertEmailVerify, setalertEmailVerify] = useState(false);
-  const [pwStrength, setpwStrength] = useState(PasswordCheckStrength.Short)
+  const [pwStrength, setpwStrength] = useState(PasswordCheckStrength.Short);
 
-  let checker:PasswordCheckService = new PasswordCheckService();
+  let checker: PasswordCheckService = new PasswordCheckService();
 
   const onEmailNameChange = useCallback((e) => setEmail(e.detail?.value), []);
-  const onPasswordChange = useCallback(
-    (e) => {
-      setPassword(e.detail?.value);
-      setpwStrength(checker.checkPasswordStrength(e.detail?.value));
-    }, 
-    []
-  );
+  const onPasswordChange = useCallback((e) => {
+    setPassword(e.detail?.value);
+    setpwStrength(checker.checkPasswordStrength(e.detail?.value));
+  }, []);
 
-  const checkPw = () => {setpwStrength(checker.checkPasswordStrength("tst_pw12"))};
-  
+  const checkPw = () => {
+    setpwStrength(checker.checkPasswordStrength("tst_pw12"));
+  };
+
   const onConfirmPasswordChange = useCallback(
     (e) => setConfirmPassword(e.detail?.value),
     []
@@ -61,61 +62,23 @@ const Register: React.FC = () => {
   );
   const onUsernameChange = useCallback((e) => setUserName(e.detail?.value), []);
 
-  const onDismiss = useCallback(() => setAlertText(""), []);  
-
-  const usernameCheck = db.collection("users");
-  //Check Username
-  async function checkUsername(userName: any) {
-    const data = await usernameCheck.get();
-    let typedDocs: User[] = [];
-    data.docs.forEach((doc: any) => typedDocs.push(doc.data().username));
-    var len = typedDocs.length;
-
-    for (var i = 0; i < len; i++) {
-      if (typedDocs[i] === userName)  setAlertText("Username already taken");     
-    }    
-  }
+  const onDismiss = useCallback(() => setAlertText(""), []);
 
   const onSignUpClick = useCallback(async () => {
-    
-    //Check Username
-    checkUsername(userName);
-   
-    // var a = checkUsername(userName);
-    // if ((await a) === true)
-    if (userName.length === 0) setAlertText("Username Required");
-      else if (userFirstName.length === 0) setAlertText("Firstname Required");
-      else if (userLastName.length === 0) setAlertText("Secondname Required");
-      else if (email.length === 0) setAlertText("Email Required");
-      else if (password.length === 0) setAlertText("Password Required");
-      else if (password.length < 6) setAlertText("Password to short");
-      else if (confirmPassword !== password)
-        setAlertText("Password don't match");
-      else {
-        auth
-          .createUserWithEmailAndPassword(email, password)
-          .then((userCredential) => {
-            var user = userCredential.user;
-            user?.sendEmailVerification();
+    var a = await checkRegister(
+      confirmPassword,
+      password,
+      email,
+      userFirstName,
+      userLastName,
+      userName
+    );
 
-            //Alert wird nicht angezeigt
-            //setalertEmailVerify(true);
+    setAlertText(a);
 
-            //Setup firestore data
-            const data = {
-              username: userName,
-              userFirstName: userFirstName,
-              userLastName: userLastName,
-              email: email,
-            };
+    //Alert wird nicht richtig angezeigt 
+    //setalertEmailVerify(true);
 
-            db.collection("users")
-              .doc(auth.currentUser?.uid)
-              .set(data)
-              .catch((err) => setAlertText(err.message));
-          })
-          .catch((err) => setAlertText(err.message));
-      }
   }, [confirmPassword, password, email, userFirstName, userLastName, userName]);
 
   return (
@@ -171,7 +134,7 @@ const Register: React.FC = () => {
           </IonItem>
           <br />
           <IonItem>
-            <IonLabel position="floating">Password { pwStrength }</IonLabel>
+            <IonLabel position="floating">Password {pwStrength}</IonLabel>
             <IonInput
               onIonChange={onPasswordChange}
               type="password"
