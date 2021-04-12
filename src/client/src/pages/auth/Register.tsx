@@ -18,8 +18,10 @@ import React, { useCallback, useState } from "react";
 import { db, auth } from "../../helper/firebase";
 import "./Register.css";
 import "firebase/auth";
+import { PasswordCheckService } from "../../hooks/pw-check";
 
 import { User } from "../../model/User";
+import { PasswordCheckStrength } from "../../hooks/pw-check";
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -30,9 +32,21 @@ const Register: React.FC = () => {
   const [userName, setUserName] = useState("");
   const [alertText, setAlertText] = useState("");
   const [alertEmailVerify, setalertEmailVerify] = useState(false);
+  const [pwStrength, setpwStrength] = useState(PasswordCheckStrength.Short)
+
+  let checker:PasswordCheckService = new PasswordCheckService();
 
   const onEmailNameChange = useCallback((e) => setEmail(e.detail?.value), []);
-  const onPasswordChange = useCallback((e) => setPassword(e.detail?.value), []);
+  const onPasswordChange = useCallback(
+    (e) => {
+      setPassword(e.detail?.value);
+      setpwStrength(checker.checkPasswordStrength(e.detail?.value));
+    }, 
+    []
+  );
+
+  const checkPw = () => {setpwStrength(checker.checkPasswordStrength("tst_pw12"))};
+  
   const onConfirmPasswordChange = useCallback(
     (e) => setConfirmPassword(e.detail?.value),
     []
@@ -157,7 +171,7 @@ const Register: React.FC = () => {
           </IonItem>
           <br />
           <IonItem>
-            <IonLabel position="floating">Password</IonLabel>
+            <IonLabel position="floating">Password { pwStrength }</IonLabel>
             <IonInput
               onIonChange={onPasswordChange}
               type="password"
