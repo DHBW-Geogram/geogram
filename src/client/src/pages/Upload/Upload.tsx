@@ -152,34 +152,39 @@ const Upload: React.FC<any> = (props) => {
 
         if (res.data.file !== undefined) {
 
-          let imageId: string = uuidv4();
+          db.collection("users").doc(user?.uid).get().then(item => {
+      
+            let imageId: string = uuidv4();
 
-          db.collection("images")
-            .doc(imageId)
-            .set({
-              id: imageId,
-              timestamp: Date.now(),
-              user: user?.email,
-              location: location,
-              url: `${process.env.REACT_APP_IMAGE_SERVER_URL}/${res.data.file}`,
-              title: title,
-              description: description,
-            })
-            .then((res) => {
-              setToast("Successfully added item to firebase");
+            db.collection("images")
+              .doc(imageId)
+              .set({
+                id: imageId,
+                timestamp: Date.now(),
+                user: item.data()?.username,
+                location: location,
+                url: `${process.env.REACT_APP_IMAGE_SERVER_URL}/${res.data.file}`,
+                title: title,
+                description: description,
+              })
+              .then((res) => {
+                setToast("Successfully added item to firebase");
+  
+                // Set back everything
+                setTitle("");
+                setDescription("");
+                setImage(undefined);
+                setLocation(undefined);
+  
+                setTimeout(() => {
+                  setRedirect("explore");
+                  props.setLoading(false);
+                }, 1000);
+              })
+              .catch((err) => setToast("Error while adding data to firebase"));
 
-              // Set back everything
-              setTitle("");
-              setDescription("");
-              setImage(undefined);
-              setLocation(undefined);
+          });
 
-              setTimeout(() => {
-                setRedirect("explore");
-                props.setLoading(false);
-              }, 1000);
-            })
-            .catch((err) => setToast("Error while adding data to firebase"));
         } else {
           setToast(
             "Error while adding data to image server: " +
