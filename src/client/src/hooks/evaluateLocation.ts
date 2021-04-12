@@ -19,6 +19,7 @@ import {
   IonToast,
   IonToolbar,
 } from "@ionic/react";
+import axios from "axios";
 import { list } from "ionicons/icons";
 import { Image } from "../model/Image";
 import { distanceInKm } from "./evaluateDistance";
@@ -33,21 +34,18 @@ export function evaluateLocation(
   let pictures: Image[] = [];
   console.log(range);
 
-  images.map((image) => {
+  images.forEach((image) => {
     let distance: number = distanceInKm(
       lat,
       long,
       image.location.coords.latitude,
       image.location.coords.longitude
     );
-    if (distance <= range) {
-      image.distance = distance;
-      pictures.push(image);
-    }
+    image.distance = distance;
   });
 
   pictures = pictures.sort((a, b) => {
-    return sortImageArray(a,b);
+    return sortImageArray(a, b);
   });
 
   console.log(pictures);

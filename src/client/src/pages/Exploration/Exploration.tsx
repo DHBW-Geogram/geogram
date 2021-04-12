@@ -113,8 +113,15 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
       <IonHeader>
         <IonToolbar>
           <IonTitle>Explore</IonTitle>
-          <IonText slot="end">{filter} km</IonText>
+          <IonText
+            style={{ marginRight: "0.25rem" }}
+            slot="end"
+            onClick={(e) => setShowPopup({ open: true, event: e.nativeEvent })}
+          >
+            {filter} km
+          </IonText>
           <IonIcon
+            style={{ margin: "0.5rem" }}
             icon={funnel}
             slot="end"
             onClick={(e) => setShowPopup({ open: true, event: e.nativeEvent })}
@@ -132,9 +139,9 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
               <IonItem>
                 <IonRange
                   min={0}
-                  max={100}
+                  max={30}
                   snaps={true}
-                  step={5}
+                  step={1}
                   pin={true}
                   value={filter}
                   onIonChange={(e) => {
@@ -152,7 +159,7 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
                   }}
                 >
                   <IonLabel slot="start">0</IonLabel>
-                  <IonLabel slot="end">100+</IonLabel>
+                  <IonLabel slot="end">30</IonLabel>
                 </IonRange>
               </IonItem>
             </IonList>
