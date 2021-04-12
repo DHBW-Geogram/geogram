@@ -161,7 +161,7 @@ const Upload: React.FC<any> = (props) => {
               .set({
                 id: imageId,
                 timestamp: Date.now(),
-                user: item.data()?.username,
+                user: item.data()?.username || user?.email,
                 location: location,
                 url: `${process.env.REACT_APP_IMAGE_SERVER_URL}/${res.data.file}`,
                 title: title,
