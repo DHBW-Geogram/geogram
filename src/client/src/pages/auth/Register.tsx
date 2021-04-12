@@ -47,7 +47,7 @@ const Register: React.FC = () => {
   );
   const onUsernameChange = useCallback((e) => setUserName(e.detail?.value), []);
 
-  const onDismiss = useCallback(() => setAlertText(""), []);
+  const onDismiss = useCallback(() => setAlertText(""), []);  
 
   const usernameCheck = db.collection("users");
   //Check Username
@@ -58,20 +58,19 @@ const Register: React.FC = () => {
     var len = typedDocs.length;
 
     for (var i = 0; i < len; i++) {
-      if (typedDocs[i] === userName) {
-        setAlertText("Username already taken");
-        return true;
-      }
-    }
-    return true;
+      if (typedDocs[i] === userName)  setAlertText("Username already taken");     
+    }    
   }
 
   const onSignUpClick = useCallback(async () => {
-    if (userName.length === 0) setAlertText("Username Required");
+    
     //Check Username
-    var a = checkUsername(userName);
-    if ((await a) === true)
-      if (userFirstName.length === 0) setAlertText("Firstname Required");
+    checkUsername(userName);
+   
+    // var a = checkUsername(userName);
+    // if ((await a) === true)
+    if (userName.length === 0) setAlertText("Username Required");
+      else if (userFirstName.length === 0) setAlertText("Firstname Required");
       else if (userLastName.length === 0) setAlertText("Secondname Required");
       else if (email.length === 0) setAlertText("Email Required");
       else if (password.length === 0) setAlertText("Password Required");
