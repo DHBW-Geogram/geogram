@@ -86,7 +86,7 @@ const Login: React.FC = () => {
           <br />
           <div className="LogInButton">
             <IonRouterLink routerLink={"/register"}>
-              CREAT A NEW ACCOUNT
+              CREATE A NEW ACCOUNT
             </IonRouterLink>
           </div>
           <br />
