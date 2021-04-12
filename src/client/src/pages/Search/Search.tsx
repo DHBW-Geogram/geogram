@@ -126,6 +126,7 @@ const Search: React.FC = () => {
 
         <IonListHeader>Filter: {filter}</IonListHeader>
         <IonChip
+          style={ filter === "Location" ? {backgroundColor: "lightgray", color: "black"} : {}}
           onClick={(e) => {
             setFilter("Location");
           }}
@@ -133,6 +134,7 @@ const Search: React.FC = () => {
           <IonLabel>Location</IonLabel>
         </IonChip>
         <IonChip
+         style={ filter === "User" ? {backgroundColor: "lightgray", color: "black"} : {}}
           onClick={(e) => {
             setFilter("User");
           }}
@@ -140,6 +142,7 @@ const Search: React.FC = () => {
           <IonLabel>User</IonLabel>
         </IonChip>
         <IonChip
+         style={ filter === "Title" ? {backgroundColor: "lightgray", color: "black"} : {}}
           onClick={(e) => {
             setFilter("Title");
           }}
