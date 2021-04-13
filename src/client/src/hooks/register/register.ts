@@ -1,4 +1,8 @@
-import { auth, db } from "../helper/firebase";
+import { auth, db } from "../../helper/firebase";
+import { presentAlert, presentAlertWithHeader } from "../alert";
+
+
+
 
 export async function register(
   password: any,
@@ -7,6 +11,7 @@ export async function register(
   userLastName: any,
   userName: any
 ): Promise<any> {
+
   await  auth
     .createUserWithEmailAndPassword(email, password)
     .then(async (userCredential) => {
@@ -16,6 +21,7 @@ export async function register(
       //Alert wird nicht angezeigt
       //setalertEmailVerify(true);
       //Setup firestore data
+     
 
       const data = {
         username: userName,
@@ -26,18 +32,8 @@ export async function register(
       await db.collection("users")
         .doc(auth.currentUser?.uid)
         .set(data)
-        //return von error geht nicht
-        .catch((err) => {
-          console.log("bin dort");
-          return err.message;
-        });
-    })
-    //return von error geht nicht
-    .catch((err) => {
-     
-      console.log(err.message);      
-      return err.message;
-    });
-    
+        .catch((err) => presentAlert(err.message));
+    })    
+    .catch((err) => presentAlert(err.message));    
   return "";
 }

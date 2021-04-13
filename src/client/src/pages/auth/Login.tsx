@@ -21,34 +21,28 @@ import "./Login.css";
 import { auth, db } from "../../helper/firebase";
 
 import "firebase/auth";
-import { signInWithUsernameAndPassword } from "../../hooks/signInWithUsernameAndPassword";
+import { signInWithUsernameAndPassword } from "../../hooks/login/signInWithUsernameAndPassword";
 import { checkUsername } from "../../hooks/checkUsername";
+import { presentAlert } from "../../hooks/alert";
+import { checkLogin } from "../../hooks/login/checkLogin";
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [alertText, setAlertText] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");  
   const [alertPasswordForgotenText, setalertPasswordForgotenText] = useState(
     false
   );  
 
-  const onEmailNameChange = useCallback((e) => setEmail(e.detail?.value), []);
+  const onUsernameNameChange = useCallback((e) => setUsername(e.detail?.value), []);
   const onPasswordChange = useCallback((e) => setPassword(e.detail?.value), []);
 
   const onLoginClick = useCallback(async () => {
-   
-    if (email.length === 0) setAlertText("Email Required");
-    else if (password.length === 0) setAlertText("Password Required");
     
-    else if (await checkUsername(email)) signInWithUsernameAndPassword(email, password);
-    else {
-      auth
-        .signInWithEmailAndPassword(email, password)
-        .catch((err) => setAlertText(err.message));
-    }
-  }, [email.length, password.length]);
+    checkLogin(username, password);   
+    
+  }, [username, password]);
 
-  const onDismiss = useCallback(() => setAlertText(""), []);
+  
 
   return (
     <IonPage>
@@ -62,12 +56,12 @@ const Login: React.FC = () => {
         <IonGrid>
           <br />
           <IonItem>
-            <IonLabel position="floating">Email</IonLabel>
+            <IonLabel position="floating">Email or Username</IonLabel>
             <IonInput
-              onIonChange={onEmailNameChange}
-              value={email}
+              onIonChange={onUsernameNameChange}
+              value={username}
               class="input"
-              type="email"
+              type="text"
             ></IonInput>
           </IonItem>
           <br />
@@ -101,13 +95,7 @@ const Login: React.FC = () => {
             </IonRouterLink>
           </div>
         </IonGrid>
-      </IonContent>
-      <IonAlert
-        isOpen={alertText.length > 0}
-        onDidDismiss={onDismiss}
-        message={alertText}
-        buttons={["OK"]}
-      />
+      </IonContent>    
       <IonAlert
         isOpen={alertPasswordForgotenText}
         onDidDismiss={() => setalertPasswordForgotenText(false)}
@@ -121,7 +109,7 @@ const Login: React.FC = () => {
         ]}
         buttons={[
           {
-            text: "OK",
+            text: "Send",
             handler: (data) => {
               auth.sendPasswordResetEmail(data.emailPasswordForgoten);
             },
