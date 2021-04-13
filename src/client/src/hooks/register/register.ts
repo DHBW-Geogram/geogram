@@ -19,6 +19,7 @@ export async function register(
       var user = userCredential.user;
 
       sendEmailVerify();    
+      const date: Date = new Date();
 
       const data = {
         username: userName,
@@ -26,7 +27,7 @@ export async function register(
         userLastName: userLastName,
         email: email,
         biography: "",
-        birthdate: "",
+        birthdate: date,
       };
       await db.collection("users")
         .doc(auth.currentUser?.uid)
