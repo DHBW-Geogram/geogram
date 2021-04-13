@@ -18,13 +18,11 @@ import {
 } from "ionicons/icons";
 import React, { useCallback, useState } from "react";
 import "./Login.css";
-import { auth, db } from "../../helper/firebase";
+import { auth } from "../../helper/firebase";
 
 import "firebase/auth";
-import { signInWithUsernameAndPassword } from "../../hooks/login/signInWithUsernameAndPassword";
-import { checkUsername } from "../../hooks/checkUsername";
-import { presentAlert } from "../../hooks/alert";
 import { checkLogin } from "../../hooks/login/checkLogin";
+import { emailVerified } from "../../hooks/register/emailVerify";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -38,8 +36,9 @@ const Login: React.FC = () => {
 
   const onLoginClick = useCallback(async () => {
     
-    checkLogin(username, password);   
-    
+    await checkLogin(username, password);   
+  
+
   }, [username, password]);
 
   

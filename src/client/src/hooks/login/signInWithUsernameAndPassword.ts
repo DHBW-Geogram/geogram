@@ -8,18 +8,18 @@ export async function signInWithUsernameAndPassword(
 ): Promise<any> {
   
   if (await checkUsername(username)) {
-    db.collection("users")
+    await db.collection("users")
       .where("username", "==", username)
       .get()
       .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          auth
+        querySnapshot.forEach(async (doc) => {
+         await auth
             .signInWithEmailAndPassword(doc.data().email, password)
             .catch((err) => presentAlert("Your Login credentials are incorrect"));
         });
       });
   } else {
-    auth
+    await auth
       .signInWithEmailAndPassword(username, password)
       .catch((err) => presentAlert("Your Login credentials are incorrect"));
   }

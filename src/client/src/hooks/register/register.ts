@@ -1,5 +1,6 @@
 import { auth, db } from "../../helper/firebase";
-import { presentAlert, presentAlertWithHeader } from "../alert";
+import { presentAlert } from "../alert";
+import { sendEmailVerify } from "./emailVerify";
 
 
 
@@ -16,12 +17,8 @@ export async function register(
     .createUserWithEmailAndPassword(email, password)
     .then(async (userCredential) => {
       var user = userCredential.user;
-      user?.sendEmailVerification();
 
-      //Alert wird nicht angezeigt
-      //setalertEmailVerify(true);
-      //Setup firestore data
-     
+      sendEmailVerify();    
 
       const data = {
         username: userName,

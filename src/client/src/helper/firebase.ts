@@ -1,5 +1,4 @@
 import firebase from "firebase";
-import React, { createContext, FC, useEffect, useState } from "react";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCuOUn1kd_QKs91UYx2Pv015QYAwNfpkWg",
