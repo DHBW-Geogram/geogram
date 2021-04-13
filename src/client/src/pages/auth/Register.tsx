@@ -11,7 +11,7 @@ import {
   IonItem,
   IonLabel,
   IonGrid,
-  IonAlert,
+  IonAlert,  
 } from "@ionic/react";
 import { chevronBackOutline, personAddOutline } from "ionicons/icons";
 import React, { useCallback, useState } from "react";
@@ -23,7 +23,8 @@ import { PasswordCheckService } from "../../hooks/pw-check";
 import { User } from "../../model/User";
 import { PasswordCheckStrength } from "../../hooks/pw-check";
 import { checkUsername } from "../../hooks/checkUsername";
-import { checkRegister } from "../../hooks/checkRegister";
+import { checkRegister } from "../../hooks/register/checkRegister";
+import { presentAlertWithHeader } from "../../hooks/alert";
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -65,7 +66,7 @@ const Register: React.FC = () => {
   const onDismiss = useCallback(() => setAlertText(""), []);
 
   const onSignUpClick = useCallback(async () => {
-    var a = await checkRegister(
+    var alertMessage = await checkRegister(
       confirmPassword,
       password,
       email,
@@ -74,11 +75,10 @@ const Register: React.FC = () => {
       userName
     );
 
-    setAlertText(a);
-
-    //Alert wird nicht richtig angezeigt 
-    //setalertEmailVerify(true);
-
+    if(auth.currentUser){
+    presentAlertWithHeader("Please verify your email address to finish signing up for Geogram", "Thank you for signing in.");
+    }
+    
   }, [confirmPassword, password, email, userFirstName, userLastName, userName]);
 
   return (
@@ -158,7 +158,7 @@ const Register: React.FC = () => {
             </IonButton>
           </div>
         </IonGrid>
-        <IonAlert
+        {/* <IonAlert
           isOpen={alertText.length > 0}
           onDidDismiss={onDismiss}
           message={alertText}
@@ -172,7 +172,7 @@ const Register: React.FC = () => {
             "Please verify your email address to finish signing up for Geogram"
           }
           buttons={["OK"]}
-        />
+        /> */}
       </IonContent>
     </IonPage>
   );
