@@ -15,7 +15,7 @@ import {
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { arrowForwardCircle, cameraOutline, cameraSharp, ellipse, square, triangle,  personCircleOutline, search, home, squareOutline,} from 'ionicons/icons';
-import Tab3 from './pages/Profile/Tab3';
+import Profile from './pages/Profile/Profile';
 
 
 /* Core CSS required for Ionic components to work properly */
@@ -68,8 +68,8 @@ const PrivateRoutes = () => {
           <Route exact path="/search">
             <Search />
           </Route>
-          <Route path="/tab3">
-            <Tab3 />
+          <Route path="/profile">
+            <Profile />
           </Route>
           <Route exact path="/">
             <Redirect to="/explore" />
@@ -95,7 +95,7 @@ const PrivateRoutes = () => {
             <IonLabel>Search</IonLabel>
           </IonTabButton>
           {/* Profile Tab - Jonas */}
-          <IonTabButton tab="tab3" href="/tab3">
+          <IonTabButton tab="profile" href="/profile">
             <IonIcon icon={personCircleOutline} />
             <IonLabel>Profile</IonLabel>
           </IonTabButton>
