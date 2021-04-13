@@ -25,6 +25,8 @@ export async function register(
         userFirstName: userFirstName,
         userLastName: userLastName,
         email: email,
+        biography: "",
+        birthdate: "",
       };
       await db.collection("users")
         .doc(auth.currentUser?.uid)
