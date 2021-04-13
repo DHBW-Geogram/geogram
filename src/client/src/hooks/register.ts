@@ -1,8 +1,13 @@
 import { auth, db } from "../helper/firebase";
 
-export async function register(confirmPassword: any, password: any, email: any, userFirstName: any, userLastName: any, userName: any): Promise<string> {
-
-    auth
+export async function register(
+  password: any,
+  email: any,
+  userFirstName: any,
+  userLastName: any,
+  userName: any
+): Promise<any> {
+  await  auth
     .createUserWithEmailAndPassword(email, password)
     .then(async (userCredential) => {
       var user = userCredential.user;
@@ -18,14 +23,21 @@ export async function register(confirmPassword: any, password: any, email: any, 
         userLastName: userLastName,
         email: email,
       };
-      db.collection("users")
+      await db.collection("users")
         .doc(auth.currentUser?.uid)
         .set(data)
         //return von error geht nicht
-  .catch((err) =>{ return (err.message);})
+        .catch((err) => {
+          console.log("bin dort");
+          return err.message;
+        });
     })
     //return von error geht nicht
-      .catch((err) =>{ return (err.message);})
-  
-    return "";    
+    .catch((err) => {
+     
+      console.log(err.message);      
+      return err.message;
+    });
+    
+  return "";
 }
