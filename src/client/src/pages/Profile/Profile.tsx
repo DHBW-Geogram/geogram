@@ -170,7 +170,7 @@ const Profile: React.FC = () => {
                   }
                 }).then(async () => {
 
-                  if(email != await auth.currentUser?.email)
+                  if(email != auth.currentUser?.email)
                   {
                     await auth.currentUser?.updateEmail(String(email)).then(async function(){
                       console.log("Email-Update successfull!");
