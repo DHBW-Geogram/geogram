@@ -76,7 +76,7 @@ const Search: React.FC = () => {
       fetchImages().then((res) => {
         let i: Image[] = [];
         res.forEach((image) => {
-          if (image.locationDetails?.[0].formatted.includes(searchText)) {
+          if (image.location.position?.includes(searchText)) {
             i.push(image);
           }
         });
