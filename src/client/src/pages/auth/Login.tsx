@@ -21,29 +21,27 @@ import "./Login.css";
 import { auth } from "../../helper/firebase";
 
 import "firebase/auth";
+import { checkLogin } from "../../hooks/login/checkLogin";
+import { emailVerified } from "../../hooks/register/emailVerify";
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [alertText, setAlertText] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");  
   const [alertPasswordForgotenText, setalertPasswordForgotenText] = useState(
     false
   );  
 
-  const onEmailNameChange = useCallback((e) => setEmail(e.detail?.value), []);
+  const onUsernameNameChange = useCallback((e) => setUsername(e.detail?.value), []);
   const onPasswordChange = useCallback((e) => setPassword(e.detail?.value), []);
 
-  const onLoginClick = useCallback(() => {
-    if (email.length === 0) setAlertText("Email Required");
-    else if (password.length === 0) setAlertText("Password Required");
-    else {
-      auth
-        .signInWithEmailAndPassword(email, password)
-        .catch((err) => setAlertText(err.message));
-    }
-  }, [email.length, password.length]);
+  const onLoginClick = useCallback(async () => {
+    
+    await checkLogin(username, password);   
+  
 
-  const onDismiss = useCallback(() => setAlertText(""), []);
+  }, [username, password]);
+
+  
 
   return (
     <IonPage>
@@ -57,12 +55,12 @@ const Login: React.FC = () => {
         <IonGrid>
           <br />
           <IonItem>
-            <IonLabel position="floating">Email</IonLabel>
+            <IonLabel position="floating">Email or Username</IonLabel>
             <IonInput
-              onIonChange={onEmailNameChange}
-              value={email}
+              onIonChange={onUsernameNameChange}
+              value={username}
               class="input"
-              type="email"
+              type="text"
             ></IonInput>
           </IonItem>
           <br />
@@ -86,7 +84,7 @@ const Login: React.FC = () => {
           <br />
           <div className="LogInButton">
             <IonRouterLink routerLink={"/register"}>
-              CREAT A NEW ACCOUNT
+              CREATE A NEW ACCOUNT
             </IonRouterLink>
           </div>
           <br />
@@ -96,13 +94,7 @@ const Login: React.FC = () => {
             </IonRouterLink>
           </div>
         </IonGrid>
-      </IonContent>
-      <IonAlert
-        isOpen={alertText.length > 0}
-        onDidDismiss={onDismiss}
-        message={alertText}
-        buttons={["OK"]}
-      />
+      </IonContent>    
       <IonAlert
         isOpen={alertPasswordForgotenText}
         onDidDismiss={() => setalertPasswordForgotenText(false)}
@@ -116,7 +108,7 @@ const Login: React.FC = () => {
         ]}
         buttons={[
           {
-            text: "OK",
+            text: "Send",
             handler: (data) => {
               auth.sendPasswordResetEmail(data.emailPasswordForgoten);
             },
