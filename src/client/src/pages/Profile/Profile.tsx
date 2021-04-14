@@ -1,5 +1,7 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonAvatar, IonImg, IonLabel, IonGrid, IonRow, IonCol, IonButton, IonModal, IonButtons, IonInput, IonTextarea} from '@ionic/react';
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
+import { UserContext } from '../..';
+import ShowEmailVerifyButton from '../../components/ShowEmailVerifyButton';
 import { auth, db } from '../../helper/firebase';
 import { checkUsername } from "./checkUsername";
 
@@ -15,6 +17,7 @@ const Profile: React.FC = () => {
   const [firstName, setFirstName] = useState<string>();
   const [lastName, setLastName] = useState<string>();
   const [email, setEmail] = useState<string>();
+  const user = useContext(UserContext);
   const[bio, setBio] = useState<string>();
 
   const Item1: Item = {src: 'http://placekitten.com/g/200/300', text: 'Picture'};
@@ -123,7 +126,7 @@ const Profile: React.FC = () => {
             </IonItem>
             <IonItem>
               <IonLabel color={errorEmailLabel} position="floating">E-Mail</IonLabel>
-              <IonInput color={errorEmailText} value={email} type="email" onIonChange={e => setEmail(e.detail.value!)}></IonInput>
+              <IonInput color={errorEmailText} value={email} type="email" onIonChange={e => setEmail(e.detail.value!)}></IonInput>             
             </IonItem>
             <IonItem>
               <IonLabel position="stacked">Biography</IonLabel>
@@ -211,10 +214,16 @@ const Profile: React.FC = () => {
               </IonCol>
             </IonRow>
             <IonRow>
+                <IonCol style={{textAlign: "center"}}>
+                   {user?.emailVerified ? false : <ShowEmailVerifyButton /> }
+                </IonCol>
+            </IonRow>
+            <IonRow>
               <IonCol style={{textAlign: "center"}}>
                 <IonButton shape="round" fill="outline" color="danger" onClick={ () => auth.signOut()}>Logout</IonButton>
               </IonCol>
             </IonRow>
+           
             </IonGrid>
           </IonContent>
         </IonModal>
