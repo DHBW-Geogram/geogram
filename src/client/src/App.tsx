@@ -39,14 +39,14 @@ import "./theme/variables.css";
 
 import { UserContext } from ".";
 import UploadSelectionModal from "./components/UploadSelectionModal/UploadSelectionModal";
-import Explore from "./pages/Explore";
-import Search from "./pages/Search";
+import Search from "./pages/Search/Search";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import Exploration from "./pages/Exploration/Exploration";
 
 const PublicRoutes = () => {
   return (
-    <IonReactRouter>         
+    <IonReactRouter>
       <Route path="/login" component={Login} exact={true} />
       <Route path="/register" component={Register} exact={true} />
       <Route path="/" render={() => <Redirect to="/login" />} />
@@ -63,7 +63,7 @@ const PrivateRoutes = () => {
       <IonTabs>
         <IonRouterOutlet>
           <Route exact path="/explore">
-            <Explore />
+            <Exploration setLoading={setLoading} />
           </Route>
           <Route exact path="/search">
             <Search />
@@ -75,13 +75,16 @@ const PrivateRoutes = () => {
             <Redirect to="/explore" />
           </Route>
 
-          <Route path="/upload" render={(props) => <Upload {...props} setLoading={setLoading} />} />
+          <Route
+            path="/upload"
+            render={(props) => <Upload {...props} setLoading={setLoading} />}
+          />
           <Route exact path="/login">
             <Redirect to="/explore" />
           </Route>
           <Route exact path="/register">
             <Redirect to="/explore" />
-          </Route>        
+          </Route>
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
           {/* Explore Tab - Benita */}

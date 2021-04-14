@@ -11,10 +11,16 @@ export interface Image {
       speed: number | undefined;
     };
     timestamp: number;
+    position?: string;
   };
   title: string;
   url: string;
   user: string;
   distance: number | undefined;
   timestamp: number;
+  locationDetails?: {
+    0: {
+      formatted: string;
+    };
+  };
 }
