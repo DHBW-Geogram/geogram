@@ -1,7 +1,7 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonItem, IonAvatar, IonImg, IonLabel, IonGrid, IonRow, IonCol, IonButton, IonModal, IonButtons, IonInput, IonTextarea} from '@ionic/react';
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import { auth, db } from '../../helper/firebase';
-import { checkUsername } from '../../hooks/checkUsername';
+import { checkUsername } from "./checkUsername";
 
 const Profile: React.FC = () => {
 
@@ -11,18 +11,24 @@ const Profile: React.FC = () => {
   };
 
   const [EditProfile, setEditProfile] = useState<boolean>(false);
-  const [birthday, setBirthday] = useState<string>();
   const [username, setUsername] = useState<string>();
   const [firstName, setFirstName] = useState<string>();
   const [lastName, setLastName] = useState<string>();
   const [email, setEmail] = useState<string>();
-  const[bio, setBio] = useState<string>("Hier steht meine Biografie schön beschrieben...");
+  const[bio, setBio] = useState<string>();
 
   const Item1: Item = {src: 'http://placekitten.com/g/200/300', text: 'Picture'};
 
-  const [errorUsernameLabel, setErrorUsernameLabel] = useState<string>("primary");
-  const [errorUsernameText, setErrorUsernameText] = useState<string>("dark");
-  const [saveButtonDisabled, setSaveButtonDisabled] = useState<boolean>(false);
+  const [errorUsernameLabel, setErrorUsernameLabel] = useState<string>("");
+  const [errorUsernameText, setErrorUsernameText] = useState<string>("");
+
+  //const [isUsernameCorrect, setUsernameCorrect] = useState<boolean>(true);
+  let isUsernameCorrect:boolean = true;
+
+  const [errorEmailLabel, setErrorEmailLabel] = useState<string>("");
+  const [errorEmailText, setErrorEmailText] = useState<string>("");
+
+  const [isEmailCorrect, setEmailCorrect] = useState<boolean>(true);
 
   useEffect(() => {
     db.collection("users")
@@ -34,6 +40,7 @@ const Profile: React.FC = () => {
                       setEmail(doc.data().email);
                       setFirstName(doc.data().userFirstName);
                       setLastName(doc.data().userLastName);
+                      setBio(doc.data().biography);
                     })
                   });
   }, [EditProfile]);
@@ -90,7 +97,13 @@ const Profile: React.FC = () => {
           <IonHeader>
             <IonToolbar>
               <IonButtons slot="end">
-                <IonButton color="primary" onClick={ () => setEditProfile(false)}>Close</IonButton>
+                <IonButton color="primary" onClick={ () => {
+                  setEditProfile(false);
+                  setErrorEmailLabel("");
+                  setErrorEmailText("");
+                  setErrorUsernameLabel("");
+                  setErrorUsernameText("");
+                }}>Close</IonButton>
               </IonButtons>
               <IonTitle>Edit Profile</IonTitle>
             </IonToolbar>
@@ -98,22 +111,7 @@ const Profile: React.FC = () => {
           <IonContent fullscreen>
             <IonItem>
               <IonLabel color={errorUsernameLabel} position="floating">Username</IonLabel>
-              <IonInput color={errorUsernameText} value={username} type="text" onIonChange={async e => {
-                setUsername(e.detail.value!)
-
-                /*if(await checkUsername(username) || username == "")
-                {
-                  setErrorUsernameLabel("danger");
-                  setErrorUsernameText("danger");
-                  setSaveButtonDisabled(true);
-                }
-                else
-                {
-                  setErrorUsernameLabel("primary");
-                  setErrorUsernameText("dark");
-                  setSaveButtonDisabled(false);
-                }*/
-              }}></IonInput>
+              <IonInput color={errorUsernameText} value={username} type="text" onIonChange={async e => setUsername(e.detail.value!)}></IonInput>
             </IonItem>
             <IonItem>
               <IonLabel position="floating">First Name</IonLabel>
@@ -124,12 +122,8 @@ const Profile: React.FC = () => {
               <IonInput value={lastName} type="text" onIonChange={e => setLastName(e.detail.value!)}></IonInput>
             </IonItem>
             <IonItem>
-              <IonLabel position="floating">E-Mail</IonLabel>
-              <IonInput value={email} type="email" onIonChange={e => setEmail(e.detail.value!)}></IonInput>
-            </IonItem>
-            <IonItem>
-              <IonLabel position="stacked">Birthday</IonLabel>
-              <IonInput value={birthday} type="date" onIonChange={e => setBirthday(e.detail.value!)}></IonInput>
+              <IonLabel color={errorEmailLabel} position="floating">E-Mail</IonLabel>
+              <IonInput color={errorEmailText} value={email} type="email" onIonChange={e => setEmail(e.detail.value!)}></IonInput>
             </IonItem>
             <IonItem>
               <IonLabel position="stacked">Biography</IonLabel>
@@ -138,20 +132,81 @@ const Profile: React.FC = () => {
             <IonGrid>
             <IonRow>
               <IonCol style={{textAlign: "center"}}>
-                <IonButton expand="block" shape="round" fill="outline" color="primary" onClick={ () => setEditProfile(false)}>Cancel</IonButton>
+                <IonButton expand="block" shape="round" fill="outline" color="primary" onClick={ () => {
+                  setEditProfile(false);
+                  setErrorEmailLabel("");
+                  setErrorEmailText("");
+                  setErrorUsernameLabel("");
+                  setErrorUsernameText("");
+                }}>Cancel</IonButton>
               </IonCol>
               <IonCol style={{textAlign: "center"}}>
-                <IonButton disabled={saveButtonDisabled} expand="block" shape="round" fill="outline" color="primary" onClick={ async () => {
+                <IonButton expand="block" shape="round" fill="outline" color="primary" onClick={ async () => {
+
+                  isUsernameCorrect = true;
+                  setEmailCorrect(true);
+
                   const data = {
                     username: username,
                     userFirstName: firstName,
                     userLastName: lastName,
                     email: email,
+                    biography: bio
                   };
 
-                  await db.collection("users").doc(auth.currentUser?.uid).set(data);
+                  await checkUsername(username).then(async check => {
 
-                  setEditProfile(false);
+                  if(check)
+                  {
+                    setErrorUsernameLabel("danger");
+                    setErrorUsernameText("danger");
+                    isUsernameCorrect = false;
+                  }
+                  else
+                  {
+                    setErrorUsernameLabel("");
+                    setErrorUsernameText("");
+                    isUsernameCorrect = true;
+                  }
+                }).then(async () => {
+
+                  if(email != auth.currentUser?.email)
+                  {
+                    await auth.currentUser?.updateEmail(String(email)).then(async function(){
+                      console.log("Email-Update successfull!");
+                      setEmailCorrect(true);
+                      await auth.currentUser?.sendEmailVerification().then(async function(){
+                        console.log("Send Email successfull!");
+                        setErrorEmailLabel("");
+                        setErrorEmailText("");
+                        if(isUsernameCorrect){
+                          setErrorUsernameLabel("");
+                          setErrorUsernameText("");
+                          await db.collection("users").doc(auth.currentUser?.uid).set(data);
+                          setEditProfile(false);
+                        }
+                      }).catch(function(error){
+                        console.log("Send Email ERROR!");
+                      });
+                    }).catch(function(error){
+                      console.log("Email-Update ERROR!");
+                      setErrorEmailLabel("danger");
+                      setErrorEmailText("danger");
+                      setEmailCorrect(false);
+                    });
+                  }
+                  else if(isUsernameCorrect)
+                  {
+                    setErrorUsernameLabel("");
+                    setErrorUsernameText("");
+                    setErrorEmailLabel("");
+                    setErrorEmailText("");
+                    await db.collection("users").doc(auth.currentUser?.uid).set(data);
+                    setEditProfile(false);
+
+                    //auth.currentUser?.emailVerified;
+                  }
+                });
                 }}>Save</IonButton>
               </IonCol>
             </IonRow>
