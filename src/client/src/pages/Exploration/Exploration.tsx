@@ -25,6 +25,7 @@ import { db } from "../../helper/firebase";
 import { sortImageArray } from "../../hooks/sortImageArray";
 import { evaluateLocation } from "../../hooks/evaluateLocation";
 import ExploreCard from "../../components/ExploreCard/ExploreCard";
+import { wait } from "@testing-library/react";
 
 const { Geolocation } = Plugins;
 
@@ -54,9 +55,9 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
       // push location to state
       setLocation(await Geolocation.getCurrentPosition());
 
-      console.log("Initial load...");
+      
 
-      fetchImages(filter).then((images) => setImages(images));
+      await fetchImages(filter).then((images) => setImages(images));
     })();
   }, []);
 
@@ -74,6 +75,8 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
       return sortImageArray(a, b);
     });
 
+    console.log("log", location);
+
     if (location !== undefined) {
       if (i) {
         t = evaluateLocation(
@@ -83,6 +86,7 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
           location.coords.longitude
         );
       } else {
+        console.log("part 2");
         t = evaluateLocation(
           filter,
           t,
