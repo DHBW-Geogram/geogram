@@ -54,6 +54,8 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Exploration from "./pages/Exploration/Exploration";
 import ProfilePic from "./pages/ProfilePic/ProfilePic";
+import LoadingPage from "./pages/auth/LoadingPage";
+import { auth } from "./helper/firebase";
 
 const PublicRoutes = () => {
   return (
@@ -68,7 +70,7 @@ const PublicRoutes = () => {
 const PrivateRoutes = () => {
   const [showActionSheet, setShowActionSheet] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  
   return (
     <IonReactRouter>
       <IonTabs>
@@ -157,8 +159,16 @@ const PrivateRoutes = () => {
 
 const App: React.FC = () => {
   const user = useContext(UserContext);
+   
+//  return !user ? (
+//    <IonApp>     
+//      <LoadingPage />
+//      </IonApp>
+//  ) :(
+//  <IonApp>{user ? <PrivateRoutes /> : <PublicRoutes />}</IonApp>
+//  );
 
-  return <IonApp>{user ? <PrivateRoutes /> : <PublicRoutes />}</IonApp>;
+  return <IonApp> {user ? <PrivateRoutes /> : <PublicRoutes />}</IonApp>;
 };
 
 export default App;
