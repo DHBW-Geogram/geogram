@@ -56,7 +56,7 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
 
       console.log("Initial load...");
 
-      setImages(await fetchImages());
+      fetchImages(filter).then((images) => setImages(images));
     })();
   }, []);
 
