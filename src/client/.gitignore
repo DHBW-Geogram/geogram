@@ -9,7 +9,7 @@
 /coverage
 
 # production
-/build
+#/build
 
 # misc
 .DS_Store
@@ -28,5 +28,5 @@ yarn-error.log*
 .eslintcache
 
 #build
-/build
+#/build
 /ios
