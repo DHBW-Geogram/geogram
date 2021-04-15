@@ -12,11 +12,21 @@ import {
   IonTabBar,
   IonTabButton,
   IonTabs,
-} from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
-import { arrowForwardCircle, cameraOutline, cameraSharp, ellipse, square, triangle,  personCircleOutline, search, home, squareOutline,} from 'ionicons/icons';
-import Profile from './pages/Profile/Profile';
-
+} from "@ionic/react";
+import { IonReactRouter } from "@ionic/react-router";
+import {
+  arrowForwardCircle,
+  cameraOutline,
+  cameraSharp,
+  ellipse,
+  square,
+  triangle,
+  personCircleOutline,
+  search,
+  home,
+  squareOutline,
+} from "ionicons/icons";
+import Profile from "./pages/Profile/Profile";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -43,6 +53,7 @@ import Search from "./pages/Search/Search";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Exploration from "./pages/Exploration/Exploration";
+import ProfilePic from "./pages/ProfilePic/ProfilePic";
 
 const PublicRoutes = () => {
   return (
@@ -69,7 +80,7 @@ const PrivateRoutes = () => {
             <Search />
           </Route>
           <Route path="/profile">
-            <Profile />
+            <Profile setLoading={setLoading} />
           </Route>
           <Route exact path="/">
             <Redirect to="/explore" />
@@ -79,6 +90,11 @@ const PrivateRoutes = () => {
             path="/upload"
             render={(props) => <Upload {...props} setLoading={setLoading} />}
           />
+          <Route
+            path="/profile-pic"
+            render={(props) => <ProfilePic {...props} setLoading={setLoading} />}
+          />
+
           <Route exact path="/login">
             <Redirect to="/explore" />
           </Route>
