@@ -28,5 +28,5 @@ yarn-error.log*
 .eslintcache
 
 #build
-#/build
+/build
 /ios
