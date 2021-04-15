@@ -55,14 +55,13 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
       // push location to state
       setLocation(await Geolocation.getCurrentPosition());
       setLoading(true);
-      setTimeout(() => {
-        console.log("Initial Load...");
-      }, 5000);
-      setLoading(false);
 
-      await fetchImages(filter).then((images) => setImages(images));
+      fetchImages(filter).then((images) => {
+        setImages(images);
+        setLoading(false);
+      });
     })();
-  }, []);
+  }, [location]);
 
   async function fetchImages(i?: number): Promise<Image[]> {
     // fetch images from firebase
