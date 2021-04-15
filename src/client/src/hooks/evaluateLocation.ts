@@ -41,10 +41,9 @@ export function evaluateLocation(
       image.location.coords.latitude,
       image.location.coords.longitude
     );
-    image.distance = distance;
 
     if (distance <= range) {
-      pictures.push(image);
+      pictures.push({...image, distance: distance});
     }
   });
 
@@ -52,7 +51,7 @@ export function evaluateLocation(
     return sortImageArray(a, b);
   });
 
-  console.log(pictures);
+  console.log("pictures",pictures);
 
   return pictures;
 }
