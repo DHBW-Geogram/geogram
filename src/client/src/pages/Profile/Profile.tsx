@@ -41,7 +41,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
   const [bio, setBio] = useState<string>();
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [verified, setVerified] = useState<string>("");
-  const [profilepic, setProfilepic] = useState(undefined);
+  const [profilepic, setProfilepic] = useState("https://im-coder.com/images4/15590312779219.png");
 
   const [posts, setPosts] = useState<number>(0);
   let postsUsername:string = "";
@@ -66,7 +66,10 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          setProfilepic(doc.data().profilepic);
+          if(doc.data().profilepic != null)
+          {
+            setProfilepic(doc.data().profilepic);
+          }
           setUsername(doc.data().username);
           setEmail(doc.data().email);
           setFirstName(doc.data().userFirstName);
@@ -110,7 +113,10 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          setProfilepic(doc.data().profilepic);
+          if(doc.data().profilepic != null)
+          {
+            setProfilepic(doc.data().profilepic);
+          }
           setUsername(doc.data().username);
           setEmail(doc.data().email);
           setFirstName(doc.data().userFirstName);
@@ -145,7 +151,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
                     setProfileSelectionModal(true);
                   }}
                 >
-                  <IonImg src={ profilepic ? profilepic : "https://im-coder.com/images4/15590312779219.png" } />
+                  <IonImg src={profilepic} />
                 </IonAvatar>
 
                 <ProfilePicSelectionModal
