@@ -19,6 +19,7 @@ import {
   IonAlert,
   IonRefresher,
   IonRefresherContent,
+  useIonToast,
 } from "@ionic/react";
 import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import ProfilePicSelectionModal from "../../components/ProfilePicSelectionModal/ProfilePicSelectionModal";
@@ -35,6 +36,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
   const [username, setUsername] = useState<string>();
   const [firstName, setFirstName] = useState<string>();
   const [lastName, setLastName] = useState<string>();
+  const [fullName, setFullName] = useState<string>();
   const [email, setEmail] = useState<string>();
   const [bio, setBio] = useState<string>();
   const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -53,7 +55,10 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
   const [errorEmailLabel, setErrorEmailLabel] = useState<string>("");
   const [errorEmailText, setErrorEmailText] = useState<string>("");
 
-  const [isEmailCorrect, setEmailCorrect] = useState<boolean>(true);
+  //const [isEmailCorrect, setEmailCorrect] = useState<boolean>(true);
+  let isEmailCorrect: boolean = true;
+
+  const [presentToast, dismissToast] = useIonToast();
 
   useEffect(() => {
     db.collection("users")
@@ -67,6 +72,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
           setFirstName(doc.data().userFirstName);
           setLastName(doc.data().userLastName);
           setBio(doc.data().biography);
+          setFullName(doc.data().userFirstName + " " + doc.data().userLastName);
         });
       });
   }, [EditProfile]);
@@ -111,6 +117,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
           setLastName(doc.data().userLastName);
           setBio(doc.data().biography);
           postsUsername = doc.data().username;
+          setFullName(doc.data().userFirstName + " " + doc.data().userLastName);
         });
       }).then( () => {
         db.collection("images").where("user", "==", postsUsername).get().then((querySnapshot) => {
@@ -123,7 +130,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Profile</IonTitle>
+          <IonTitle>{username}</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -167,7 +174,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
                   <IonRow>
                     <IonCol>
                       <IonLabel style={{ fontSize: "20px" }}>
-                        {username}
+                        {fullName}
                       </IonLabel>
                     </IonCol>
                   </IonRow>
@@ -315,7 +322,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
                     color="primary"
                     onClick={async () => {
                       isUsernameCorrect = true;
-                      setEmailCorrect(true);
+                      isEmailCorrect = true;
 
                       const data = {
                         username: username,
@@ -344,7 +351,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
                               ?.updateEmail(String(email))
                               .then(async function () {
                                 console.log("Email-Update successfull!");
-                                setEmailCorrect(true);
+                                isEmailCorrect = true;
                                 await auth.currentUser
                                   ?.sendEmailVerification()
                                   .then(async function () {
@@ -369,7 +376,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
                                 console.log("Email-Update ERROR!");
                                 setErrorEmailLabel("danger");
                                 setErrorEmailText("danger");
-                                setEmailCorrect(false);
+                                isEmailCorrect = false;
                               });
                           } else if (isUsernameCorrect) {
                             setErrorUsernameLabel("");
@@ -381,6 +388,34 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
                               .doc(auth.currentUser?.uid)
                               .set(data);
                             setEditProfile(false);
+                          }
+                        }).then(() => {
+                          if(!isUsernameCorrect && !isEmailCorrect)
+                          {
+                            presentToast({
+                              buttons: [{ text: 'hide', handler: () => dismissToast() }],
+                              message: 'Username and Email already exists or invalid!',
+                              duration: 5000,
+                              color: "danger"
+                            });
+                          }
+                          else if(!isUsernameCorrect)
+                          {
+                            presentToast({
+                              buttons: [{ text: 'hide', handler: () => dismissToast() }],
+                              message: 'Username already exists or invalid!',
+                              duration: 5000,
+                              color: "danger"
+                            });
+                          }
+                          else if(!isEmailCorrect)
+                          {
+                            presentToast({
+                              buttons: [{ text: 'hide', handler: () => dismissToast() }],
+                              message: 'Email already exists or invalid!',
+                              duration: 5000,
+                              color: "danger"
+                            });
                           }
                         });
                     }}
