@@ -232,7 +232,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
           message={"Email was sent to you to verify your email."}
           buttons={["OK"]}
         />
-        <IonRefresher slot="fixed" onIonRefresh={doRefresh}>
+        <IonRefresher slot="fixed" pullFactor={0.5} pullMin={100} pullMax={200} onIonRefresh={doRefresh}>
           <IonRefresherContent></IonRefresherContent>
         </IonRefresher>
         <IonModal isOpen={EditProfile}>
