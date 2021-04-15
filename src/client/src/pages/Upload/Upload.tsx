@@ -20,8 +20,6 @@ import {
   IonToolbar,
   isPlatform,
 } from "@ionic/react";
-import { useCamera } from "@ionic/react-hooks/camera";
-import { camera } from "ionicons/icons";
 import React, { useContext, useEffect, useState } from "react";
 import { Photo, usePhotoGallery } from "../../hooks/usePhotoGallery";
 import { useFilesystem, base64FromPath } from "@ionic/react-hooks/filesystem";
@@ -44,9 +42,6 @@ const { Geolocation, Filesystem } = Plugins;
 const Upload: React.FC<any> = (props) => {
   const user = useContext(UserContext);
 
-  const { get } = useStorage();
-  const { deleteFile, readFile, writeFile } = useFilesystem();
-  const { convertBlobToBase64 } = usePhotoGallery();
 
   // image provided by props
   const [image, setImage] = useState<Photo>();
@@ -64,9 +59,6 @@ const Upload: React.FC<any> = (props) => {
 
   // Redirect
   const [redirect, setRedirect] = useState("");
-
-  // Debug
-  const [log, setLog] = useState("");
 
   useEffect(() => {
     if (props.location.state !== undefined) {
@@ -298,14 +290,6 @@ const Upload: React.FC<any> = (props) => {
                   >
                     Cancel
                   </IonButton>
-                </IonCol>
-              </IonRow>
-              <IonRow>
-                <IonCol size="12">
-                  <IonItem>
-                    <IonLabel position="floating">Log</IonLabel>
-                    <IonTextarea value={log} />
-                  </IonItem>
                 </IonCol>
               </IonRow>
             </IonGrid>

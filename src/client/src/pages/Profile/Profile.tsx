@@ -275,6 +275,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
                         userLastName: lastName,
                         email: email,
                         biography: bio,
+                        profilepic: profilepic
                       };
 
                       await checkUsername(username)
