@@ -42,7 +42,6 @@ import { UserContext } from "../..";
 const { Geolocation, Filesystem } = Plugins;
 
 const Upload: React.FC<any> = (props) => {
-
   const user = useContext(UserContext);
 
   const { get } = useStorage();
@@ -58,7 +57,7 @@ const Upload: React.FC<any> = (props) => {
 
   // Geoinformation
   const [location, setLocation] = useState<GeogramPosition>();
-  const [position, setPosition] = useState("")
+  const [position, setPosition] = useState("");
 
   // Toast message
   const [toast, setToast] = useState("");
@@ -89,17 +88,19 @@ const Upload: React.FC<any> = (props) => {
         timestamp: location.timestamp,
       });
       // reverse geolocating
-      axios.get(`https://api.opencagedata.com/geocode/v1/json?q=${location?.coords.latitude}+${location?.coords.longitude}&key=bb44e70b618844faba7cb23b580419e0`)
-      .then(res => {
-         setPosition(res.data.results[0].formatted)
-         setLocation((state: any) => {
-           return {
-             ...state,
-             position: res.data.results[0].formatted
-           }
-         })
-      })
-    
+      axios
+        .get(
+          `https://api.opencagedata.com/geocode/v1/json?q=${location?.coords.latitude}+${location?.coords.longitude}&key=bb44e70b618844faba7cb23b580419e0`
+        )
+        .then((res) => {
+          setPosition(res.data.results[0].formatted);
+          setLocation((state: any) => {
+            return {
+              ...state,
+              position: res.data.results[0].formatted,
+            };
+          });
+        });
     });
 
     //disable set Loading
@@ -125,9 +126,7 @@ const Upload: React.FC<any> = (props) => {
     }
 
     if (title !== "" && description !== "" && image !== undefined) {
-
       if (image.webviewPath !== undefined) {
-
         let file: any;
         // get image data when on android or ios
         if (isPlatform("android") || isPlatform("ios")) {
@@ -151,40 +150,41 @@ const Upload: React.FC<any> = (props) => {
         );
 
         if (res.data.file !== undefined) {
+          db.collection("users")
+            .doc(user?.uid)
+            .get()
+            .then((item) => {
+              let imageId: string = uuidv4();
 
-          db.collection("users").doc(user?.uid).get().then(item => {
-      
-            let imageId: string = uuidv4();
+              db.collection("images")
+                .doc(imageId)
+                .set({
+                  id: imageId,
+                  timestamp: Date.now(),
+                  user: item.data()?.username || user?.email,
+                  location: location,
+                  url: `${process.env.REACT_APP_IMAGE_SERVER_URL}/${res.data.file}`,
+                  title: title,
+                  description: description,
+                })
+                .then((res) => {
+                  setToast("Successfully added item to firebase");
 
-            db.collection("images")
-              .doc(imageId)
-              .set({
-                id: imageId,
-                timestamp: Date.now(),
-                user: item.data()?.username || user?.email,
-                location: location,
-                url: `${process.env.REACT_APP_IMAGE_SERVER_URL}/${res.data.file}`,
-                title: title,
-                description: description,
-              })
-              .then((res) => {
-                setToast("Successfully added item to firebase");
-  
-                // Set back everything
-                setTitle("");
-                setDescription("");
-                setImage(undefined);
-                setLocation(undefined);
-  
-                setTimeout(() => {
-                  setRedirect("explore");
-                  props.setLoading(false);
-                }, 1000);
-              })
-              .catch((err) => setToast("Error while adding data to firebase"));
+                  // Set back everything
+                  setTitle("");
+                  setDescription("");
+                  setImage(undefined);
+                  setLocation(undefined);
 
-          });
-
+                  setTimeout(() => {
+                    setRedirect("explore");
+                    props.setLoading(false);
+                  }, 1000);
+                })
+                .catch((err) =>
+                  setToast("Error while adding data to firebase")
+                );
+            });
         } else {
           setToast(
             "Error while adding data to image server: " +
@@ -260,9 +260,7 @@ const Upload: React.FC<any> = (props) => {
                 </IonCol>
               </IonRow>
               <IonRow>
-                <IonCol size="12">
-                  City: { position }
-                </IonCol>
+                <IonCol size="12">City: {position}</IonCol>
               </IonRow>
               <IonRow>
                 <IonCol size="12">
@@ -271,7 +269,35 @@ const Upload: React.FC<any> = (props) => {
               </IonRow>
               <IonRow>
                 <IonCol>
-                  <IonButton onClick={upload}>Submit</IonButton>
+                  <IonButton
+                    expand="block"
+                    shape="round"
+                    fill="outline"
+                    color="primary"
+                    onClick={upload}
+                  >
+                    Submit
+                  </IonButton>
+                </IonCol>
+                <IonCol>
+                  <IonButton
+                    expand="block"
+                    shape="round"
+                    fill="outline"
+                    color="danger"
+                    onClick={() => {
+
+                      // Set back everything
+                      setTitle("");
+                      setDescription("");
+                      setImage(undefined);
+                      setLocation(undefined);
+                      setRedirect("explore");
+                      
+                    }}
+                  >
+                    Cancel
+                  </IonButton>
                 </IonCol>
               </IonRow>
               <IonRow>

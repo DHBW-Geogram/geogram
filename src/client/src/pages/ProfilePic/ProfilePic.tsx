@@ -5,6 +5,7 @@ import {
   IonContent,
   IonGrid,
   IonHeader,
+  IonIcon,
   IonImg,
   IonPage,
   IonRow,
@@ -26,6 +27,11 @@ import axios from "axios";
 import { db } from "../../helper/firebase";
 import { Redirect } from "react-router";
 import { UserContext } from "../..";
+import {
+  arrowForward,
+  arrowForwardCircle,
+  arrowForwardCircleSharp,
+} from "ionicons/icons";
 
 const { Filesystem } = Plugins;
 
@@ -37,10 +43,6 @@ const ProfilePic: React.FC<any> = (props) => {
   const [oldImage, setOldImage] = useState<string>(
     "https://im-coder.com/images4/15590312779219.png"
   );
-
-  // Form data
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
 
   // Toast message
   const [toast, setToast] = useState("");
@@ -101,21 +103,23 @@ const ProfilePic: React.FC<any> = (props) => {
             .doc(user?.uid)
             .get()
             .then((data) => {
-
               db.collection("users")
                 .doc(user?.uid)
                 .set(
-                  { 
-                    ...data.data(), 
-                    profilepic: `${process.env.REACT_APP_IMAGE_SERVER_URL}/`+res.data.file },
-                  {merge: true}
+                  {
+                    ...data.data(),
+                    profilepic:
+                      `${process.env.REACT_APP_IMAGE_SERVER_URL}/` +
+                      res.data.file,
+                  },
+                  { merge: true }
                 )
                 .then((s) => {
-                    setToast("Successfully added item to firebase");
-                    setTimeout(() => {
-                        setRedirect("profile");
-                        props.setLoading(false);
-                      }, 1000);
+                  setToast("Successfully added item to firebase");
+                  setTimeout(() => {
+                    setRedirect("profile");
+                    props.setLoading(false);
+                  }, 100);
                 })
                 .catch((e) => {
                   console.log("Error while changing profile picture");
@@ -132,13 +136,7 @@ const ProfilePic: React.FC<any> = (props) => {
       // wait for api
       // cleanup of input fields
     } else {
-      if (title === "") {
-        setToast("Please fill out the title field!");
-      } else if (description === "") {
-        setToast("Please fill out the description field!");
-      } else {
-        setToast("Error occured!");
-      }
+      setToast("Error occured!");
     }
   };
 
@@ -166,15 +164,55 @@ const ProfilePic: React.FC<any> = (props) => {
                 </IonCol>
               </IonRow>
               <IonRow>
-                <IonImg style={{ width: "40%" }} src={oldImage} />
-
-                <p>{">"}</p>
-
-                <IonImg style={{ width: "40%" }} src={image.webviewPath} />
+                <IonCol size="5">
+                  <IonImg src={oldImage} />
+                </IonCol>
+                <IonCol
+                  size="2"
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <IonIcon
+                    style={{ fontSize: "3em" }}
+                    icon={arrowForward}
+                  ></IonIcon>
+                </IonCol>
+                <IonCol size="5">
+                  <IonImg src={image.webviewPath} />
+                </IonCol>
               </IonRow>
+              <br />
               <IonRow>
-                <IonCol>
-                  <IonButton onClick={upload}>Submit</IonButton>
+                <IonCol size="2" offset="4">
+                  <IonButton
+                    expand="block"
+                    shape="round"
+                    fill="outline"
+                    color="primary"
+                    onClick={upload}
+                  >
+                    Submit
+                  </IonButton>
+                </IonCol>
+                <IonCol size="2">
+                  <IonButton
+                    expand="block"
+                    shape="round"
+                    fill="outline"
+                    color="danger"
+                    onClick={() => {
+                      setOldImage(
+                        "https://im-coder.com/images4/15590312779219.png"
+                      );
+                      setImage(undefined);
+                      setRedirect("profile");
+                    }}
+                  >
+                    Cancel
+                  </IonButton>
                 </IonCol>
               </IonRow>
             </IonGrid>

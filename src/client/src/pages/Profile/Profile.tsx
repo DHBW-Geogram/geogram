@@ -24,10 +24,6 @@ import { auth, db } from "../../helper/firebase";
 import { checkUsername } from "./checkUsername";
 
 const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({setLoading}) => {
-  type Item = {
-    src: string;
-    text: string;
-  };
 
   // modal to change profile picture
   const [profileSelectionModal, setProfileSelectionModal] = useState(false);
@@ -41,11 +37,6 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [verified, setVerified] = useState<string>("");
   const [profilepic, setProfilepic] = useState(undefined)
-
-  const Item1: Item = {
-    src: "http://placekitten.com/g/200/300",
-    text: "Picture",
-  };
 
   const [errorUsernameLabel, setErrorUsernameLabel] = useState<string>("");
   const [errorUsernameText, setErrorUsernameText] = useState<string>("");
