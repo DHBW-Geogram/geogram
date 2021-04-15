@@ -102,7 +102,7 @@ const ProfilePic: React.FC<any> = (props) => {
             .get()
             .then((data) => {
 
-              db.collection("user")
+              db.collection("users")
                 .doc(user?.uid)
                 .set(
                   { 

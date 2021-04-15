@@ -40,6 +40,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
   const [bio, setBio] = useState<string>();
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [verified, setVerified] = useState<string>("");
+  const [profilepic, setProfilepic] = useState(undefined)
 
   const Item1: Item = {
     src: "http://placekitten.com/g/200/300",
@@ -63,11 +64,13 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
+          setProfilepic(doc.data().profilepic);
           setUsername(doc.data().username);
           setEmail(doc.data().email);
           setFirstName(doc.data().userFirstName);
           setLastName(doc.data().userLastName);
           setBio(doc.data().biography);
+
         });
       });
   }, [EditProfile]);
@@ -99,7 +102,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
                     setProfileSelectionModal(true);
                   }}
                 >
-                  <IonImg src={Item1.src} />
+                  <IonImg src={ profilepic ? profilepic : "https://im-coder.com/images4/15590312779219.png" } />
                 </IonAvatar>
 
                 <ProfilePicSelectionModal
