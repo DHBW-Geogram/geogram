@@ -58,7 +58,6 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
 
       fetchImages(filter).then((images) => {
         setImages(images);
-        setLoading(false);
       });
     })();
   }, [location]);
@@ -87,18 +86,12 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
           location.coords.latitude,
           location.coords.longitude
         );
-      } else {
-        console.log("part 2");
-        t = evaluateLocation(
-          filter,
-          t,
-          location.coords.latitude,
-          location.coords.longitude
-        );
-      }
+        setLoading(false);
+        return t;
+      } 
     }
 
-    return t;
+    return [];
   }
 
   function doRefresh(event: CustomEvent<RefresherEventDetail>) {

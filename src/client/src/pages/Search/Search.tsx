@@ -37,11 +37,11 @@ const Search: React.FC = () => {
       // push location to state
       setLocation(await Geolocation.getCurrentPosition());
 
-      console.log("Initial load...");
-
-      setImages(await fetchImages());
+      fetchImages().then((images) => {
+        setImages(images);
+      });
     })();
-  }, []);
+  }, [location]);
 
   async function fetchImages(): Promise<Image[]> {
     // fetch images from firebase
@@ -67,6 +67,9 @@ const Search: React.FC = () => {
 
   function filterItems(searchText: string) {
     console.log("filtering", searchText);
+    if (searchText.length <= 3) {
+      return;
+    }
 
     if (searchText === "" || searchText === null || searchText === undefined) {
       fetchImages().then((res) => {
@@ -160,9 +163,9 @@ const Search: React.FC = () => {
 
         <IonGrid>
           <IonRow>
-            {images.map((p: Image) => {
+            {images.map((p: Image, i: number) => {
               return (
-                <IonCol size="4">
+                <IonCol size="4" key={i}>
                   <IonImg
                     onClick={(e) => {
                       setShowPopup(true);
