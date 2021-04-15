@@ -17,11 +17,14 @@ import {
   IonInput,
   IonTextarea,
   IonAlert,
+  IonRefresher,
+  IonRefresherContent,
 } from "@ionic/react";
 import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import ProfilePicSelectionModal from "../../components/ProfilePicSelectionModal/ProfilePicSelectionModal";
 import { auth, db } from "../../helper/firebase";
 import { checkUsername } from "./checkUsername";
+import { RefresherEventDetail } from '@ionic/core';
 
 const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({setLoading}) => {
 
@@ -36,7 +39,10 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
   const [bio, setBio] = useState<string>();
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [verified, setVerified] = useState<string>("");
-  const [profilepic, setProfilepic] = useState(undefined)
+  const [profilepic, setProfilepic] = useState(undefined);
+
+  const [posts, setPosts] = useState<number>(0);
+  let postsUsername:string = "";
 
   const [errorUsernameLabel, setErrorUsernameLabel] = useState<string>("");
   const [errorUsernameText, setErrorUsernameText] = useState<string>("");
@@ -61,7 +67,6 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
           setFirstName(doc.data().userFirstName);
           setLastName(doc.data().userLastName);
           setBio(doc.data().biography);
-
         });
       });
   }, [EditProfile]);
@@ -72,7 +77,47 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
     } else {
       setVerified("");
     }
-  });
+
+    db.collection("users")
+      .where("email", "==", auth.currentUser?.email)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          postsUsername = doc.data().username;
+        });
+      }).then( () => {
+        db.collection("images").where("user", "==", postsUsername).get().then((querySnapshot) => {
+          setPosts(querySnapshot.size);
+        });
+      });
+  }, []);
+
+  async function doRefresh(event: CustomEvent<RefresherEventDetail>) {
+    if (auth.currentUser?.emailVerified) {
+      setVerified("none");
+    } else {
+      setVerified("");
+    }
+
+    await db.collection("users")
+      .where("email", "==", auth.currentUser?.email)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          setProfilepic(doc.data().profilepic);
+          setUsername(doc.data().username);
+          setEmail(doc.data().email);
+          setFirstName(doc.data().userFirstName);
+          setLastName(doc.data().userLastName);
+          setBio(doc.data().biography);
+          postsUsername = doc.data().username;
+        });
+      }).then( () => {
+        db.collection("images").where("user", "==", postsUsername).get().then((querySnapshot) => {
+          setPosts(querySnapshot.size);
+        });
+      }).then(() => {event.detail.complete()});
+  }
 
   return (
     <IonPage>
@@ -104,8 +149,8 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
 
                 <IonGrid>
                   <IonRow>
-                    <IonCol style={{ textAlign: "center" }}>14</IonCol>
-                    <IonCol style={{ textAlign: "center" }}>3</IonCol>
+                    <IonCol style={{ textAlign: "center" }}>-</IonCol>
+                    <IonCol style={{ textAlign: "center" }}>{posts}</IonCol>
                   </IonRow>
                   <IonRow>
                     <IonCol style={{ textAlign: "center" }}>Likes</IonCol>
@@ -174,6 +219,9 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
           message={"Email was sent to you to verify your email."}
           buttons={["OK"]}
         />
+        <IonRefresher slot="fixed" onIonRefresh={doRefresh}>
+          <IonRefresherContent></IonRefresherContent>
+        </IonRefresher>
         <IonModal isOpen={EditProfile}>
           <IonHeader>
             <IonToolbar>
