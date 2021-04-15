@@ -12,6 +12,5 @@ export async function emailVerified(): Promise<boolean> {
 }
 
 export async function sendEmailVerify() {
-    auth.currentUser?.sendEmailVerification();
-    presentAlert("Email to Verify your Accout was send");
+    auth.currentUser?.sendEmailVerification();    
 }
