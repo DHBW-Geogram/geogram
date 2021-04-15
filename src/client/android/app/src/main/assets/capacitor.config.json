@@ -1,6 +1,6 @@
 {
   "appId": "io.ionic.starter",
-  "appName": "client",
+  "appName": "geogram",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "build",
