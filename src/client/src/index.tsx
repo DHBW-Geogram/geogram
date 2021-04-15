@@ -22,7 +22,7 @@ return  <UserContext.Provider value={user}> {children}    </UserContext.Provider
 
 
 ReactDOM.render(
-  <UserProvider>
+  <UserProvider>   
     <App />
   </UserProvider>,
   document.getElementById('root')
