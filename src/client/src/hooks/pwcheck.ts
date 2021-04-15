@@ -1,9 +1,9 @@
 export enum PasswordCheckStrength {
-    Short,
-    Common,
-    Weak,
-    Ok,
-    Strong,
+    Short = "too short",
+    Common = "commonly used",
+    Weak = "weak",
+    Ok = "ok",
+    Strong = "strong",
 };
 
 // Object to check password strengths and various properties
@@ -11,7 +11,7 @@ export class PasswordCheckService {
 
     // Expected length of all passwords
     public static get MinimumLength(): number {
-        return 5;
+        return 6;
     }
 
     // Regex to check for a common password string - all based on 5+ length passwords

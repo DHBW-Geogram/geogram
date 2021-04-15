@@ -18,10 +18,10 @@ import React, { useCallback, useState } from "react";
 import { db, auth } from "../../helper/firebase";
 import "./Register.css";
 import "firebase/auth";
-import { PasswordCheckService } from "../../hooks/pw-check";
+import { PasswordCheckService } from "../../hooks/pwcheck";
 
 import { User } from "../../model/User";
-import { PasswordCheckStrength } from "../../hooks/pw-check";
+import { PasswordCheckStrength } from "../../hooks/pwcheck";
 import { checkUsername } from "../../hooks/checkUsername";
 import { checkRegister } from "../../hooks/register/checkRegister";
 import { presentAlertWithHeader } from "../../hooks/alert";
@@ -44,10 +44,6 @@ const Register: React.FC = () => {
     setPassword(e.detail?.value);
     setpwStrength(checker.checkPasswordStrength(e.detail?.value));
   }, []);
-
-  const checkPw = () => {
-    setpwStrength(checker.checkPasswordStrength("tst_pw12"));
-  };
 
   const onConfirmPasswordChange = useCallback(
     (e) => setConfirmPassword(e.detail?.value),
