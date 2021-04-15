@@ -54,8 +54,6 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Exploration from "./pages/Exploration/Exploration";
 import ProfilePic from "./pages/ProfilePic/ProfilePic";
-import LoadingPage from "./pages/auth/LoadingPage";
-import { auth } from "./helper/firebase";
 
 const PublicRoutes = () => {
   return (
