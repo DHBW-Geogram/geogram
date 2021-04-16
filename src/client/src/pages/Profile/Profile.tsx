@@ -61,6 +61,12 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
   const [presentToast, dismissToast] = useIonToast();
 
   useEffect(() => {
+    if (auth.currentUser?.emailVerified) {
+      setVerified("none");
+    } else {
+      setVerified("");
+    }
+
     db.collection("users")
       .where("email", "==", auth.currentUser?.email)
       .get()
@@ -81,12 +87,6 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
   }, [EditProfile]);
 
   useEffect(() => {
-    if (auth.currentUser?.emailVerified) {
-      setVerified("none");
-    } else {
-      setVerified("");
-    }
-
     db.collection("users")
       .where("email", "==", auth.currentUser?.email)
       .get()
