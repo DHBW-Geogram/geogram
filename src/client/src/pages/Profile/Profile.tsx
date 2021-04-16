@@ -26,8 +26,9 @@ import ProfilePicSelectionModal from "../../components/ProfilePicSelectionModal/
 import { auth, db } from "../../helper/firebase";
 import { checkUsername } from "./checkUsername";
 import { RefresherEventDetail } from '@ionic/core';
+import { Image } from "../../model/Image";
 
-const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({setLoading}) => {
+const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ setLoading }) => {
 
   // modal to change profile picture
   const [profileSelectionModal, setProfileSelectionModal] = useState(false);
@@ -44,13 +45,15 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
   const [profilepic, setProfilepic] = useState("https://im-coder.com/images4/15590312779219.png");
 
   const [posts, setPosts] = useState<number>(0);
-  let postsUsername:string = "";
+  let postsUsername: string = "";
 
   const [errorUsernameLabel, setErrorUsernameLabel] = useState<string>("");
   const [errorUsernameText, setErrorUsernameText] = useState<string>("");
 
   //const [isUsernameCorrect, setUsernameCorrect] = useState<boolean>(true);
   let isUsernameCorrect: boolean = true;
+
+  let oldUsername: string = "";
 
   const [errorEmailLabel, setErrorEmailLabel] = useState<string>("");
   const [errorEmailText, setErrorEmailText] = useState<string>("");
@@ -72,8 +75,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          if(doc.data().profilepic != null)
-          {
+          if (doc.data().profilepic != null) {
             setProfilepic(doc.data().profilepic);
           }
           setUsername(doc.data().username);
@@ -94,7 +96,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
         querySnapshot.forEach((doc) => {
           postsUsername = doc.data().username;
         });
-      }).then( () => {
+      }).then(() => {
         db.collection("images").where("user", "==", postsUsername).get().then((querySnapshot) => {
           setPosts(querySnapshot.size);
         });
@@ -113,8 +115,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          if(doc.data().profilepic != null)
-          {
+          if (doc.data().profilepic != null) {
             setProfilepic(doc.data().profilepic);
           }
           setUsername(doc.data().username);
@@ -125,11 +126,11 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
           postsUsername = doc.data().username;
           setFullName(doc.data().userFirstName + " " + doc.data().userLastName);
         });
-      }).then( () => {
+      }).then(() => {
         db.collection("images").where("user", "==", postsUsername).get().then((querySnapshot) => {
           setPosts(querySnapshot.size);
         });
-      }).then(() => {event.detail.complete()});
+      }).then(() => { event.detail.complete() });
   }
 
   return (
@@ -242,6 +243,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
                 <IonButton
                   color="primary"
                   onClick={() => {
+                    dismissToast();
                     setEditProfile(false);
                     setErrorEmailLabel("");
                     setErrorEmailText("");
@@ -310,6 +312,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
                     fill="outline"
                     color="primary"
                     onClick={() => {
+                      dismissToast();
                       setEditProfile(false);
                       setErrorEmailLabel("");
                       setErrorEmailText("");
@@ -339,90 +342,113 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
                         profilepic: profilepic
                       };
 
-                      await checkUsername(username)
-                        .then(async (check) => {
-                          if (check) {
-                            setErrorUsernameLabel("danger");
-                            setErrorUsernameText("danger");
-                            isUsernameCorrect = false;
-                          } else {
-                            setErrorUsernameLabel("");
-                            setErrorUsernameText("");
-                            isUsernameCorrect = true;
-                          }
+                      await db.collection("users")
+                        .where("email", "==", auth.currentUser?.email)
+                        .get()
+                        .then((querySnapshot) => {
+                          querySnapshot.forEach((doc) => {
+                            oldUsername = doc.data().username;
+                          });
                         })
                         .then(async () => {
-                          if (email != auth.currentUser?.email) {
-                            await auth.currentUser
-                              ?.updateEmail(String(email))
-                              .then(async function () {
-                                console.log("Email-Update successfull!");
-                                isEmailCorrect = true;
+                          await checkUsername(username)
+                            .then(async (check) => {
+                              if (check) {
+                                setErrorUsernameLabel("danger");
+                                setErrorUsernameText("danger");
+                                isUsernameCorrect = false;
+                              } else {
+                                setErrorUsernameLabel("");
+                                setErrorUsernameText("");
+                                isUsernameCorrect = true;
+                              }
+                            })
+                            .then(async () => {
+                              if (email != auth.currentUser?.email) {
                                 await auth.currentUser
-                                  ?.sendEmailVerification()
+                                  ?.updateEmail(String(email))
                                   .then(async function () {
-                                    console.log("Send Email successfull!");
-                                    setErrorEmailLabel("");
-                                    setErrorEmailText("");
-                                    if (isUsernameCorrect) {
-                                      setErrorUsernameLabel("");
-                                      setErrorUsernameText("");
-                                      await db
-                                        .collection("users")
-                                        .doc(auth.currentUser?.uid)
-                                        .set(data);
-                                      setEditProfile(false);
-                                    }
+                                    console.log("Email-Update successfull!");
+                                    isEmailCorrect = true;
+                                    await auth.currentUser
+                                      ?.sendEmailVerification()
+                                      .then(async function () {
+                                        console.log("Send Email successfull!");
+                                        setErrorEmailLabel("");
+                                        setErrorEmailText("");
+                                        if (isUsernameCorrect) {
+                                          setErrorUsernameLabel("");
+                                          setErrorUsernameText("");
+                                          await db
+                                            .collection("users")
+                                            .doc(auth.currentUser?.uid)
+                                            .set(data);
+                                          setEditProfile(false);
+                                        }
+                                      })
+                                      .catch(function (error) {
+                                        console.log("Send Email ERROR!");
+                                      });
                                   })
                                   .catch(function (error) {
-                                    console.log("Send Email ERROR!");
+                                    console.log("Email-Update ERROR!");
+                                    setErrorEmailLabel("danger");
+                                    setErrorEmailText("danger");
+                                    isEmailCorrect = false;
                                   });
-                              })
-                              .catch(function (error) {
-                                console.log("Email-Update ERROR!");
-                                setErrorEmailLabel("danger");
-                                setErrorEmailText("danger");
-                                isEmailCorrect = false;
-                              });
-                          } else if (isUsernameCorrect) {
-                            setErrorUsernameLabel("");
-                            setErrorUsernameText("");
-                            setErrorEmailLabel("");
-                            setErrorEmailText("");
-                            await db
-                              .collection("users")
-                              .doc(auth.currentUser?.uid)
-                              .set(data);
-                            setEditProfile(false);
-                          }
-                        }).then(() => {
-                          if(!isUsernameCorrect && !isEmailCorrect)
-                          {
-                            presentToast({
-                              buttons: [{ text: 'hide', handler: () => dismissToast() }],
-                              message: 'Username and Email already exists or invalid!',
-                              duration: 5000,
-                              color: "danger"
+                              } else if (isUsernameCorrect) {
+                                setErrorUsernameLabel("");
+                                setErrorUsernameText("");
+                                setErrorEmailLabel("");
+                                setErrorEmailText("");
+                                await db
+                                  .collection("users")
+                                  .doc(auth.currentUser?.uid)
+                                  .set(data);
+                                setEditProfile(false);
+                              }
+                            }).then(async () => {
+                              if (username != oldUsername && isUsernameCorrect) {
+                                await db.collection("images").where("user", "==", oldUsername).get().then((querySnapshot) => {
+                                  querySnapshot.forEach(async doc => {
+                                    let imageData: Image = doc.data() as Image;
+                                    imageData.user = String(username);
+                                    await db
+                                      .collection("images")
+                                      .doc(doc.data().id)
+                                      .set(imageData);
+                                  });
+                                });
+                              }
+                            }).then(() => {
+                              if (!isUsernameCorrect && !isEmailCorrect) {
+                                presentToast({
+                                  buttons: [{ text: 'hide', handler: () => dismissToast() }],
+                                  message: 'Username and Email already exists or invalid!',
+                                  duration: 5000,
+                                  color: "danger"
+                                });
+                              }
+                              else if (!isUsernameCorrect) {
+                                presentToast({
+                                  buttons: [{ text: 'hide', handler: () => dismissToast() }],
+                                  message: 'Username already exists or invalid!',
+                                  duration: 5000,
+                                  color: "danger"
+                                });
+                              }
+                              else if (!isEmailCorrect) {
+                                presentToast({
+                                  buttons: [{ text: 'hide', handler: () => dismissToast() }],
+                                  message: 'Email already exists or invalid!',
+                                  duration: 5000,
+                                  color: "danger"
+                                });
+                              }
+                              else {
+                                dismissToast();
+                              }
                             });
-                          }
-                          else if(!isUsernameCorrect)
-                          {
-                            presentToast({
-                              buttons: [{ text: 'hide', handler: () => dismissToast() }],
-                              message: 'Username already exists or invalid!',
-                              duration: 5000,
-                              color: "danger"
-                            });
-                          }
-                          else if(!isEmailCorrect)
-                          {
-                            presentToast({
-                              buttons: [{ text: 'hide', handler: () => dismissToast() }],
-                              message: 'Email already exists or invalid!',
-                              duration: 5000,
-                              color: "danger"
-                            });
-                          }
                         });
                     }}
                   >
@@ -436,7 +462,10 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
                     shape="round"
                     fill="outline"
                     color="danger"
-                    onClick={() => auth.signOut()}
+                    onClick={() => {
+                      dismissToast();
+                      auth.signOut();
+                    }}
                   >
                     Logout
                   </IonButton>
@@ -446,7 +475,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({s
           </IonContent>
         </IonModal>
       </IonContent>
-    </IonPage>
+    </IonPage >
   );
 };
 
