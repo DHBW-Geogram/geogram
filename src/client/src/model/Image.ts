@@ -1,5 +1,7 @@
 export interface Image {
   description: string;
+  id: string;
+  likes: number;
   location: {
     coords: {
       accuracy: number;
