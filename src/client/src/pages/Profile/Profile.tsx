@@ -366,7 +366,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                             .then(async () => {
                               if (email != auth.currentUser?.email) {
                                 await auth.currentUser
-                                  ?.updateEmail(String(email))
+                                  ?.updateEmail(email as string)
                                   .then(async function () {
                                     console.log("Email-Update successfull!");
                                     isEmailCorrect = true;
