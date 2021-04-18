@@ -364,26 +364,40 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                               }
                             })
                             .then(async () => {
-                              if (email != auth.currentUser?.email) {
+                              await auth.fetchSignInMethodsForEmail(email as string).then(async () => {
+                                await db.collection("users").get().then((querySnapshot) => {
+                                  querySnapshot.forEach(doc => {
+                                    if (doc.data().email == email && auth.currentUser?.email != email) {
+                                      isEmailCorrect = false;
+                                      console.log("Email bereits vorhanden!");
+                                      setErrorEmailLabel("danger");
+                                      setErrorEmailText("danger");
+                                    }
+                                  });
+                                });
+                              }).catch((error) => {
+                                isEmailCorrect = false;
+                                console.log("Email ist Falsch!");
+                                setErrorEmailLabel("danger");
+                                setErrorEmailText("danger");
+                              });
+                              if (email != auth.currentUser?.email && isEmailCorrect && isUsernameCorrect) {
                                 await auth.currentUser
                                   ?.updateEmail(email as string)
                                   .then(async function () {
                                     console.log("Email-Update successfull!");
-                                    isEmailCorrect = true;
                                     await auth.currentUser
                                       ?.sendEmailVerification()
                                       .then(async function () {
                                         console.log("Send Email successfull!");
                                         setErrorEmailLabel("");
                                         setErrorEmailText("");
+                                        isEmailCorrect = true;
                                         if (isUsernameCorrect) {
-                                          setErrorUsernameLabel("");
-                                          setErrorUsernameText("");
                                           await db
                                             .collection("users")
                                             .doc(auth.currentUser?.uid)
                                             .set(data);
-                                          setEditProfile(false);
                                         }
                                       })
                                       .catch(function (error) {
@@ -391,21 +405,23 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                                       });
                                   })
                                   .catch(function (error) {
-                                    console.log("Email-Update ERROR!");
+                                    console.log("Email-Update ERROR! Error-Email: " + email);
                                     setErrorEmailLabel("danger");
                                     setErrorEmailText("danger");
                                     isEmailCorrect = false;
                                   });
-                              } else if (isUsernameCorrect) {
-                                setErrorUsernameLabel("");
-                                setErrorUsernameText("");
-                                setErrorEmailLabel("");
-                                setErrorEmailText("");
-                                await db
-                                  .collection("users")
-                                  .doc(auth.currentUser?.uid)
-                                  .set(data);
-                                setEditProfile(false);
+                              } else {
+                                if (isEmailCorrect) {
+                                  setErrorEmailLabel("");
+                                  setErrorEmailText("");
+                                }
+
+                                if (isUsernameCorrect && isEmailCorrect) {
+                                  await db
+                                    .collection("users")
+                                    .doc(auth.currentUser?.uid)
+                                    .set(data);
+                                }
                               }
                             }).then(async () => {
                               if (username != oldUsername && isUsernameCorrect) {
@@ -447,6 +463,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                               }
                               else {
                                 dismissToast();
+                                setEditProfile(false);
                               }
                             });
                         });
