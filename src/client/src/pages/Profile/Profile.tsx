@@ -424,7 +424,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                                 }
                               }
                             }).then(async () => {
-                              if (username != oldUsername && isUsernameCorrect) {
+                              if (username != oldUsername && isUsernameCorrect && isEmailCorrect) {
                                 await db.collection("images").where("user", "==", oldUsername).get().then((querySnapshot) => {
                                   querySnapshot.forEach(async doc => {
                                     let imageData: Image = doc.data() as Image;
