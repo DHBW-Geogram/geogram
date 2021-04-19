@@ -8,15 +8,21 @@ import {
   IonCardTitle,
   IonIcon,
   IonImg,
-  IonInput,
   IonItem,
   IonLabel,
   IonText,
 } from "@ionic/react";
-import { heartOutline, pin, heart, bookmarkOutline } from "ionicons/icons";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import { heartOutline, pin, heart } from "ionicons/icons";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { UserContext } from "../..";
-import { auth, db, fb } from "../../helper/firebase";
+import { db } from "../../helper/firebase";
 import { presentAlert } from "../../hooks/alert";
 import { Image } from "../../model/Image";
 
@@ -24,12 +30,14 @@ import { delikeFunction, likeFunction } from "../../hooks/like";
 
 interface ContainerProps {
   image: Image;
+  setLoading?: Dispatch<SetStateAction<boolean>>;
 }
 
-const ExploreCard: React.FC<ContainerProps> = ({ image }) => {
-  const [likeNumber, setLikeNumber] = useState(Number);
+const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
+  const [likeNumber, setLikeNumber] = useState(0);
   const [likeIcon, setLikeIcon] = useState(heartOutline);
   const [likeColor, setLikeColor] = useState("dark");
+  const [flag, setFlag] = useState(false);
 
   const user = useContext(UserContext);
 
@@ -46,33 +54,17 @@ const ExploreCard: React.FC<ContainerProps> = ({ image }) => {
             .doc(user?.uid)
             .get()
             .then(async (documentSnapshot) => {
-              if (
-                documentSnapshot.data()?.likedImage === undefined ||
-                documentSnapshot.data()?.likedImage.length < 1
-              ) {
-                await db
-                  .collection("users")
-                  .doc(user?.uid)
-                  .update({
-                    likedImage: ["initialString"],
-                  })
-                  .catch((err) => presentAlert(err.message));
-              }
-            });
+              let likedImages: string[] = documentSnapshot.data()?.likedImage;
 
-          await db
-            .collection("users")
-            .doc(user?.uid)
-            .get()
-            .then(async (documentSnapshot) => {
-              documentSnapshot
-                .data()
-                ?.likedImage.forEach(async (userLikedImage: any) => {
-                  if (userLikedImage === image.id) {
-                    setLikeIcon(heart);
-                    setLikeColor("danger");
-                  }
-                });
+              let bol: boolean = false;
+              if (likedImages !== undefined)
+                bol = likedImages.find((i) => i === image.id) != undefined;
+
+              //if true delike
+              if (bol) {
+                setLikeIcon(heart);
+                setLikeColor("danger");
+              }
             });
           setLikeNumber(documentSnapshot.data()?.likes);
         }
@@ -80,58 +72,46 @@ const ExploreCard: React.FC<ContainerProps> = ({ image }) => {
   });
 
   const onLikeClick = useCallback(async () => {
-    // check if liekdImage Arr in users are undifined or empty then set "initialString"
-    await db
-      .collection("users")
-      .doc(user?.uid)
-      .get()
-      .then(async (documentSnapshot) => {
-        if (
-          documentSnapshot.data()?.likedImage === undefined ||
-          documentSnapshot.data()?.likedImage.length < 1
-        ) {
-          await db
-            .collection("users")
-            .doc(user?.uid)
-            .update({
-              likedImage: ["initialString"],
-            })
-            .catch((err) => presentAlert(err.message));
-        }
-      });
+    if (flag === false) {
+      setFlag(true);
+      setTimeout(() => setFlag(false), 1000);
 
-    await db
-      .collection("users")
-      .doc(user?.uid)
-      .get()
-      .then(async (documentSnapshot) => {
-        documentSnapshot
-          .data()
-          ?.likedImage.forEach(async (userLikedImage: any) => {
-            //if true delike
-            if (userLikedImage === image.id) {
-              var like = await delikeFunction(user, likeNumber, image);
+      if (setLoading != undefined) setLoading(true);
 
-              setLikeNumber(like);
-              setLikeColor("dark");
-              setLikeIcon(heartOutline);
-            }
-            //else like
-            else {
-              if (likeNumber === undefined) {
-                setLikeNumber(0);
-              }
+      await db
+        .collection("users")
+        .doc(user?.uid)
+        .get()
+        .then(async (documentSnapshot) => {
+          let likedImages: string[] = documentSnapshot.data()?.likedImage;
 
-              var like = await likeFunction(user, likeNumber, image);
+          let bol: boolean = false;
+          if (likedImages !== undefined)
+            bol = likedImages.find((i) => i === image.id) != undefined;
 
-              setLikeNumber(like);
-              setLikeColor("danger");
-              setLikeIcon(heart);
-            }
-          });
-      })
-      .catch((err) => presentAlert(err.message));
-  }, [likeNumber, image, user, db]);
+          //if true delike
+          if (bol) {
+            var like = await delikeFunction(user, likeNumber, image);
+
+            setLikeNumber(like);
+            setLikeColor("dark");
+            setLikeIcon(heartOutline);
+          }
+          //else like
+          else {
+            var like = await likeFunction(user, likeNumber, image);
+
+            setLikeNumber(like);
+            setLikeColor("danger");
+            setLikeIcon(heart);
+          }
+
+          if (setLoading != undefined) setLoading(false);
+        })
+        .catch((err) => presentAlert(err.message));
+    }
+    if (setLoading != undefined) setLoading(false);
+  }, [likeNumber, image, user, db, flag]);
 
   return (
     <IonCard className="my-ion-card">

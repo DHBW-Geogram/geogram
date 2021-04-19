@@ -51,6 +51,10 @@ export async function delikeFunction(
 
   like -= 1;
 
+  if(like <= 0){
+    like = 0;
+  }
+
   //update like number in db
   await db
     .collection("images")
