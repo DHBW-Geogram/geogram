@@ -1,5 +1,3 @@
-import { useContext } from "react";
-import { UserContext } from "..";
 import { db } from "../helper/firebase";
 import { Image } from "../model/Image";
 import { presentAlert } from "./alert";
@@ -11,7 +9,6 @@ export async function likeFunction(
   likeNumber: number,
   image: Image
 ): Promise<number> {
-
   //add liked image to user collection
   await db
     .collection("users")

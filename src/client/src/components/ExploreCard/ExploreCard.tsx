@@ -19,9 +19,7 @@ import { UserContext } from "../..";
 import { auth, db, fb } from "../../helper/firebase";
 import { presentAlert } from "../../hooks/alert";
 import { Image } from "../../model/Image";
-import { User } from "../../model/User";
 
-import firebase from "firebase/app";
 import { delikeFunction, likeFunction } from "../../hooks/like";
 
 interface ContainerProps {
@@ -31,66 +29,58 @@ interface ContainerProps {
 const ExploreCard: React.FC<ContainerProps> = ({ image }) => {
   const [likeNumber, setLikeNumber] = useState(Number);
   const [likeIcon, setLikeIcon] = useState(heartOutline);
-  const [liked, setLiked] = useState(false);
+  const [likeColor, setLikeColor] = useState("dark");
 
   const user = useContext(UserContext);
 
   useEffect(() => {
     db.collection("images")
-      .where("id", "==", image.id)
+      .doc(image.id)
       .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach(async (doc) => {
-          //if picture was never liked or like equals zero
-          if (doc?.data()?.likes === undefined || doc?.data()?.likes === 0) {
-            await db
-              .collection("users")
-              .doc(user?.uid)
-              .update({
-                likedImage: ["initialString"],
-              })
-              .catch((err) => presentAlert(err.message));
-            return;
-          }
-          //if image was liked set likes and for spezific user the icon
-          else {
-            //set the like number
-            setLikeNumber(doc.data().likes);
+      .then(async (documentSnapshot) => {
+        if (documentSnapshot.data()?.likes === undefined) {
+          return;
+        } else {
+          await db
+            .collection("users")
+            .doc(user?.uid)
+            .get()
+            .then(async (documentSnapshot) => {
+              if (
+                documentSnapshot.data()?.likedImage === undefined ||
+                documentSnapshot.data()?.likedImage.length < 1
+              ) {
+                await db
+                  .collection("users")
+                  .doc(user?.uid)
+                  .update({
+                    likedImage: ["initialString"],
+                  })
+                  .catch((err) => presentAlert(err.message));
+              }
+            });
 
-            //check if user liked the image if true set spezific icon
-            await db
-              .collection("users")
-              .doc(user?.uid)
-              .get()
-              .then(async (documentSnapshot) => {
-                if (
-                  documentSnapshot.data()?.likedImage === undefined ||
-                  documentSnapshot.data()?.likedImage.length < 1
-                ) {
-                  await db
-                    .collection("users")
-                    .doc(user?.uid)
-                    .update({
-                      likedImage: ["initialString"],
-                    })
-                    .catch((err) => presentAlert(err.message));
-                }
-                documentSnapshot
-                  .data()
-                  ?.likedImage.forEach(async (userLikedImage: any) => {
-                    console.log(userLikedImage);
-
-                    if (userLikedImage === image.id) {
-                      setLikeIcon(heart);
-                    }
-                  });
-              });
-          }
-        });
+          await db
+            .collection("users")
+            .doc(user?.uid)
+            .get()
+            .then(async (documentSnapshot) => {
+              documentSnapshot
+                .data()
+                ?.likedImage.forEach(async (userLikedImage: any) => {
+                  if (userLikedImage === image.id) {
+                    setLikeIcon(heart);
+                    setLikeColor("danger");
+                  }
+                });
+            });
+          setLikeNumber(documentSnapshot.data()?.likes);
+        }
       });
   });
 
   const onLikeClick = useCallback(async () => {
+    // check if liekdImage Arr in users are undifined or empty then set "initialString"
     await db
       .collection("users")
       .doc(user?.uid)
@@ -108,23 +98,26 @@ const ExploreCard: React.FC<ContainerProps> = ({ image }) => {
             })
             .catch((err) => presentAlert(err.message));
         }
+      });
 
+    await db
+      .collection("users")
+      .doc(user?.uid)
+      .get()
+      .then(async (documentSnapshot) => {
         documentSnapshot
           .data()
           ?.likedImage.forEach(async (userLikedImage: any) => {
-            console.log(userLikedImage);
-
             //if true delike
             if (userLikedImage === image.id) {
-              console.log("delike");
               var like = await delikeFunction(user, likeNumber, image);
 
               setLikeNumber(like);
+              setLikeColor("dark");
               setLikeIcon(heartOutline);
             }
             //else like
             else {
-              console.log("like");
               if (likeNumber === undefined) {
                 setLikeNumber(0);
               }
@@ -132,6 +125,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image }) => {
               var like = await likeFunction(user, likeNumber, image);
 
               setLikeNumber(like);
+              setLikeColor("danger");
               setLikeIcon(heart);
             }
           });
@@ -175,7 +169,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image }) => {
         <IonImg src={image.url}></IonImg>
         <br />
         <IonButtons slot="start">
-          <IonButton color="dark" onClick={onLikeClick}>
+          <IonButton color={likeColor} onClick={onLikeClick}>
             <IonIcon icon={likeIcon} />
           </IonButton>
           <IonText>{likeNumber}</IonText>
