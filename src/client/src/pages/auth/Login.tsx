@@ -46,10 +46,8 @@ const Login: React.FC = () => {
       <IonContent fullscreen>
         <br />
         <br />
-        <br />
-        <IonItem lines="none">
-          <IonTitle className="Title">Geogram</IonTitle>
-        </IonItem>
+        <br />        
+          <IonTitle className="Title">Geogram</IonTitle>        
         <br />
         <IonGrid>
           <IonRow>

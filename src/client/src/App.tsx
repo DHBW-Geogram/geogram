@@ -54,6 +54,7 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Exploration from "./pages/Exploration/Exploration";
 import ProfilePic from "./pages/ProfilePic/ProfilePic";
+import LoadingPage from "./pages/auth/LoadingPage";
 
 const PublicRoutes = () => {
   return (
@@ -157,8 +158,15 @@ const PrivateRoutes = () => {
 
 const App: React.FC = () => {
   const user = useContext(UserContext);
-
-  return <IonApp> {user ? <PrivateRoutes /> : <PublicRoutes />}</IonApp>;
+    
+//   return !user ? (
+//    <IonApp>
+//      <LoadingPage />
+//      </IonApp>
+//  ) :(
+//  <IonApp>{user ? <PrivateRoutes /> : <PublicRoutes />}</IonApp>
+//  );
+   return <IonApp> {user ? <PrivateRoutes /> : <PublicRoutes />}</IonApp>;
 };
 
 export default App;
