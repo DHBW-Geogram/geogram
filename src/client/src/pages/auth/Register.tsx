@@ -13,7 +13,7 @@ import {
   IonGrid,
   IonAlert,
 } from "@ionic/react";
-import { chevronBackOutline, personAddOutline } from "ionicons/icons";
+import { chevronBackOutline, eyeOutline, personAddOutline } from "ionicons/icons";
 import React, { useCallback, useState } from "react";
 import { db, auth } from "../../helper/firebase";
 import "./Register.css";
@@ -25,6 +25,7 @@ import { PasswordCheckStrength } from "../../hooks/pwcheck";
 import { checkUsername } from "../../hooks/checkUsername";
 import { checkRegister } from "../../hooks/register/checkRegister";
 import { presentAlertWithHeader } from "../../hooks/alert";
+import { hideShowPassword } from "../../hooks/hideShowPassword";
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -33,8 +34,10 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [userName, setUserName] = useState("");
-  const [alertText, setAlertText] = useState("");
-  const [alertEmailVerify, setalertEmailVerify] = useState(false);
+  const [passwordShowHideIcon, setPasswordShowHideIcon] = useState(eyeOutline);
+  const [passwordType, setpasswordType] = useState<any>("password");
+  const [passwordConfirmShowHideIcon, setPasswordConfirmShowHideIcon] = useState(eyeOutline);
+  const [passwordConfirmType, setpasswordConfirmType] = useState<any>("password");
   const [pwStrength, setpwStrength] = useState(PasswordCheckStrength.Short);
 
   let checker: PasswordCheckService = new PasswordCheckService();
@@ -59,7 +62,21 @@ const Register: React.FC = () => {
   );
   const onUsernameChange = useCallback((e) => setUserName(e.detail?.value), []);
 
-  const onDismiss = useCallback(() => setAlertText(""), []);
+    const onhideShowPasswordConfirmClick = useCallback(async() => {
+
+      var a: any[]= await hideShowPassword(passwordConfirmType)    
+      setpasswordConfirmType(a[0]);
+      setPasswordConfirmShowHideIcon(a[1]);
+  
+    }, [passwordConfirmType]);
+
+  const onhideShowPasswordClick = useCallback(async() => {
+
+    var a: any[]= await hideShowPassword(passwordType)    
+    setpasswordType(a[0]);
+    setPasswordShowHideIcon(a[1]);
+
+  }, [passwordType]);
 
   const onSignUpClick = useCallback(async () => {
     var string = await checkRegister(
@@ -135,9 +152,14 @@ const Register: React.FC = () => {
             <IonLabel position="floating">Password {pwStrength}</IonLabel>
             <IonInput
               onIonChange={onPasswordChange}
-              type="password"
+              type={passwordType}
               value={password}
             ></IonInput>
+            <IonIcon
+                  slot="end"
+                  icon={passwordShowHideIcon}
+                  onClick={onhideShowPasswordClick}
+                />
           </IonItem>
           <br />
           <IonItem>
@@ -145,8 +167,13 @@ const Register: React.FC = () => {
             <IonInput
               onIonChange={onConfirmPasswordChange}
               value={confirmPassword}
-              type="password"
+              type={passwordConfirmType}
             ></IonInput>
+            <IonIcon
+                  slot="end"
+                  icon={passwordConfirmShowHideIcon}
+                  onClick={onhideShowPasswordConfirmClick}
+                />
           </IonItem>
           <br />
           <div className="SignInButton">
@@ -155,22 +182,7 @@ const Register: React.FC = () => {
               <IonIcon icon={personAddOutline} />
             </IonButton>
           </div>
-        </IonGrid>
-        {/* <IonAlert
-          isOpen={alertText.length > 0}
-          onDidDismiss={onDismiss}
-          message={alertText}
-          buttons={["OK"]}
-        />
-        <IonAlert
-          isOpen={alertEmailVerify}
-          onDidDismiss={() => setalertEmailVerify(false)}
-          header={"Thank you for signing in."}
-          message={
-            "Please verify your email address to finish signing up for Geogram"
-          }
-          buttons={["OK"]}
-        /> */}
+        </IonGrid>      
       </IonContent>
     </IonPage>
   );

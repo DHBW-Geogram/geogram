@@ -16,17 +16,24 @@ import {
   IonRow,
   IonCol,
 } from "@ionic/react";
-import { logInOutline } from "ionicons/icons";
+import {
+  eyeOffOutline,
+  eyeOutline,
+  logInOutline,
+} from "ionicons/icons";
 import React, { useCallback, useState } from "react";
 import "./Login.css";
 import { auth } from "../../helper/firebase";
 import icon from "../../assets/icon/icon.png";
 import "firebase/auth";
 import { checkLogin } from "../../hooks/login/checkLogin";
+import { hideShowPassword } from "../../hooks/hideShowPassword";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordShowHideIcon, setPasswordShowHideIcon] = useState(eyeOutline);
+  const [passwordType, setpasswordType] = useState<any>("password");
   const [alertPasswordForgotenText, setalertPasswordForgotenText] = useState(
     false
   );
@@ -37,6 +44,14 @@ const Login: React.FC = () => {
   );
   const onPasswordChange = useCallback((e) => setPassword(e.detail?.value), []);
 
+  const onhideShowPasswordClick = useCallback(async() => {
+
+    var a: any[]= await hideShowPassword(passwordType)    
+    setpasswordType(a[0]);
+    setPasswordShowHideIcon(a[1]);
+
+  }, [passwordType]);
+
   const onLoginClick = useCallback(async () => {
     await checkLogin(username, password);
   }, [username, password]);
@@ -46,8 +61,8 @@ const Login: React.FC = () => {
       <IonContent fullscreen>
         <br />
         <br />
-        <br />        
-          <IonTitle className="Title">Geogram</IonTitle>        
+        <br />
+        <IonTitle className="Title">Geogram</IonTitle>
         <br />
         <IonGrid>
           <IonRow>
@@ -100,8 +115,13 @@ const Login: React.FC = () => {
                 <IonInput
                   onIonChange={onPasswordChange}
                   value={password}
-                  type="password"
+                  type={passwordType}
                 ></IonInput>
+                <IonIcon
+                  slot="end"
+                  icon={passwordShowHideIcon}
+                  onClick={onhideShowPasswordClick}
+                />
               </IonItem>
             </IonCol>
           </IonRow>
