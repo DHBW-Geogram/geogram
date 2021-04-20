@@ -1,6 +1,5 @@
 export interface Image {
-  description: string;
-  id: string;
+  description: string;  
   likes: number;
   location: {
     coords: {
