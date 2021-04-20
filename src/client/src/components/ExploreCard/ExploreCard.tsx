@@ -116,6 +116,9 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
   function showUserProfil() {
     setShowUser(true);
+    
+    //sollte noch geändert werden
+    setTimeout(() => setShowUser(false), 5000);
   }
   
   return (

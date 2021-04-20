@@ -19,19 +19,19 @@ import {
 import { chevronBackOutline, image } from "ionicons/icons";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Image } from "../model/Image";
-import { db } from "../helper/firebase";
-
+import { auth, db } from "../helper/firebase";
 
 interface ContainerProps {
-  image: Image;  
+  image: Image;
 }
 
-const ShowUserProfil: React.FC<ContainerProps> = ({image}) => {
-
+const ShowUserProfil: React.FC<ContainerProps> = ({ image }) => {
   const [username, setUsername] = useState<string>();
   const [firstName, setFirstName] = useState<string>();
   const [lastName, setLastName] = useState<string>();
   const [fullName, setFullName] = useState<string>();
+
+  let postsUsername: string = "";
 
   const [bio, setBio] = useState<string>();
   const [profilepic, setProfilepic] = useState(
@@ -39,12 +39,11 @@ const ShowUserProfil: React.FC<ContainerProps> = ({image}) => {
   );
 
   const [posts, setPosts] = useState<number>(0);
-
   useEffect(() => {
     db.collection("users")
       .where("username", "==", image.user)
       .get()
-      .then((querySnapshot) => {
+      .then(async (querySnapshot) => {
         querySnapshot.forEach((doc) => {
           if (doc.data().profilepic != null) {
             setProfilepic(doc.data().profilepic);
@@ -54,11 +53,20 @@ const ShowUserProfil: React.FC<ContainerProps> = ({image}) => {
           setLastName(doc.data().userLastName);
           setBio(doc.data().biography);
           setFullName(doc.data().userFirstName + " " + doc.data().userLastName);
+
+          postsUsername = doc.data().username;
         });
+      })
+      .then(async () => {
+        await db
+          .collection("images")
+          .where("user", "==", postsUsername)
+          .get()
+          .then((querySnapshot) => {
+            setPosts(querySnapshot.size);
+          });
       });
   }, []);
-
-    
 
   return (
     <IonPage>
@@ -79,7 +87,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({image}) => {
               <IonItem>
                 <IonAvatar
                   slot="start"
-                  style={{ height: "100px", width: "100px" }}                  
+                  style={{ height: "100px", width: "100px" }}
                 >
                   <IonImg src={profilepic} />
                 </IonAvatar>
