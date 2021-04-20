@@ -11,7 +11,7 @@ import {
   IonItem,
   IonLabel,
   IonGrid,
-  IonAlert,  
+  IonAlert,
 } from "@ionic/react";
 import { chevronBackOutline, personAddOutline } from "ionicons/icons";
 import React, { useCallback, useState } from "react";
@@ -62,7 +62,7 @@ const Register: React.FC = () => {
   const onDismiss = useCallback(() => setAlertText(""), []);
 
   const onSignUpClick = useCallback(async () => {
-    var alertMessage = await checkRegister(
+    var string = await checkRegister(
       confirmPassword,
       password,
       email,
@@ -71,10 +71,12 @@ const Register: React.FC = () => {
       userName
     );
 
-    if(auth.currentUser){
-    presentAlertWithHeader("Please verify your email address to finish signing up for Geogram", "Thank you for signing in.");
+    if (auth.currentUser) {
+      presentAlertWithHeader(
+        "Please verify your email address to finish signing up for Geogram",
+        "Thank you for signing in."
+      );
     }
-    
   }, [confirmPassword, password, email, userFirstName, userLastName, userName]);
 
   return (
@@ -112,7 +114,7 @@ const Register: React.FC = () => {
           </IonItem>
           <br />
           <IonItem>
-            <IonLabel position="floating">Second Name</IonLabel>
+            <IonLabel position="floating">Last Name</IonLabel>
             <IonInput
               onIonChange={onLastNameChange}
               type="text"

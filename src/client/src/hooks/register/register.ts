@@ -19,7 +19,7 @@ export async function register(
       var user = userCredential.user;
 
       sendEmailVerify();    
-      const date: Date = new Date();
+      
 
       const data = {
         username: userName,

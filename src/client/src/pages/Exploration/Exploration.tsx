@@ -56,7 +56,7 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
 
       console.log("Initial load...");
 
-      setImages(await fetchImages());
+      fetchImages(filter).then((images) => setImages(images));
     })();
   }, []);
 
@@ -182,7 +182,7 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
         </IonHeader>
         {images.length > 0 &&
           images.map((image, id) => {
-            return <ExploreCard key={id} image={image} />;
+            return <ExploreCard key={id} image={image} setLoading={setLoading}/>;
           })}
       </IonContent>
     </IonPage>

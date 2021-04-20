@@ -23,7 +23,7 @@ auth.onAuthStateChanged((user: any) => {
     if (user) {
         var uid: any = user.uid;
         localStorage.setItem("uid", uid);
-        console.log("RES:",auth)
+      //  console.log("RES:",auth)
     } else {
         localStorage.removeItem("uid");
     }

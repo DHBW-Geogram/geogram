@@ -10,7 +10,7 @@ export async function checkRegister(
   userLastName: any,
   userName: any
 ): Promise<any> {
-  if (userName.length === 0) presentAlert("Username Required");
+  if (userName.length === 0)  presentAlert("Username Required");
   else if (await checkUsername(userName)) presentAlert("Username already taken");
   else if (userFirstName.length === 0) presentAlert("Firstname Required");
   else if (userLastName.length === 0) presentAlert("Secondname Required");
