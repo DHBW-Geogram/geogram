@@ -412,6 +412,8 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                                       });
                                   })
                                   .catch(function (error) {
+                                    setErrorEmailLabel("");
+                                    setErrorEmailText("");
                                     isShowAlertLogin = true;
                                     setShowAlertLogin(true);
                                   });
