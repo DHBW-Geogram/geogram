@@ -13,16 +13,18 @@ import {
   IonGrid,
   IonAlert,
 } from "@ionic/react";
-import { chevronBackOutline, eyeOutline, personAddOutline } from "ionicons/icons";
+import {
+  chevronBackOutline,
+  eyeOutline,
+  personAddOutline,
+} from "ionicons/icons";
 import React, { useCallback, useState } from "react";
-import { db, auth } from "../../helper/firebase";
+import { auth } from "../../helper/firebase";
 import "./Register.css";
 import "firebase/auth";
 import { PasswordCheckService } from "../../hooks/pwcheck";
 
-import { User } from "../../model/User";
 import { PasswordCheckStrength } from "../../hooks/pwcheck";
-import { checkUsername } from "../../hooks/checkUsername";
 import { checkRegister } from "../../hooks/register/checkRegister";
 import { presentAlertWithHeader } from "../../hooks/alert";
 import { hideShowPassword } from "../../hooks/hideShowPassword";
@@ -36,8 +38,13 @@ const Register: React.FC = () => {
   const [userName, setUserName] = useState("");
   const [passwordShowHideIcon, setPasswordShowHideIcon] = useState(eyeOutline);
   const [passwordType, setpasswordType] = useState<any>("password");
-  const [passwordConfirmShowHideIcon, setPasswordConfirmShowHideIcon] = useState(eyeOutline);
-  const [passwordConfirmType, setpasswordConfirmType] = useState<any>("password");
+  const [
+    passwordConfirmShowHideIcon,
+    setPasswordConfirmShowHideIcon,
+  ] = useState(eyeOutline);
+  const [passwordConfirmType, setpasswordConfirmType] = useState<any>(
+    "password"
+  );
   const [pwStrength, setpwStrength] = useState(PasswordCheckStrength.Short);
 
   let checker: PasswordCheckService = new PasswordCheckService();
@@ -62,24 +69,20 @@ const Register: React.FC = () => {
   );
   const onUsernameChange = useCallback((e) => setUserName(e.detail?.value), []);
 
-    const onhideShowPasswordConfirmClick = useCallback(async() => {
-
-      var a: any[]= await hideShowPassword(passwordConfirmType)    
-      setpasswordConfirmType(a[0]);
-      setPasswordConfirmShowHideIcon(a[1]);
-  
-    }, [passwordConfirmType]);
-
-  const onhideShowPasswordClick = useCallback(async() => {
-
-    var a: any[]= await hideShowPassword(passwordType)    
+  const onhideShowPasswordClick = useCallback(async () => {
+    var a: any[] = await hideShowPassword(passwordType);
     setpasswordType(a[0]);
     setPasswordShowHideIcon(a[1]);
-
   }, [passwordType]);
 
+  const onhideShowPasswordConfirmClick = useCallback(async () => {
+    var a: any[] = await hideShowPassword(passwordConfirmType);
+    setpasswordConfirmType(a[0]);
+    setPasswordConfirmShowHideIcon(a[1]);
+  }, [passwordConfirmType]);
+
   const onSignUpClick = useCallback(async () => {
-    var string = await checkRegister(
+    await checkRegister(
       confirmPassword,
       password,
       email,
@@ -155,11 +158,11 @@ const Register: React.FC = () => {
               type={passwordType}
               value={password}
             ></IonInput>
-            <IonIcon
-                  slot="end"
-                  icon={passwordShowHideIcon}
-                  onClick={onhideShowPasswordClick}
-                />
+            <IonIcon className="LookIcon"
+              slot="end"
+              icon={passwordShowHideIcon}
+              onClick={onhideShowPasswordClick}
+            />
           </IonItem>
           <br />
           <IonItem>
@@ -169,11 +172,11 @@ const Register: React.FC = () => {
               value={confirmPassword}
               type={passwordConfirmType}
             ></IonInput>
-            <IonIcon
-                  slot="end"
-                  icon={passwordConfirmShowHideIcon}
-                  onClick={onhideShowPasswordConfirmClick}
-                />
+            <IonIcon className="LookIcon"
+              slot="end"
+              icon={passwordConfirmShowHideIcon}
+              onClick={onhideShowPasswordConfirmClick}
+            />
           </IonItem>
           <br />
           <div className="SignInButton">
@@ -182,7 +185,7 @@ const Register: React.FC = () => {
               <IonIcon icon={personAddOutline} />
             </IonButton>
           </div>
-        </IonGrid>      
+        </IonGrid>
       </IonContent>
     </IonPage>
   );

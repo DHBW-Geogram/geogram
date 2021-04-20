@@ -1,7 +1,5 @@
 import {
   IonPage,
-  IonHeader,
-  IonToolbar,
   IonTitle,
   IonContent,
   IonInput,
@@ -16,11 +14,7 @@ import {
   IonRow,
   IonCol,
 } from "@ionic/react";
-import {
-  eyeOffOutline,
-  eyeOutline,
-  logInOutline,
-} from "ionicons/icons";
+import { eyeOutline, logInOutline } from "ionicons/icons";
 import React, { useCallback, useState } from "react";
 import "./Login.css";
 import { auth } from "../../helper/firebase";
@@ -44,12 +38,10 @@ const Login: React.FC = () => {
   );
   const onPasswordChange = useCallback((e) => setPassword(e.detail?.value), []);
 
-  const onhideShowPasswordClick = useCallback(async() => {
-
-    var a: any[]= await hideShowPassword(passwordType)    
+  const onhideShowPasswordClick = useCallback(async () => {
+    var a: any[] = await hideShowPassword(passwordType);
     setpasswordType(a[0]);
     setPasswordShowHideIcon(a[1]);
-
   }, [passwordType]);
 
   const onLoginClick = useCallback(async () => {
@@ -116,8 +108,8 @@ const Login: React.FC = () => {
                   onIonChange={onPasswordChange}
                   value={password}
                   type={passwordType}
-                ></IonInput>
-                <IonIcon
+                ></IonInput>                
+                <IonIcon className="LookIcon"
                   slot="end"
                   icon={passwordShowHideIcon}
                   onClick={onhideShowPasswordClick}
