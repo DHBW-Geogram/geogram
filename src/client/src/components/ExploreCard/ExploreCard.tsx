@@ -27,6 +27,7 @@ import { presentAlert } from "../../hooks/alert";
 import { Image } from "../../model/Image";
 
 import { delikeFunction, likeFunction } from "../../hooks/like";
+import ShowUserProfil from "../ShowUserProfil";
 
 interface ContainerProps {
   image: Image;
@@ -38,7 +39,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [likeIcon, setLikeIcon] = useState(heartOutline);
   const [likeColor, setLikeColor] = useState("dark");
   const [flag, setFlag] = useState(false);
-
+  const [showUser, setShowUser] = useState(false);
   const user = useContext(UserContext);
 
   useEffect(() => {
@@ -113,6 +114,10 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     if (setLoading != undefined) setLoading(false);
   }, [likeNumber, image, user, db, flag]);
 
+  function showUserProfil() {
+    setShowUser(true);
+  }
+  
   return (
     <IonCard className="my-ion-card">
       {/* Coordinated */}
@@ -141,8 +146,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
       )}
 
       <IonCardHeader>
-        <IonCardSubtitle>{image.user}</IonCardSubtitle>
-        <IonCardTitle>{image.title}</IonCardTitle>
+        <IonCardSubtitle onClick={showUserProfil}>{image.user}</IonCardSubtitle>
+        <IonCardTitle >{image.title}</IonCardTitle>
       </IonCardHeader>
 
       <IonCardContent>
@@ -157,6 +162,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         <br />
         <IonText style={{ fontSize: "large" }}>{image.description}</IonText>
       </IonCardContent>
+
+      {showUser ? <ShowUserProfil image={image} /> : false}
     </IonCard>
   );
 };
