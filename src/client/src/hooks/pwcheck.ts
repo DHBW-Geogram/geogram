@@ -1,9 +1,10 @@
 export enum PasswordCheckStrength {
-    Short,
-    Common,
-    Weak,
-    Ok,
-    Strong,
+    Notset = "Password",
+    Short = "too short",
+    Common = "commonly used",
+    Weak = "weak",
+    Ok = "ok",
+    Strong = "strong",
 };
 
 // Object to check password strengths and various properties
@@ -11,7 +12,7 @@ export class PasswordCheckService {
 
     // Expected length of all passwords
     public static get MinimumLength(): number {
-        return 5;
+        return 6;
     }
 
     // Regex to check for a common password string - all based on 5+ length passwords
@@ -40,9 +41,12 @@ export class PasswordCheckService {
         let currentPasswordStrength = PasswordCheckStrength.Short;
 
         // Check then strenth of this password using some simple rules
-        if (password === null || password.length < PasswordCheckService.MinimumLength) {
-            currentPasswordStrength = PasswordCheckStrength.Short;
-        } else if (this.isPasswordCommon(password) === true) {
+        if (password == null || password == "") {
+            currentPasswordStrength = PasswordCheckStrength.Notset;
+        } else if (password.length < PasswordCheckService.MinimumLength) {
+            currentPasswordStrength = PasswordCheckStrength.Short; 
+        } 
+        else if (this.isPasswordCommon(password) === true) {
             currentPasswordStrength = PasswordCheckStrength.Common;
         } else if (numberOfElements === 0 || numberOfElements === 1 || numberOfElements === 2) {
             currentPasswordStrength = PasswordCheckStrength.Weak;
