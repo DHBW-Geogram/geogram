@@ -10,6 +10,7 @@ import {
   IonImg,
   IonItem,
   IonLabel,
+  IonModal,
   IonPage,
   IonRow,
   IonTitle,
@@ -17,15 +18,30 @@ import {
   useIonToast,
 } from "@ionic/react";
 import { chevronBackOutline, image } from "ionicons/icons";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Image } from "../model/Image";
-import { auth, db } from "../helper/firebase";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import { Image } from "../../model/Image";
+import { auth, db } from "../../helper/firebase";
+import "./ShowUserProfil"
 
 interface ContainerProps {
   image: Image;
+  active: boolean;
+  setuserProfilModel: Dispatch<SetStateAction<boolean>>;
+  setLoading?: Dispatch<SetStateAction<boolean>>;
 }
 
-const ShowUserProfil: React.FC<ContainerProps> = ({ image }) => {
+const ShowUserProfil: React.FC<ContainerProps> = ({
+  image,
+  active,
+  setuserProfilModel,
+  setLoading,
+}) => {
   const [username, setUsername] = useState<string>();
   const [firstName, setFirstName] = useState<string>();
   const [lastName, setLastName] = useState<string>();
@@ -39,13 +55,16 @@ const ShowUserProfil: React.FC<ContainerProps> = ({ image }) => {
   );
 
   const [posts, setPosts] = useState<number>(0);
+
   useEffect(() => {
+    if (setLoading != undefined) setLoading(true);
+
     db.collection("users")
       .where("username", "==", image.user)
       .get()
       .then(async (querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          if (doc.data().profilepic != null) {
+        querySnapshot.forEach(async (doc) => {
+          if ((await doc.data().profilepic) != null) {
             setProfilepic(doc.data().profilepic);
           }
           setUsername(doc.data().username);
@@ -66,20 +85,25 @@ const ShowUserProfil: React.FC<ContainerProps> = ({ image }) => {
             setPosts(querySnapshot.size);
           });
       });
+    if (setLoading != undefined) setLoading(false);
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setuserProfilModel(false);
   }, []);
 
   return (
-    <IonPage>
+    <IonModal isOpen={active} >
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
-            <IonButton color="primary" routerLink="/explore">
+            <IonButton color="primary" onClick={closeModal}>
               <IonIcon icon={chevronBackOutline} />
             </IonButton>
           </IonButtons>
           <IonTitle>{username}</IonTitle>
         </IonToolbar>
-      </IonHeader>
+      </IonHeader> 
       <IonContent fullscreen>
         <IonGrid>
           <IonRow>
@@ -132,7 +156,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({ image }) => {
           </IonRow>
         </IonGrid>
       </IonContent>
-    </IonPage>
+    </IonModal>
   );
 };
 

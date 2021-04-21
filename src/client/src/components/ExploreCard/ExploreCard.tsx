@@ -27,11 +27,11 @@ import { presentAlert } from "../../hooks/alert";
 import { Image } from "../../model/Image";
 
 import { delikeFunction, likeFunction } from "../../hooks/like";
-import ShowUserProfil from "../ShowUserProfil";
+import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
 
 interface ContainerProps {
   image: Image;
-  setLoading?: Dispatch<SetStateAction<boolean>>;
+  setLoading?: Dispatch<SetStateAction<boolean>>; 
 }
 
 const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
@@ -41,6 +41,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [flag, setFlag] = useState(false);
   const [showUser, setShowUser] = useState(false);
   const user = useContext(UserContext);
+
+  const [userProfilModel, setuserProfilModel] = useState(false);
 
   useEffect(() => {
     db.collection("images")
@@ -115,12 +117,14 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   }, [likeNumber, image, user, db, flag]);
 
   function showUserProfil() {
-    setShowUser(true);
-    
+    //setShowUser(true);
+
     //sollte noch geändert werden
-    setTimeout(() => setShowUser(false), 5000);
+    // setTimeout(() => setShowUser(false), 5000);
+
+    setuserProfilModel(true);
   }
-  
+
   return (
     <IonCard className="my-ion-card">
       {/* Coordinated */}
@@ -150,7 +154,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
       <IonCardHeader>
         <IonCardSubtitle onClick={showUserProfil}>{image.user}</IonCardSubtitle>
-        <IonCardTitle >{image.title}</IonCardTitle>
+        <IonCardTitle>{image.title}</IonCardTitle>
       </IonCardHeader>
 
       <IonCardContent>
@@ -166,7 +170,13 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         <IonText style={{ fontSize: "large" }}>{image.description}</IonText>
       </IonCardContent>
 
-      {showUser ? <ShowUserProfil image={image} /> : false}
+      {/* {showUser ? <ShowUserProfil image={image} active={userProfilModel} /> : false} */}
+      <ShowUserProfil
+        image={image}
+        active={userProfilModel}
+        setuserProfilModel={setuserProfilModel}
+        setLoading={setLoading}
+      />
     </IonCard>
   );
 };
