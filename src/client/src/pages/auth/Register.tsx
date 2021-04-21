@@ -38,6 +38,7 @@ const Register: React.FC = () => {
   const [userName, setUserName] = useState("");
   const [passwordShowHideIcon, setPasswordShowHideIcon] = useState(eyeOutline);
   const [passwordType, setpasswordType] = useState<any>("password");
+  const [indColor, setindColor] = useState("white");
   const [
     passwordConfirmShowHideIcon,
     setPasswordConfirmShowHideIcon,
@@ -50,9 +51,23 @@ const Register: React.FC = () => {
   let checker: PasswordCheckService = new PasswordCheckService();
 
   const onEmailNameChange = useCallback((e) => setEmail(e.detail?.value), []);
+  
   const onPasswordChange = useCallback((e) => {
     setPassword(e.detail?.value);
-    setpwStrength(checker.checkPasswordStrength(e.detail?.value));
+    let pwsec = checker.checkPasswordStrength(e.detail?.value);
+    setpwStrength(pwsec);
+    if (pwsec === PasswordCheckStrength.Notset){
+      setindColor("white");
+    } 
+    else if (pwsec === PasswordCheckStrength.Short){
+      setindColor("danger");
+    } 
+    else if (pwsec === PasswordCheckStrength.Weak || pwsec === PasswordCheckStrength.Common){
+      setindColor("warning");
+    } 
+    else if (pwsec === PasswordCheckStrength.Strong || pwsec === PasswordCheckStrength.Ok){
+      setindColor("success");
+    } 
   }, []);
 
   const onConfirmPasswordChange = useCallback(
@@ -152,9 +167,7 @@ const Register: React.FC = () => {
           </IonItem>
           <br />
           <IonItem>
-            <IonLabel position="floating">
-              <div style={{color:"red"}}>{pwStrength}</div>
-            </IonLabel>
+            <IonLabel position="floating" color={indColor}>{pwStrength}</IonLabel>
             <IonInput
               onIonChange={onPasswordChange}
               type={passwordType}
