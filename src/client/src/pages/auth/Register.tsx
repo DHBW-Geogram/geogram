@@ -45,7 +45,7 @@ const Register: React.FC = () => {
   const [passwordConfirmType, setpasswordConfirmType] = useState<any>(
     "password"
   );
-  const [pwStrength, setpwStrength] = useState(PasswordCheckStrength.Short);
+  const [pwStrength, setpwStrength] = useState(PasswordCheckStrength.Notset);
 
   let checker: PasswordCheckService = new PasswordCheckService();
 
@@ -152,7 +152,9 @@ const Register: React.FC = () => {
           </IonItem>
           <br />
           <IonItem>
-            <IonLabel position="floating">Password {pwStrength}</IonLabel>
+            <IonLabel position="floating">
+              <div style={{color:"red"}}>{pwStrength}</div>
+            </IonLabel>
             <IonInput
               onIonChange={onPasswordChange}
               type={passwordType}
