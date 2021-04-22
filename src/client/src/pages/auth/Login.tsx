@@ -22,6 +22,7 @@ import icon from "../../assets/icon/icon.png";
 import "firebase/auth";
 import { checkLogin } from "../../hooks/login/checkLogin";
 import { hideShowPassword } from "../../hooks/hideShowPassword";
+import { presentAlert } from "../../hooks/alert";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -108,8 +109,9 @@ const Login: React.FC = () => {
                   onIonChange={onPasswordChange}
                   value={password}
                   type={passwordType}
-                ></IonInput>                
-                <IonIcon className="LookIcon"
+                ></IonInput>
+                <IonIcon
+                  className="LookIcon"
                   slot="end"
                   icon={passwordShowHideIcon}
                   onClick={onhideShowPasswordClick}
@@ -168,6 +170,11 @@ const Login: React.FC = () => {
             text: "Send",
             handler: (data) => {
               auth.sendPasswordResetEmail(data.emailPasswordForgoten);
+              presentAlert(
+                "A Passowrd reset Email was send to " +
+                  data.emailPasswordForgoten +
+                  "."
+              );
             },
           },
         ]}
