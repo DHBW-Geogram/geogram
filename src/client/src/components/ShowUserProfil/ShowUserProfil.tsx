@@ -27,7 +27,7 @@ import React, {
 } from "react";
 import { Image } from "../../model/Image";
 import { auth, db } from "../../helper/firebase";
-import "./ShowUserProfil"
+import "./ShowUserProfil";
 
 interface ContainerProps {
   image: Image;
@@ -46,7 +46,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   const [firstName, setFirstName] = useState<string>();
   const [lastName, setLastName] = useState<string>();
   const [fullName, setFullName] = useState<string>();
-
+  const [flag, setFlag] = useState(false);
   let postsUsername: string = "";
 
   const [bio, setBio] = useState<string>();
@@ -58,33 +58,39 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
 
   useEffect(() => {
     if (setLoading != undefined) setLoading(true);
+    if (flag === false) {
+      setFlag(true);
+      setTimeout(() => setFlag(false), 5000);
 
-    db.collection("users")
-      .where("username", "==", image.user)
-      .get()
-      .then(async (querySnapshot) => {
-        querySnapshot.forEach(async (doc) => {
-          if ((await doc.data().profilepic) != null) {
-            setProfilepic(doc.data().profilepic);
-          }
-          setUsername(doc.data().username);
-          setFirstName(doc.data().userFirstName);
-          setLastName(doc.data().userLastName);
-          setBio(doc.data().biography);
-          setFullName(doc.data().userFirstName + " " + doc.data().userLastName);
+      db.collection("users")
+        .where("username", "==", image.user)
+        .get()
+        .then(async (querySnapshot) => {
+          querySnapshot.forEach(async (doc) => {
+            if ((await doc.data().profilepic) != null) {
+              setProfilepic(doc.data().profilepic);
+            }
+            setUsername(doc.data().username);
+            setFirstName(doc.data().userFirstName);
+            setLastName(doc.data().userLastName);
+            setBio(doc.data().biography);
+            setFullName(
+              doc.data().userFirstName + " " + doc.data().userLastName
+            );
 
-          postsUsername = doc.data().username;
-        });
-      })
-      .then(async () => {
-        await db
-          .collection("images")
-          .where("user", "==", postsUsername)
-          .get()
-          .then((querySnapshot) => {
-            setPosts(querySnapshot.size);
+            postsUsername = doc.data().username;
           });
-      });
+        })
+        .then(async () => {
+          await db
+            .collection("images")
+            .where("user", "==", postsUsername)
+            .get()
+            .then((querySnapshot) => {
+              setPosts(querySnapshot.size);
+            });
+        });
+    }
     if (setLoading != undefined) setLoading(false);
   }, []);
 
@@ -93,7 +99,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   }, []);
 
   return (
-    <IonModal isOpen={active} >
+    <IonModal isOpen={active}>
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
@@ -103,7 +109,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
           </IonButtons>
           <IonTitle>{username}</IonTitle>
         </IonToolbar>
-      </IonHeader> 
+      </IonHeader>
       <IonContent fullscreen>
         <IonGrid>
           <IonRow>

@@ -31,7 +31,7 @@ import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
 
 interface ContainerProps {
   image: Image;
-  setLoading?: Dispatch<SetStateAction<boolean>>; 
+  setLoading?: Dispatch<SetStateAction<boolean>>;
 }
 
 const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
@@ -116,14 +116,13 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     if (setLoading != undefined) setLoading(false);
   }, [likeNumber, image, user, db, flag]);
 
-  function showUserProfil() {
-    //setShowUser(true);
-
-    //sollte noch geändert werden
-    // setTimeout(() => setShowUser(false), 5000);
-
-    setuserProfilModel(true);
-  }
+  //  function showUserProfil() {
+  //    setuserProfilModel(true);
+  //  }
+   const showUserProfil = useCallback(() => {
+     setuserProfilModel(true);
+   },[]
+   )
 
   return (
     <IonCard className="my-ion-card">
