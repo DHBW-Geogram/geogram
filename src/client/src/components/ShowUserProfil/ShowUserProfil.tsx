@@ -12,6 +12,7 @@ import {
   IonLabel,
   IonModal,
   IonPage,
+  IonPopover,
   IonRow,
   IonTitle,
   IonToolbar,
@@ -27,7 +28,7 @@ import React, {
 } from "react";
 import { Image } from "../../model/Image";
 import { auth, db } from "../../helper/firebase";
-import "./ShowUserProfil";
+import "./ShowUserProfil.css";
 
 interface ContainerProps {
   image: Image;
@@ -46,9 +47,11 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   const [firstName, setFirstName] = useState<string>();
   const [lastName, setLastName] = useState<string>();
   const [fullName, setFullName] = useState<string>();
+  const [showPopup, setShowPopup] = useState(false);
+  const [likes, setLikes] = useState<number>(0);
   const [flag, setFlag] = useState(false);
   let postsUsername: string = "";
-
+  let counterLikes: number = 0;
   const [bio, setBio] = useState<string>();
   const [profilepic, setProfilepic] = useState(
     "https://im-coder.com/images4/15590312779219.png"
@@ -57,49 +60,47 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   const [posts, setPosts] = useState<number>(0);
 
   useEffect(() => {
-    if (setLoading != undefined) setLoading(true);
-    if (flag === false) {
-      setFlag(true);
-      setTimeout(() => setFlag(false), 5000);
+    db.collection("users")
+      .where("username", "==", image.user)
+      .get()
+      .then(async (querySnapshot) => {
+        querySnapshot.forEach(async (doc) => {
+          if ((await doc.data().profilepic) != null) {
+            setProfilepic(doc.data().profilepic);
+          }
+          setUsername(doc.data().username);
+          setFirstName(doc.data().userFirstName);
+          setLastName(doc.data().userLastName);
+          setBio(doc.data().biography);
+          setFullName(doc.data().userFirstName + " " + doc.data().userLastName);
 
-      db.collection("users")
-        .where("username", "==", image.user)
-        .get()
-        .then(async (querySnapshot) => {
-          querySnapshot.forEach(async (doc) => {
-            if ((await doc.data().profilepic) != null) {
-              setProfilepic(doc.data().profilepic);
-            }
-            setUsername(doc.data().username);
-            setFirstName(doc.data().userFirstName);
-            setLastName(doc.data().userLastName);
-            setBio(doc.data().biography);
-            setFullName(
-              doc.data().userFirstName + " " + doc.data().userLastName
-            );
-
-            postsUsername = doc.data().username;
-          });
-        })
-        .then(async () => {
-          await db
-            .collection("images")
-            .where("user", "==", postsUsername)
-            .get()
-            .then((querySnapshot) => {
-              setPosts(querySnapshot.size);
-            });
+          postsUsername = doc.data().username;
         });
-    }
-    if (setLoading != undefined) setLoading(false);
-  }, []);
+      })
+      .then(() => {
+        db.collection("images")
+          .where("user", "==", postsUsername)
+          .get()
+          .then((querySnapshot) => {
+            setPosts(querySnapshot.size);
+
+            counterLikes = 0;
+            querySnapshot.forEach((doc) => {
+              if (!(doc.data().likes == null)) {
+                counterLikes = counterLikes + doc.data().likes;
+              }
+            });
+            setLikes(counterLikes);
+          });
+      });
+  }, [image, counterLikes, image.likes]);
 
   const closeModal = useCallback(() => {
     setuserProfilModel(false);
   }, []);
 
   return (
-    <IonModal isOpen={active}>
+    <IonModal isOpen={active} cssClass='modal' onWillDismiss={() => setuserProfilModel(false)}>
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
@@ -110,7 +111,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
           <IonTitle>{username}</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
+      <IonContent >
         <IonGrid>
           <IonRow>
             <IonCol>
@@ -124,7 +125,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
 
                 <IonGrid>
                   <IonRow>
-                    <IonCol style={{ textAlign: "center" }}>-</IonCol>
+                    <IonCol style={{ textAlign: "center" }}>{likes}</IonCol>
                     <IonCol style={{ textAlign: "center" }}>{posts}</IonCol>
                   </IonRow>
                   <IonRow>

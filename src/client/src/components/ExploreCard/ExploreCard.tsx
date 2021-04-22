@@ -10,6 +10,7 @@ import {
   IonImg,
   IonItem,
   IonLabel,
+  IonPopover,
   IonText,
 } from "@ionic/react";
 import { heartOutline, pin, heart } from "ionicons/icons";
@@ -40,6 +41,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [likeColor, setLikeColor] = useState("dark");
   const [flag, setFlag] = useState(false);
   const [showUser, setShowUser] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   const user = useContext(UserContext);
 
   const [userProfilModel, setuserProfilModel] = useState(false);
@@ -116,13 +118,12 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     if (setLoading != undefined) setLoading(false);
   }, [likeNumber, image, user, db, flag]);
 
-  //  function showUserProfil() {
-  //    setuserProfilModel(true);
-  //  }
-   const showUserProfil = useCallback(() => {
-     setuserProfilModel(true);
-   },[]
-   )
+  const showUserProfil = useCallback(() => {
+    if (!userProfilModel) {
+      setuserProfilModel(false);
+    }
+    setuserProfilModel(true);
+  }, []);
 
   return (
     <IonCard className="my-ion-card">
@@ -169,7 +170,6 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         <IonText style={{ fontSize: "large" }}>{image.description}</IonText>
       </IonCardContent>
 
-      {/* {showUser ? <ShowUserProfil image={image} active={userProfilModel} /> : false} */}
       <ShowUserProfil
         image={image}
         active={userProfilModel}
