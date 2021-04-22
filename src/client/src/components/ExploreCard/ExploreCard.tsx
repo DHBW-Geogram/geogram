@@ -74,7 +74,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           setLikeNumber(documentSnapshot.data()?.likes);
         }
       });
-  });
+  }, [image.id, user?.uid]);
 
   const onLikeClick = useCallback(async () => {
     if (flag === false) {
@@ -119,9 +119,6 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   }, [likeNumber, image, user, db, flag]);
 
   const showUserProfil = useCallback(() => {
-    if (!userProfilModel) {
-      setuserProfilModel(false);
-    }
     setuserProfilModel(true);
   }, []);
 

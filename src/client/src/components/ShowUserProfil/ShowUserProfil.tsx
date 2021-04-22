@@ -93,14 +93,32 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
             setLikes(counterLikes);
           });
       });
-  }, [image, counterLikes, image.likes]);
+  }, [
+    image,
+    counterLikes,
+    image.likes,
+    image.user,
+    counterLikes,
+    setPosts,
+    setLikes,
+    postsUsername,
+    setUsername,
+    setFirstName,
+    setLastName,
+    setBio,
+    setFullName,
+  ]);
 
   const closeModal = useCallback(() => {
     setuserProfilModel(false);
-  }, []);
+  }, [false, setuserProfilModel]);
 
   return (
-    <IonModal isOpen={active} cssClass='modal' onWillDismiss={() => setuserProfilModel(false)}>
+    <IonModal
+      isOpen={active}
+      cssClass="modal"
+      onWillDismiss={() => setuserProfilModel(false)}
+    >
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
@@ -111,7 +129,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
           <IonTitle>{username}</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent >
+      <IonContent>
         <IonGrid>
           <IonRow>
             <IonCol>
