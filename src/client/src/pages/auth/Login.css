@@ -1,22 +1,25 @@
 .LogInButton {
-    text-align: center;    
+  text-align: center;
 }
 
 .Title {
-
-    font-family: Lucida Handwriting, cursive;
-    text-align: center;
-    font-size: xx-large;
+  font-family: Lucida Handwriting, cursive;
+  text-align: center;
+  font-size: xx-large;
 }
 
-.Icon {    
-    width: 20%;    
+.Icon {
+  width: 20%;
 }
 
-.inputField{
-border: 2px solid slategray;
-border-radius: 1em;
-width: 80%;
-height: 80%;
-margin: 5px;
+.inputField {
+  border: 2px solid slategray;
+  border-radius: 1em;
+  width: 80%;
+  height: 80%;
+  margin: 5px;
+}
+
+.LookIcon {  
+  height: 65%;   
 }

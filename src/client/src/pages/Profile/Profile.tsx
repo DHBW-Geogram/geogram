@@ -20,8 +20,9 @@ import {
   IonRefresher,
   IonRefresherContent,
   useIonToast,
+  IonLoading,
 } from "@ionic/react";
-import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import ProfilePicSelectionModal from "../../components/ProfilePicSelectionModal/ProfilePicSelectionModal";
 import { auth, db } from "../../helper/firebase";
 import { checkUsername } from "./checkUsername";
@@ -46,6 +47,8 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
 
   const [posts, setPosts] = useState<number>(0);
   let postsUsername: string = "";
+  const [likes, setLikes] = useState<number>(0);
+  let counterLikes: number = 0;
 
   const [errorUsernameLabel, setErrorUsernameLabel] = useState<string>("");
   const [errorUsernameText, setErrorUsernameText] = useState<string>("");
@@ -67,6 +70,8 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
   const [showAlertIncorrectPassword, setShowAlertIncorrectPassword] = useState<boolean>(false);
   let isShowAlertLogin: boolean = false;
   const [isLoginSuccessfull, setLoginSuccessfull] = useState<boolean>(false);
+
+  const [showLoading, setShowLoading] = useState(false);
 
   useEffect(() => {
     if (auth.currentUser?.emailVerified) {
@@ -104,6 +109,13 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
       }).then(() => {
         db.collection("images").where("user", "==", postsUsername).get().then((querySnapshot) => {
           setPosts(querySnapshot.size);
+          counterLikes = 0;
+          querySnapshot.forEach((doc) => {
+            if (!(doc.data().likes == null)) {
+              counterLikes = counterLikes + doc.data().likes;
+            }
+          });
+          setLikes(counterLikes);
         });
       });
   }, []);
@@ -134,6 +146,13 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
       }).then(() => {
         db.collection("images").where("user", "==", postsUsername).get().then((querySnapshot) => {
           setPosts(querySnapshot.size);
+          counterLikes = 0;
+          querySnapshot.forEach((doc) => {
+            if (!(doc.data().likes == null)) {
+              counterLikes = counterLikes + doc.data().likes;
+            }
+          });
+          setLikes(counterLikes);
         });
       }).then(() => { event.detail.complete() });
   }
@@ -168,7 +187,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
 
                 <IonGrid>
                   <IonRow>
-                    <IonCol style={{ textAlign: "center" }}>-</IonCol>
+                    <IonCol style={{ textAlign: "center" }}>{likes}</IonCol>
                     <IonCol style={{ textAlign: "center" }}>{posts}</IonCol>
                   </IonRow>
                   <IonRow>
@@ -335,6 +354,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                     fill="outline"
                     color="primary"
                     onClick={async () => {
+                      setShowLoading(true);
                       dismissToast();
                       isShowAlertLogin = false;
                       isUsernameCorrect = true;
@@ -404,7 +424,14 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                                           await db
                                             .collection("users")
                                             .doc(auth.currentUser?.uid)
-                                            .set(data);
+                                            .update({
+                                              biography: data.biography,
+                                              email: data.email,
+                                              profilepic: data.profilepic,
+                                              userFirstName: data.userFirstName,
+                                              userLastName: data.userLastName,
+                                              username: data.username
+                                            });
                                         }
                                       })
                                       .catch(function (error) {
@@ -427,7 +454,14 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                                   await db
                                     .collection("users")
                                     .doc(auth.currentUser?.uid)
-                                    .set(data);
+                                    .update({
+                                      biography: data.biography,
+                                      email: data.email,
+                                      profilepic: data.profilepic,
+                                      userFirstName: data.userFirstName,
+                                      userLastName: data.userLastName,
+                                      username: data.username
+                                    });
                                 }
                               }
                             }).then(async () => {
@@ -475,6 +509,9 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                                 }
                               }
                             });
+                        })
+                        .then(() => {
+                          setShowLoading(false);
                         });
                     }}
                   >
@@ -541,6 +578,10 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                     header={"Login Successful"}
                     message={"Now you can save your data again."}
                     buttons={["OK"]}
+                  />
+                  <IonLoading
+                    isOpen={showLoading}
+                    message={'Please wait...'}
                   />
                 </IonCol>
               </IonRow>
