@@ -74,7 +74,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           setLikeNumber(documentSnapshot.data()?.likes);
         }
       });
-  }, [image.id, user?.uid]);
+  }, []);
 
   const onLikeClick = useCallback(async () => {
     if (flag === false) {
