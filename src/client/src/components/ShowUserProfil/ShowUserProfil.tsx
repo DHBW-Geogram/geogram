@@ -32,14 +32,14 @@ import "./ShowUserProfil.css";
 
 interface ContainerProps {
   image: Image;
-  active: boolean;
+  activeShowUserProfil: boolean;
   setuserProfilModel: Dispatch<SetStateAction<boolean>>;
   setLoading?: Dispatch<SetStateAction<boolean>>;
 }
 
 const ShowUserProfil: React.FC<ContainerProps> = ({
   image,
-  active,
+  activeShowUserProfil,
   setuserProfilModel,
   setLoading,
 }) => {
@@ -115,7 +115,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
 
   return (
     <IonModal
-      isOpen={active}
+      isOpen={activeShowUserProfil}
       cssClass="modal"
       onWillDismiss={() => setuserProfilModel(false)}
     >

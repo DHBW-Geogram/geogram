@@ -12,6 +12,7 @@ import {
   IonLabel,
   IonPopover,
   IonText,
+  IonTextarea,
 } from "@ionic/react";
 import { heartOutline, pin, heart } from "ionicons/icons";
 import React, {
@@ -26,9 +27,10 @@ import { UserContext } from "../..";
 import { db } from "../../helper/firebase";
 import { presentAlert } from "../../hooks/alert";
 import { Image } from "../../model/Image";
-
+import firebase from "firebase/app";
 import { delikeFunction, likeFunction } from "../../hooks/like";
 import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
+import ShowComments from "../ShowComments/ShowComments";
 
 interface ContainerProps {
   image: Image;
@@ -39,12 +41,20 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [likeNumber, setLikeNumber] = useState(0);
   const [likeIcon, setLikeIcon] = useState(heartOutline);
   const [likeColor, setLikeColor] = useState("dark");
+  const [comment, setComment] = useState<any>("");
+  const [commentText, setCommentText] = useState<any>("");
   const [flag, setFlag] = useState(false);
+
+  const [comments, setComments] = useState<Array<String>>([]);
+  const [lastComment, setLastComment] = useState<String>();
+
+  const onCommentChange = useCallback((e) => setComment(e.detail?.value), []);
   const [showUser, setShowUser] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const user = useContext(UserContext);
-
+  const [commentTrue, setCommentTrue] = useState<boolean>(false)
   const [userProfilModel, setuserProfilModel] = useState(false);
+  const [showCommentsModal, setshowCommentsModal] = useState(false);
 
   useEffect(() => {
     db.collection("images")
@@ -74,7 +84,33 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           setLikeNumber(documentSnapshot.data()?.likes);
         }
       });
-  },[image.id, user?.uid, setLikeIcon, setLikeColor, setLikeNumber]);
+
+    //set last comment
+    (async () => {
+      await db
+        .collection("images")
+        .doc(image.id)
+        .get()
+        .then(async (documentSnapshot) => {
+          let commentsInCollection: string[] = documentSnapshot.data()?.comment;
+
+          if (commentsInCollection === undefined) {
+            return;
+          }
+
+          var len = commentsInCollection.length - 1;
+          setCommentTrue(true);
+          setLastComment(commentsInCollection[len]);
+        });
+    })();
+  }, [
+    image.id,
+    user?.uid,
+    setCommentText,
+    setLikeIcon,
+    setLikeColor,
+    setLikeNumber,
+  ]);
 
   const onLikeClick = useCallback(async () => {
     if (flag === false) {
@@ -117,6 +153,38 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     }
     if (setLoading != undefined) setLoading(false);
   }, [likeNumber, image, user, db, flag]);
+
+  //save comment on click in db
+  const onAddCommentClick = useCallback(async () => {
+    if (comment === "") {
+      return;
+    } else {
+      var username: string = "";
+      await db
+        .collection("users")
+        .doc(user?.uid)
+        .get()
+        .then((documentSnapshot) => {
+          username = documentSnapshot.data()?.username;
+        });
+
+      var mes = username + ": " + comment;
+
+      await db
+        .collection("images")
+        .doc(image.id)
+        .update({
+          comment: firebase.firestore.FieldValue.arrayUnion(mes),
+        })
+        .catch((err) => presentAlert(err.message));
+
+      setComment("");
+    }
+  }, [user, image, comment]);
+
+  const onReadCommentClick = useCallback(() => {
+    setshowCommentsModal(true);
+  }, []);
 
   const showUserProfil = useCallback(() => {
     setuserProfilModel(true);
@@ -162,15 +230,47 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
             <IonIcon icon={likeIcon} />
           </IonButton>
           <IonText>{likeNumber}</IonText>
+          
+          <IonButton onClick={onReadCommentClick}>Read Comments</IonButton>
         </IonButtons>
+        <IonItem>
+          <IonTextarea
+            placeholder="Comment"
+            maxlength={160}
+            rows={1}
+            autoGrow={true}
+            value={comment}
+            inputmode="text"
+            onIonChange={onCommentChange}
+          ></IonTextarea>
+          <IonButton
+            style={{
+              height: "80%",
+            }}
+            fill="clear"
+            onClick={onAddCommentClick}
+          >
+            Add
+          </IonButton>
+        </IonItem>
+        {commentTrue ? <IonItem>{lastComment}</IonItem> : false}
+
         <br />
+
         <IonText style={{ fontSize: "large" }}>{image.description}</IonText>
       </IonCardContent>
 
       <ShowUserProfil
         image={image}
-        active={userProfilModel}
+        activeShowUserProfil={userProfilModel}
         setuserProfilModel={setuserProfilModel}
+        setLoading={setLoading}
+      />
+
+      <ShowComments
+        image={image}
+        active={showCommentsModal}
+        setshowCommentsModal={setshowCommentsModal}
         setLoading={setLoading}
       />
     </IonCard>
