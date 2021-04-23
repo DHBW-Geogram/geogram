@@ -2,6 +2,7 @@ import { Redirect, Route } from "react-router-dom";
 import React, { useContext, useState } from "react";
 import Upload from "./pages/Upload/Upload";
 import {
+  IonAlert,
   IonApp,
   IonFab,
   IonFabButton,
@@ -56,6 +57,7 @@ import Exploration from "./pages/Exploration/Exploration";
 import ProfilePic from "./pages/ProfilePic/ProfilePic";
 import LoadingPage from "./pages/auth/LoadingPage";
 import ShowUserProfil from "./components/ShowUserProfil/ShowUserProfil";
+import { auth } from "./helper/firebase";
 
 const PublicRoutes = () => {
   return (
@@ -70,7 +72,8 @@ const PublicRoutes = () => {
 const PrivateRoutes = () => {
   const [showActionSheet, setShowActionSheet] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+  const [showAlertNotVerified, setShowAlertNotVerified] = useState(false);
+
   return (
     <IonReactRouter>
       <IonTabs>
@@ -96,8 +99,6 @@ const PrivateRoutes = () => {
             path="/profile-pic"
             render={(props) => <ProfilePic {...props} setLoading={setLoading} />}
           />
-
-      
 
           <Route exact path="/login">
             <Redirect to="/explore" />
@@ -134,7 +135,12 @@ const PrivateRoutes = () => {
             horizontal="end"
             slot="fixed"
             onClick={() => {
-              setShowActionSheet(true);
+              if (auth.currentUser?.emailVerified) {
+                setShowActionSheet(true);
+              }
+              else {
+                setShowAlertNotVerified(true);
+              }
             }}
           >
             <IonFabButton>
@@ -145,6 +151,15 @@ const PrivateRoutes = () => {
             active={showActionSheet}
             setShowActionSheet={setShowActionSheet}
             setLoading={setLoading}
+          />
+          <IonAlert
+            isOpen={showAlertNotVerified}
+            onDidDismiss={() => {
+              setShowAlertNotVerified(false);
+            }}
+            header={"Email not verified"}
+            message={"You need to verify your email to upload images."}
+            buttons={["OK"]}
           />
         </>
       )}
@@ -161,15 +176,15 @@ const PrivateRoutes = () => {
 
 const App: React.FC = () => {
   const user = useContext(UserContext);
-    
-//   return !user ? (
-//    <IonApp>
-//      <LoadingPage />
-//      </IonApp>
-//  ) :(
-//  <IonApp>{user ? <PrivateRoutes /> : <PublicRoutes />}</IonApp>
-//  );
-   return <IonApp> {user ? <PrivateRoutes /> : <PublicRoutes />}</IonApp>;
+
+  //   return !user ? (
+  //    <IonApp>
+  //      <LoadingPage />
+  //      </IonApp>
+  //  ) :(
+  //  <IonApp>{user ? <PrivateRoutes /> : <PublicRoutes />}</IonApp>
+  //  );
+  return <IonApp> {user ? <PrivateRoutes /> : <PublicRoutes />}</IonApp>;
 };
 
 export default App;
