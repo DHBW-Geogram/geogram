@@ -15,7 +15,7 @@ import {
   IonListHeader,
   IonRange,
 } from "@ionic/react";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { GeolocationPosition, Plugins } from "@capacitor/core";
 import { funnel } from "ionicons/icons";
 import React from "react";
@@ -26,6 +26,8 @@ import { sortImageArray } from "../../hooks/sortImageArray";
 import { evaluateLocation } from "../../hooks/evaluateLocation";
 import ExploreCard from "../../components/ExploreCard/ExploreCard";
 import { wait } from "@testing-library/react";
+import { checkAuthEmailWithUserCollectionEmail } from "../../hooks/checkAuthEmailWithUserCollectionEmail";
+import { UserContext } from "../..";
 
 const { Geolocation } = Plugins;
 
@@ -49,9 +51,13 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
     open: false,
     event: undefined,
   });
+  
+  const user = useContext(UserContext);
 
   useEffect(() => {
     (async () => {
+      
+      checkAuthEmailWithUserCollectionEmail(user);
       // push location to state
       setLocation(await Geolocation.getCurrentPosition());
       setLoading(true);
@@ -181,7 +187,7 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
         </IonHeader>
         {images.length > 0 &&
           images.map((image, id) => {
-            return <ExploreCard key={id} image={image} />;
+            return <ExploreCard key={id} image={image} setLoading={setLoading}/>;
           })}
       </IonContent>
     </IonPage>

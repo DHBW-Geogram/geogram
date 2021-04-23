@@ -11,20 +11,23 @@ import {
   IonItem,
   IonLabel,
   IonGrid,
-  IonAlert,  
+  IonAlert,
 } from "@ionic/react";
-import { chevronBackOutline, personAddOutline } from "ionicons/icons";
+import {
+  chevronBackOutline,
+  eyeOutline,
+  personAddOutline,
+} from "ionicons/icons";
 import React, { useCallback, useState } from "react";
-import { db, auth } from "../../helper/firebase";
+import { auth } from "../../helper/firebase";
 import "./Register.css";
 import "firebase/auth";
-import { PasswordCheckService } from "../../hooks/pw-check";
+import { PasswordCheckService } from "../../hooks/pwcheck";
 
-import { User } from "../../model/User";
-import { PasswordCheckStrength } from "../../hooks/pw-check";
-import { checkUsername } from "../../hooks/checkUsername";
+import { PasswordCheckStrength } from "../../hooks/pwcheck";
 import { checkRegister } from "../../hooks/register/checkRegister";
 import { presentAlertWithHeader } from "../../hooks/alert";
+import { hideShowPassword } from "../../hooks/hideShowPassword";
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -33,21 +36,39 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [userName, setUserName] = useState("");
-  const [alertText, setAlertText] = useState("");
-  const [alertEmailVerify, setalertEmailVerify] = useState(false);
-  const [pwStrength, setpwStrength] = useState(PasswordCheckStrength.Short);
+  const [passwordShowHideIcon, setPasswordShowHideIcon] = useState(eyeOutline);
+  const [passwordType, setpasswordType] = useState<any>("password");
+  const [indColor, setindColor] = useState("white");
+  const [
+    passwordConfirmShowHideIcon,
+    setPasswordConfirmShowHideIcon,
+  ] = useState(eyeOutline);
+  const [passwordConfirmType, setpasswordConfirmType] = useState<any>(
+    "password"
+  );
+  const [pwStrength, setpwStrength] = useState(PasswordCheckStrength.Notset);
 
   let checker: PasswordCheckService = new PasswordCheckService();
 
   const onEmailNameChange = useCallback((e) => setEmail(e.detail?.value), []);
+  
   const onPasswordChange = useCallback((e) => {
     setPassword(e.detail?.value);
-    setpwStrength(checker.checkPasswordStrength(e.detail?.value));
+    let pwsec = checker.checkPasswordStrength(e.detail?.value);
+    setpwStrength(pwsec);
+    if (pwsec === PasswordCheckStrength.Notset){
+      setindColor("white");
+    } 
+    else if (pwsec === PasswordCheckStrength.Short){
+      setindColor("danger");
+    } 
+    else if (pwsec === PasswordCheckStrength.Weak || pwsec === PasswordCheckStrength.Common){
+      setindColor("warning");
+    } 
+    else if (pwsec === PasswordCheckStrength.Strong || pwsec === PasswordCheckStrength.Ok){
+      setindColor("success");
+    } 
   }, []);
-
-  const checkPw = () => {
-    setpwStrength(checker.checkPasswordStrength("tst_pw12"));
-  };
 
   const onConfirmPasswordChange = useCallback(
     (e) => setConfirmPassword(e.detail?.value),
@@ -63,10 +84,20 @@ const Register: React.FC = () => {
   );
   const onUsernameChange = useCallback((e) => setUserName(e.detail?.value), []);
 
-  const onDismiss = useCallback(() => setAlertText(""), []);
+  const onhideShowPasswordClick = useCallback(async () => {
+    var a: any[] = await hideShowPassword(passwordType);
+    setpasswordType(a[0]);
+    setPasswordShowHideIcon(a[1]);
+  }, [passwordType]);
+
+  const onhideShowPasswordConfirmClick = useCallback(async () => {
+    var a: any[] = await hideShowPassword(passwordConfirmType);
+    setpasswordConfirmType(a[0]);
+    setPasswordConfirmShowHideIcon(a[1]);
+  }, [passwordConfirmType]);
 
   const onSignUpClick = useCallback(async () => {
-    var alertMessage = await checkRegister(
+    await checkRegister(
       confirmPassword,
       password,
       email,
@@ -75,10 +106,12 @@ const Register: React.FC = () => {
       userName
     );
 
-    if(auth.currentUser){
-    presentAlertWithHeader("Please verify your email address to finish signing up for Geogram", "Thank you for signing in.");
+    if (auth.currentUser) {
+      presentAlertWithHeader(
+        "Please verify your email address to finish signing up for Geogram",
+        "Thank you for signing in."
+      );
     }
-    
   }, [confirmPassword, password, email, userFirstName, userLastName, userName]);
 
   return (
@@ -116,7 +149,7 @@ const Register: React.FC = () => {
           </IonItem>
           <br />
           <IonItem>
-            <IonLabel position="floating">Second Name</IonLabel>
+            <IonLabel position="floating">Last Name</IonLabel>
             <IonInput
               onIonChange={onLastNameChange}
               type="text"
@@ -134,12 +167,17 @@ const Register: React.FC = () => {
           </IonItem>
           <br />
           <IonItem>
-            <IonLabel position="floating">Password {pwStrength}</IonLabel>
+            <IonLabel position="floating" color={indColor}>{pwStrength}</IonLabel>
             <IonInput
               onIonChange={onPasswordChange}
-              type="password"
+              type={passwordType}
               value={password}
             ></IonInput>
+            <IonIcon className="LookIcon"
+              slot="end"
+              icon={passwordShowHideIcon}
+              onClick={onhideShowPasswordClick}
+            />
           </IonItem>
           <br />
           <IonItem>
@@ -147,8 +185,13 @@ const Register: React.FC = () => {
             <IonInput
               onIonChange={onConfirmPasswordChange}
               value={confirmPassword}
-              type="password"
+              type={passwordConfirmType}
             ></IonInput>
+            <IonIcon className="LookIcon"
+              slot="end"
+              icon={passwordConfirmShowHideIcon}
+              onClick={onhideShowPasswordConfirmClick}
+            />
           </IonItem>
           <br />
           <div className="SignInButton">
@@ -158,21 +201,6 @@ const Register: React.FC = () => {
             </IonButton>
           </div>
         </IonGrid>
-        {/* <IonAlert
-          isOpen={alertText.length > 0}
-          onDidDismiss={onDismiss}
-          message={alertText}
-          buttons={["OK"]}
-        />
-        <IonAlert
-          isOpen={alertEmailVerify}
-          onDidDismiss={() => setalertEmailVerify(false)}
-          header={"Thank you for signing in."}
-          message={
-            "Please verify your email address to finish signing up for Geogram"
-          }
-          buttons={["OK"]}
-        /> */}
       </IonContent>
     </IonPage>
   );

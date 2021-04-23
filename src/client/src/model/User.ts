@@ -3,4 +3,5 @@ export interface User {
     userFirstName: string;
     userLastName: string;
     username: string;
+    likedImage: string[];
 }
