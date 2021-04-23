@@ -10,6 +10,7 @@ import {
   IonImg,
   IonItem,
   IonLabel,
+  IonPopover,
   IonText,
 } from "@ionic/react";
 import { heartOutline, pin, heart } from "ionicons/icons";
@@ -27,6 +28,7 @@ import { presentAlert } from "../../hooks/alert";
 import { Image } from "../../model/Image";
 
 import { delikeFunction, likeFunction } from "../../hooks/like";
+import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
 
 interface ContainerProps {
   image: Image;
@@ -38,8 +40,11 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [likeIcon, setLikeIcon] = useState(heartOutline);
   const [likeColor, setLikeColor] = useState("dark");
   const [flag, setFlag] = useState(false);
-
+  const [showUser, setShowUser] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   const user = useContext(UserContext);
+
+  const [userProfilModel, setuserProfilModel] = useState(false);
 
   useEffect(() => {
     db.collection("images")
@@ -113,6 +118,10 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     if (setLoading != undefined) setLoading(false);
   }, [likeNumber, image, user, db, flag]);
 
+  const showUserProfil = useCallback(() => {
+    setuserProfilModel(true);
+  }, []);
+
   return (
     <IonCard className="my-ion-card">
       {/* Coordinated */}
@@ -141,7 +150,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
       )}
 
       <IonCardHeader>
-        <IonCardSubtitle>{image.user}</IonCardSubtitle>
+        <IonCardSubtitle onClick={showUserProfil}>{image.user}</IonCardSubtitle>
         <IonCardTitle>{image.title}</IonCardTitle>
       </IonCardHeader>
 
@@ -157,6 +166,13 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         <br />
         <IonText style={{ fontSize: "large" }}>{image.description}</IonText>
       </IonCardContent>
+
+      <ShowUserProfil
+        image={image}
+        active={userProfilModel}
+        setuserProfilModel={setuserProfilModel}
+        setLoading={setLoading}
+      />
     </IonCard>
   );
 };

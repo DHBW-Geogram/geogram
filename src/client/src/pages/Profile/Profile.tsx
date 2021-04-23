@@ -26,11 +26,12 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import ProfilePicSelectionModal from "../../components/ProfilePicSelectionModal/ProfilePicSelectionModal";
 import { auth, db } from "../../helper/firebase";
 import { checkUsername } from "./checkUsername";
-import { RefresherEventDetail } from '@ionic/core';
+import { RefresherEventDetail } from "@ionic/core";
 import { Image } from "../../model/Image";
 
-const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ setLoading }) => {
-
+const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
+  setLoading,
+}) => {
   // modal to change profile picture
   const [profileSelectionModal, setProfileSelectionModal] = useState(false);
 
@@ -43,7 +44,9 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
   const [bio, setBio] = useState<string>();
   const [showAlertVerify, setShowAlertVerify] = useState<boolean>(false);
   const [verified, setVerified] = useState<string>("");
-  const [profilepic, setProfilepic] = useState("https://im-coder.com/images4/15590312779219.png");
+  const [profilepic, setProfilepic] = useState(
+    "https://im-coder.com/images4/15590312779219.png"
+  );
 
   const [posts, setPosts] = useState<number>(0);
   let postsUsername: string = "";
@@ -67,7 +70,10 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
   const [presentToast, dismissToast] = useIonToast();
 
   const [showAlertLogin, setShowAlertLogin] = useState<boolean>(false);
-  const [showAlertIncorrectPassword, setShowAlertIncorrectPassword] = useState<boolean>(false);
+  const [
+    showAlertIncorrectPassword,
+    setShowAlertIncorrectPassword,
+  ] = useState<boolean>(false);
   let isShowAlertLogin: boolean = false;
   const [isLoginSuccessfull, setLoginSuccessfull] = useState<boolean>(false);
 
@@ -106,17 +112,21 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
         querySnapshot.forEach((doc) => {
           postsUsername = doc.data().username;
         });
-      }).then(() => {
-        db.collection("images").where("user", "==", postsUsername).get().then((querySnapshot) => {
-          setPosts(querySnapshot.size);
-          counterLikes = 0;
-          querySnapshot.forEach((doc) => {
-            if (!(doc.data().likes == null)) {
-              counterLikes = counterLikes + doc.data().likes;
-            }
+      })
+      .then(() => {
+        db.collection("images")
+          .where("user", "==", postsUsername)
+          .get()
+          .then((querySnapshot) => {
+            setPosts(querySnapshot.size);
+            counterLikes = 0;
+            querySnapshot.forEach((doc) => {
+              if (!(doc.data().likes == null)) {
+                counterLikes = counterLikes + doc.data().likes;
+              }
+            });
+            setLikes(counterLikes);
           });
-          setLikes(counterLikes);
-        });
       });
   }, []);
 
@@ -127,7 +137,8 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
       setVerified("");
     }
 
-    await db.collection("users")
+    await db
+      .collection("users")
       .where("email", "==", auth.currentUser?.email)
       .get()
       .then((querySnapshot) => {
@@ -143,18 +154,25 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
           postsUsername = doc.data().username;
           setFullName(doc.data().userFirstName + " " + doc.data().userLastName);
         });
-      }).then(() => {
-        db.collection("images").where("user", "==", postsUsername).get().then((querySnapshot) => {
-          setPosts(querySnapshot.size);
-          counterLikes = 0;
-          querySnapshot.forEach((doc) => {
-            if (!(doc.data().likes == null)) {
-              counterLikes = counterLikes + doc.data().likes;
-            }
+      })
+      .then(() => {
+        db.collection("images")
+          .where("user", "==", postsUsername)
+          .get()
+          .then((querySnapshot) => {
+            setPosts(querySnapshot.size);
+            counterLikes = 0;
+            querySnapshot.forEach((doc) => {
+              if (!(doc.data().likes == null)) {
+                counterLikes = counterLikes + doc.data().likes;
+              }
+            });
+            setLikes(counterLikes);
           });
-          setLikes(counterLikes);
-        });
-      }).then(() => { event.detail.complete() });
+      })
+      .then(() => {
+        event.detail.complete();
+      });
   }
 
   return (
@@ -257,7 +275,13 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
           message={"Email was sent to you to verify your email."}
           buttons={["OK"]}
         />
-        <IonRefresher slot="fixed" pullFactor={0.5} pullMin={100} pullMax={200} onIonRefresh={doRefresh}>
+        <IonRefresher
+          slot="fixed"
+          pullFactor={0.5}
+          pullMin={100}
+          pullMax={200}
+          onIonRefresh={doRefresh}
+        >
           <IonRefresherContent></IonRefresherContent>
         </IonRefresher>
         <IonModal isOpen={EditProfile}>
@@ -366,10 +390,11 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                         userLastName: lastName,
                         email: email,
                         biography: bio,
-                        profilepic: profilepic
+                        profilepic: profilepic,
                       };
 
-                      await db.collection("users")
+                      await db
+                        .collection("users")
                         .where("email", "==", auth.currentUser?.email)
                         .get()
                         .then((querySnapshot) => {
@@ -391,24 +416,39 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                               }
                             })
                             .then(async () => {
-                              await auth.fetchSignInMethodsForEmail(email as string).then(async () => {
-                                await db.collection("users").get().then((querySnapshot) => {
-                                  querySnapshot.forEach(doc => {
-                                    if (doc.data().email == email && auth.currentUser?.email != email) {
-                                      isEmailCorrect = false;
-                                      console.log("Email bereits vorhanden!");
-                                      setErrorEmailLabel("danger");
-                                      setErrorEmailText("danger");
-                                    }
-                                  });
+                              await auth
+                                .fetchSignInMethodsForEmail(email as string)
+                                .then(async () => {
+                                  await db
+                                    .collection("users")
+                                    .get()
+                                    .then((querySnapshot) => {
+                                      querySnapshot.forEach((doc) => {
+                                        if (
+                                          doc.data().email == email &&
+                                          auth.currentUser?.email != email
+                                        ) {
+                                          isEmailCorrect = false;
+                                          console.log(
+                                            "Email bereits vorhanden!"
+                                          );
+                                          setErrorEmailLabel("danger");
+                                          setErrorEmailText("danger");
+                                        }
+                                      });
+                                    });
+                                })
+                                .catch((error) => {
+                                  isEmailCorrect = false;
+                                  console.log("Email ist Falsch!");
+                                  setErrorEmailLabel("danger");
+                                  setErrorEmailText("danger");
                                 });
-                              }).catch((error) => {
-                                isEmailCorrect = false;
-                                console.log("Email ist Falsch!");
-                                setErrorEmailLabel("danger");
-                                setErrorEmailText("danger");
-                              });
-                              if (email != auth.currentUser?.email && isEmailCorrect && isUsernameCorrect) {
+                              if (
+                                email != auth.currentUser?.email &&
+                                isEmailCorrect &&
+                                isUsernameCorrect
+                              ) {
                                 await auth.currentUser
                                   ?.updateEmail(email as string)
                                   .then(async function () {
@@ -430,7 +470,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                                               profilepic: data.profilepic,
                                               userFirstName: data.userFirstName,
                                               userLastName: data.userLastName,
-                                              username: data.username
+                                              username: data.username,
                                             });
                                         }
                                       })
@@ -460,49 +500,74 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                                       profilepic: data.profilepic,
                                       userFirstName: data.userFirstName,
                                       userLastName: data.userLastName,
-                                      username: data.username
+                                      username: data.username,
                                     });
                                 }
                               }
-                            }).then(async () => {
-                              if (username != oldUsername && isUsernameCorrect && isEmailCorrect && !isShowAlertLogin) {
-                                await db.collection("images").where("user", "==", oldUsername).get().then((querySnapshot) => {
-                                  querySnapshot.forEach(async doc => {
-                                    let imageData: Image = doc.data() as Image;
-                                    imageData.user = String(username);
-                                    await db
-                                      .collection("images")
-                                      .doc(doc.data().id)
-                                      .set(imageData);
+                            })
+                            .then(async () => {
+                              if (
+                                username != oldUsername &&
+                                isUsernameCorrect &&
+                                isEmailCorrect &&
+                                !isShowAlertLogin
+                              ) {
+                                await db
+                                  .collection("images")
+                                  .where("user", "==", oldUsername)
+                                  .get()
+                                  .then((querySnapshot) => {
+                                    querySnapshot.forEach(async (doc) => {
+                                      let imageData: Image = doc.data() as Image;
+                                      imageData.user = String(username);
+                                      await db
+                                        .collection("images")
+                                        .doc(doc.data().id)
+                                        .set(imageData);
+                                    });
                                   });
-                                });
                               }
-                            }).then(() => {
+                            })
+                            .then(() => {
                               if (!isUsernameCorrect && !isEmailCorrect) {
                                 presentToast({
-                                  buttons: [{ text: 'hide', handler: () => dismissToast() }],
-                                  message: 'Username and Email already exists or invalid!',
+                                  buttons: [
+                                    {
+                                      text: "hide",
+                                      handler: () => dismissToast(),
+                                    },
+                                  ],
+                                  message:
+                                    "Username and Email already exists or invalid!",
                                   duration: 5000,
-                                  color: "danger"
+                                  color: "danger",
                                 });
-                              }
-                              else if (!isUsernameCorrect) {
+                              } else if (!isUsernameCorrect) {
                                 presentToast({
-                                  buttons: [{ text: 'hide', handler: () => dismissToast() }],
-                                  message: 'Username already exists or invalid!',
+                                  buttons: [
+                                    {
+                                      text: "hide",
+                                      handler: () => dismissToast(),
+                                    },
+                                  ],
+                                  message:
+                                    "Username already exists or invalid!",
                                   duration: 5000,
-                                  color: "danger"
+                                  color: "danger",
                                 });
-                              }
-                              else if (!isEmailCorrect) {
+                              } else if (!isEmailCorrect) {
                                 presentToast({
-                                  buttons: [{ text: 'hide', handler: () => dismissToast() }],
-                                  message: 'Email already exists or invalid!',
+                                  buttons: [
+                                    {
+                                      text: "hide",
+                                      handler: () => dismissToast(),
+                                    },
+                                  ],
+                                  message: "Email already exists or invalid!",
                                   duration: 5000,
-                                  color: "danger"
+                                  color: "danger",
                                 });
-                              }
-                              else {
+                              } else {
                                 dismissToast();
                                 if (!isShowAlertLogin) {
                                   setEditProfile(false);
@@ -521,31 +586,36 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                     isOpen={showAlertLogin}
                     cssClass="my-custom-class"
                     header={"Login"}
-                    message={"Enter your password and try to save your data again."}
+                    message={
+                      "Enter your password and try to save your data again."
+                    }
                     inputs={[
                       {
-                        name: 'Password',
-                        type: 'password',
-                        placeholder: "Password"
-                      }
+                        name: "Password",
+                        type: "password",
+                        placeholder: "Password",
+                      },
                     ]}
                     buttons={[
                       {
-                        text: 'Cancel',
-                        role: 'cancel',
-                        cssClass: 'secondary',
+                        text: "Cancel",
+                        role: "cancel",
+                        cssClass: "secondary",
                         handler: () => {
-                          console.log('Confirm Cancel');
+                          console.log("Confirm Cancel");
                           setShowAlertLogin(false);
-                        }
+                        },
                       },
                       {
-                        text: 'OK',
+                        text: "OK",
                         handler: async (e) => {
-                          console.log('Confirm Ok');
+                          console.log("Confirm Ok");
 
                           await auth
-                            .signInWithEmailAndPassword(auth.currentUser?.email as string, e.Password)
+                            .signInWithEmailAndPassword(
+                              auth.currentUser?.email as string,
+                              e.Password
+                            )
                             .then(() => {
                               setShowAlertLogin(false);
                               setLoginSuccessfull(true);
@@ -554,8 +624,8 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                               setShowAlertLogin(false);
                               setShowAlertIncorrectPassword(true);
                             });
-                        }
-                      }
+                        },
+                      },
                     ]}
                   />
                   <IonAlert
@@ -579,10 +649,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
                     message={"Now you can save your data again."}
                     buttons={["OK"]}
                   />
-                  <IonLoading
-                    isOpen={showLoading}
-                    message={'Please wait...'}
-                  />
+                  <IonLoading isOpen={showLoading} message={"Please wait..."} />
                 </IonCol>
               </IonRow>
               <IonRow>
@@ -604,7 +671,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({ 
           </IonContent>
         </IonModal>
       </IonContent>
-    </IonPage >
+    </IonPage>
   );
 };
 

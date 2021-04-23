@@ -55,6 +55,7 @@ import Register from "./pages/auth/Register";
 import Exploration from "./pages/Exploration/Exploration";
 import ProfilePic from "./pages/ProfilePic/ProfilePic";
 import LoadingPage from "./pages/auth/LoadingPage";
+import ShowUserProfil from "./components/ShowUserProfil/ShowUserProfil";
 
 const PublicRoutes = () => {
   return (
@@ -95,6 +96,8 @@ const PrivateRoutes = () => {
             path="/profile-pic"
             render={(props) => <ProfilePic {...props} setLoading={setLoading} />}
           />
+
+      
 
           <Route exact path="/login">
             <Redirect to="/explore" />
