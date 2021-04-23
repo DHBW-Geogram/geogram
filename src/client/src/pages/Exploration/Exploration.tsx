@@ -17,7 +17,7 @@ import {
 } from "@ionic/react";
 import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { GeolocationPosition, Plugins } from "@capacitor/core";
-import { funnel } from "ionicons/icons";
+import { funnel, image } from "ionicons/icons";
 import React from "react";
 import { RefresherEventDetail } from "@ionic/core";
 import { Image } from "../../model/Image";

@@ -6,6 +6,7 @@ import {
   IonHeader,
   IonIcon,
   IonItem,
+  IonLabel,
   IonModal,
   IonTextarea,
   IonTitle,
@@ -27,6 +28,7 @@ import "./ShowComments.css";
 
 import firebase from "firebase/app";
 import { UserContext } from "../..";
+import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
 
 interface ContainerProps {
   image: Image;
@@ -43,10 +45,11 @@ const ShowComments: React.FC<ContainerProps> = ({
 }) => {
   const onCommentChange = useCallback((e) => setComment(e.detail?.value), []);
   const [comment, setComment] = useState<any>("");
-
-  // const [comments, setComments] = useState<Image[]>([]);
+  const [userComment, setUserComment] = useState<String>();
   const [comments, setComments] = useState<String[]>();
-
+  const [userNameComments, setuserNameComments] = useState<String[]>();
+  const [userProfilModel, setuserProfilModel] = useState(false);
+  const [nameOfUser, setNameOfUser]= useState<string>("");
   const user = useContext(UserContext);
 
   useEffect(() => {
@@ -58,13 +61,36 @@ const ShowComments: React.FC<ContainerProps> = ({
         .then(async (documentSnapshot) => {
           let commentsInCollection: string[] = documentSnapshot.data()?.comment;
 
-          setComments(await documentSnapshot.data()?.comment);
+         // setComments(await documentSnapshot.data()?.comment);
 
           if (commentsInCollection === undefined) {
             return;
           }
 
-          setComments(commentsInCollection);
+          let a: String[] = [];
+
+          let b: String[] = [];
+
+          commentsInCollection.forEach(async (s) => {
+            var ss = s.split(":")[0];
+
+            await db
+              .collection("users")
+              .doc(ss)
+              .get()
+              .then((documentSnapshot) => {
+                b.push(documentSnapshot.data()?.username + ":");
+
+                a.push(documentSnapshot.data()?.username + ": " + s.substr(ss.length + 2));
+                
+              });
+          });        
+
+          var d: String[][] = [a,b] 
+
+          
+          setuserNameComments(b);
+          setComments(a);
         });
     })();
   }, [image]);
@@ -73,22 +99,15 @@ const ShowComments: React.FC<ContainerProps> = ({
     if (comment === "") {
       return;
     } else {
-      var username: string = "";
-      await db
-        .collection("users")
-        .doc(user?.uid)
-        .get()
-        .then((documentSnapshot) => {
-          username = documentSnapshot.data()?.username;
-        });
-
-      var mes = username + ": " + comment;
+      var mes = user?.uid + ": " + comment;
 
       await db
         .collection("images")
         .doc(image.id)
         .update({
           comment: firebase.firestore.FieldValue.arrayUnion(mes),
+          // comment: [{comment: [mes, user?.uid]}],
+          // , { merge: true }
         })
         .catch((err) => presentAlert(err.message));
 
@@ -100,6 +119,11 @@ const ShowComments: React.FC<ContainerProps> = ({
     setshowCommentsModal(false);
   }, [false, setshowCommentsModal]);
 
+  const onClickShowUserProfil = useCallback(() => {
+    
+    setNameOfUser("Josua");
+    setuserProfilModel(true);
+  },[setuserProfilModel, true, setNameOfUser])
   return (
     <IonModal
       isOpen={active}
@@ -113,10 +137,9 @@ const ShowComments: React.FC<ContainerProps> = ({
       </div>
 
       <IonContent>
-      
         <IonItem>
           <IonTextarea
-          placeholder="Comment"            
+            placeholder="Comment"
             maxlength={160}
             rows={1}
             autoGrow={true}
@@ -132,20 +155,30 @@ const ShowComments: React.FC<ContainerProps> = ({
             onClick={onAddCommentClick}
           >
             Add
-          </IonButton>          
+          </IonButton>
         </IonItem>
 
-        
-        {comments?.map((comment) => {
-          return (
-            <IonItem>
-              <IonTextarea rows={1} autoGrow={true} disabled={true}>
+        {comments?.map((comment, id) => { 
+
+            // for(var i =0; i < comments?.length; i++){
+            return(
+            <IonGrid key={id}>
+              <IonLabel>{}</IonLabel>
+              <IonTextarea onClick={onClickShowUserProfil} rows={1} autoGrow={true} disabled={true}>
                 {comment}
               </IonTextarea>
-            </IonItem>
-          );
-        })}
+            </IonGrid>
+           ) // }
+           })}
       </IonContent>
+
+      <ShowUserProfil
+        image={image}
+        nameOfUser={nameOfUser}
+        activeShowUserProfil={userProfilModel}
+        setuserProfilModel={setuserProfilModel}
+        setLoading={setLoading}
+      />
     </IonModal>
   );
 };

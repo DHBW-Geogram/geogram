@@ -6,13 +6,16 @@ import {
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
+  IonGrid,
   IonIcon,
   IonImg,
+  IonInput,
   IonItem,
   IonLabel,
   IonPopover,
   IonText,
   IonTextarea,
+  IonTitle,
 } from "@ionic/react";
 import { heartOutline, pin, heart } from "ionicons/icons";
 import React, {
@@ -42,21 +45,22 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [likeIcon, setLikeIcon] = useState(heartOutline);
   const [likeColor, setLikeColor] = useState("dark");
   const [comment, setComment] = useState<any>("");
-  const [commentText, setCommentText] = useState<any>("");
   const [flag, setFlag] = useState(false);
+  const [nameOfUser, setNameOfUser]= useState<string>("");
 
-  const [comments, setComments] = useState<Array<String>>([]);
   const [lastComment, setLastComment] = useState<String>();
+  const [userComment, setUserComment] = useState<String>("");
 
   const onCommentChange = useCallback((e) => setComment(e.detail?.value), []);
-  const [showUser, setShowUser] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
   const user = useContext(UserContext);
-  const [commentTrue, setCommentTrue] = useState<boolean>(false)
+  const [commentTrue, setCommentTrue] = useState<boolean>(false);
   const [userProfilModel, setuserProfilModel] = useState(false);
   const [showCommentsModal, setshowCommentsModal] = useState(false);
 
   useEffect(() => {
+    setNameOfUser(image.user);
+        
+    //likes
     db.collection("images")
       .doc(image.id)
       .get()
@@ -99,14 +103,26 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           }
 
           var len = commentsInCollection.length - 1;
+          var last = commentsInCollection[len].split(":")[0];
+          var s = commentsInCollection[len].substr(last.length + 1);
+
+          await db
+            .collection("users")
+            .doc(last)
+            .get()
+            .then((documentSnapshot) => {
+              setUserComment(documentSnapshot.data()?.username + ":");
+            });
+
           setCommentTrue(true);
-          setLastComment(commentsInCollection[len]);
+          setLastComment(s);
         });
     })();
   }, [
     image.id,
+    image.user,
+    image,
     user?.uid,
-    setCommentText,
     setLikeIcon,
     setLikeColor,
     setLikeNumber,
@@ -159,16 +175,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     if (comment === "") {
       return;
     } else {
-      var username: string = "";
-      await db
-        .collection("users")
-        .doc(user?.uid)
-        .get()
-        .then((documentSnapshot) => {
-          username = documentSnapshot.data()?.username;
-        });
-
-      var mes = username + ": " + comment;
+      var mes = user?.uid + ": " + comment;
 
       await db
         .collection("images")
@@ -182,13 +189,20 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     }
   }, [user, image, comment]);
 
-  const onReadCommentClick = useCallback(() => {
+  const onReadCommentClick = useCallback(() => {    
     setshowCommentsModal(true);
-  }, []);
+  }, [true, setshowCommentsModal]);
 
   const showUserProfil = useCallback(() => {
+    setNameOfUser(image.user);    
     setuserProfilModel(true);
-  }, []);
+  }, [image.user, setNameOfUser, setuserProfilModel]);
+
+
+  const onCommetShowUserProfilClick = useCallback(() => {   
+    setNameOfUser(userComment?.split(":")[0])
+    setuserProfilModel(false);
+  },[setuserProfilModel, true, setNameOfUser, userComment] )
 
   return (
     <IonCard className="my-ion-card">
@@ -230,7 +244,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
             <IonIcon icon={likeIcon} />
           </IonButton>
           <IonText>{likeNumber}</IonText>
-          
+
           <IonButton onClick={onReadCommentClick}>Read Comments</IonButton>
         </IonButtons>
         <IonItem>
@@ -253,7 +267,16 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
             Add
           </IonButton>
         </IonItem>
-        {commentTrue ? <IonItem>{lastComment}</IonItem> : false}
+
+        {commentTrue ? (
+          <IonGrid>
+            <IonInput onClick={onCommetShowUserProfilClick} disabled={false}>{userComment}</IonInput>
+
+            <IonInput>{lastComment}</IonInput>
+          </IonGrid>
+        ) : (
+          false
+        )}
 
         <br />
 
@@ -262,6 +285,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
       <ShowUserProfil
         image={image}
+        nameOfUser={nameOfUser}
         activeShowUserProfil={userProfilModel}
         setuserProfilModel={setuserProfilModel}
         setLoading={setLoading}

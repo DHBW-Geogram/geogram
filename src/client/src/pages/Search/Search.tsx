@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   IonContent,
   IonHeader,
@@ -41,9 +41,10 @@ const Search: React.FC = () => {
 
       setImages(await fetchImages());
     })();
-  }, []);
+  }, [setLocation, setImages, GeolocationPositionError ]);
 
-  async function fetchImages(): Promise<Image[]> {
+  // async function fetchImages(): Promise<Image[]> {
+    const fetchImages = useCallback(async () =>  {
     // fetch images from firebase
     const ref = db.collection("images");
     const data = await ref.get();
@@ -63,7 +64,7 @@ const Search: React.FC = () => {
     });
 
     return t;
-  }
+  }, [location, location])
 
   function filterItems(searchText: string) {
     console.log("filtering", searchText);
@@ -160,9 +161,9 @@ const Search: React.FC = () => {
 
         <IonGrid>
           <IonRow>
-            {images.map((p: Image) => {
+            {images.map((p: Image, id) => {
               return (
-                <IonCol size="4">
+                <IonCol key={id} size="4">
                   <IonImg
                     onClick={(e) => {
                       setShowPopup(true);

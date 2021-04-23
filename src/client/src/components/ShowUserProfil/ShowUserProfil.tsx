@@ -32,16 +32,20 @@ import "./ShowUserProfil.css";
 
 interface ContainerProps {
   image: Image;
+  nameOfUser: string;
   activeShowUserProfil: boolean;
   setuserProfilModel: Dispatch<SetStateAction<boolean>>;
   setLoading?: Dispatch<SetStateAction<boolean>>;
+ 
 }
 
 const ShowUserProfil: React.FC<ContainerProps> = ({
   image,
+  nameOfUser,
   activeShowUserProfil,
   setuserProfilModel,
   setLoading,
+  
 }) => {
   const [username, setUsername] = useState<string>();
   const [firstName, setFirstName] = useState<string>();
@@ -61,7 +65,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
 
   useEffect(() => {
     db.collection("users")
-      .where("username", "==", image.user)
+      .where("username", "==", nameOfUser)
       .get()
       .then(async (querySnapshot) => {
         querySnapshot.forEach(async (doc) => {
@@ -98,7 +102,8 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
     counterLikes,
     image.likes,
     image.user,
-    counterLikes,
+    counterLikes,    
+    nameOfUser,
     setPosts,
     setLikes,
     postsUsername,
