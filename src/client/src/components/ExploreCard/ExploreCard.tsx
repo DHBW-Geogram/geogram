@@ -47,7 +47,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [userProfilModel, setuserProfilModel] = useState(false);
 
   useEffect(() => {
-    db.collection("images")
+    (async () => {
+    await db.collection("images")
       .doc(image.id)
       .get()
       .then(async (documentSnapshot) => {
@@ -74,7 +75,9 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           setLikeNumber(documentSnapshot.data()?.likes);
         }
       });
-  },[image.id, user?.uid, setLikeIcon, setLikeColor, setLikeNumber]);
+
+    })();
+  },[image.id, image, user, db, user?.uid, setLikeIcon, heart,"danger", "users", "images",  setLikeColor, setLikeNumber]);
 
   const onLikeClick = useCallback(async () => {
     if (flag === false) {
@@ -120,7 +123,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
   const showUserProfil = useCallback(() => {
     setuserProfilModel(true);
-  }, []);
+  }, [setuserProfilModel, true]);
 
   return (
     <IonCard className="my-ion-card">
