@@ -41,8 +41,8 @@ const Search: React.FC = () => {
         setImages(images);
       });
     })();
-  }, [location]);
-
+  }, [location, setLocation, fetchImages, images, setImages, Geolocation, Geolocation.getCurrentPosition]);
+ 
   async function fetchImages(): Promise<Image[]> {
     // fetch images from firebase
     const ref = db.collection("images");
