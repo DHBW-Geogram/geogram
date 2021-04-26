@@ -60,7 +60,6 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
       checkAuthEmailWithUserCollectionEmail(user);
       // push location to state
       setLocation(await Geolocation.getCurrentPosition());
-      setLoading(true);
 
       fetchImages(filter).then((images) => {
         setImages(images);
