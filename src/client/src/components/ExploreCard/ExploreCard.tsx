@@ -47,8 +47,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
   const [userProfilModel, setuserProfilModel] = useState(false);
 
-  useEffect(() => {
-    //(async () => {
+  useEffect(() => {    
       db
         .collection("images")
         .doc(image.id)
@@ -82,27 +81,19 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
                 if (bol) {
                   setLikeIcon(heart);
                   setLikeColor("danger");
+                }else {                  
+                  setLikeIcon(heartOutline);
+                  setLikeColor("dark");
                 }
+                
               });
                
           }
           //in alle Fälle setzte die anzahl an likes
           setLikeNumber(documentSnapshot.data()?.likes);
         });
-
-      
-   // })();
-  }, [
-    image.id,
-    image,
-    user,
-    db,
-    user?.uid,
-    setLikeIcon,
-    heart,    
-    setLikeColor,
-    setLikeNumber,
-  ]);
+   
+  });
 
   const onLikeClick = useCallback(async () => {
     console.log("Function onLikeClick");
