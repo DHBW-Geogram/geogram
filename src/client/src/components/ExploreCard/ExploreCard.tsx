@@ -35,6 +35,8 @@ import { delikeFunction, likeFunction } from "../../hooks/like";
 import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
 import ShowComments from "../ShowComments/ShowComments";
 
+import "./ExploreCard.css"
+
 interface ContainerProps {
   image: Image;
   setLoading?: Dispatch<SetStateAction<boolean>>;
@@ -60,8 +62,9 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   useEffect(() => {
     setNameOfUser(image.user);
         
-    //likes
-    db.collection("images")
+    //likes    
+    (async () => {
+    await db.collection("images")
       .doc(image.id)
       .get()
       .then(async (documentSnapshot) => {
@@ -118,15 +121,9 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           setLastComment(s);
         });
     })();
-  }, [
-    image.id,
-    image.user,
-    image,
-    user?.uid,
-    setLikeIcon,
-    setLikeColor,
-    setLikeNumber,
-  ]);
+  })();
+},[image.id, image, user, db, user?.uid, setLikeIcon, heart,"danger", "users", "images",  setLikeColor, setLikeNumber]);
+   
 
   const onLikeClick = useCallback(async () => {
     if (flag === false) {
@@ -233,7 +230,14 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
       <IonCardHeader>
         <IonCardSubtitle onClick={showUserProfil}>{image.user}</IonCardSubtitle>
-        <IonCardTitle>{image.title}</IonCardTitle>
+        <IonCardTitle onClick={() => {
+          let descriptionElement: any = document.getElementById(`${image.id}-2`);
+          if(descriptionElement.classList.length > 0){
+            descriptionElement.classList.remove("hide-text-overflow");
+          }else{
+            descriptionElement.classList.add("hide-text-overflow")
+          }
+        }}><h2 style={{fontSize: "1.3rem"}} id={`${image.id}-2`} className="hide-text-overflow">{image.title}</h2></IonCardTitle>
       </IonCardHeader>
 
       <IonCardContent>
@@ -279,8 +283,14 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         )}
 
         <br />
-
-        <IonText style={{ fontSize: "large" }}>{image.description}</IonText>
+        <IonText onClick={() => {
+          let descriptionElement: any = document.getElementById(`${image.id}-1`);
+            if(descriptionElement.classList.length > 0){
+              descriptionElement.classList.remove("hide-text-overflow");
+            }else{
+              descriptionElement.classList.add("hide-text-overflow")
+            }
+        }} style={{ fontSize: "large" }}><p id={`${image.id}-1`} className="hide-text-overflow">{image.description}</p></IonText>
       </IonCardContent>
 
       <ShowUserProfil

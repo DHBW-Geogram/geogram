@@ -86,60 +86,64 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
       setVerified("");
     }
 
-    db.collection("users")
-      .doc(auth.currentUser?.uid)
-      .update({
-        email: auth.currentUser?.email,
-      }).then(() => {
-        db.collection("users")
-          .where("email", "==", auth.currentUser?.email)
-          .get()
-          .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              if (doc.data().profilepic != null) {
-                setProfilepic(doc.data().profilepic);
-              }
-              setUsername(doc.data().username);
-              setEmail(doc.data().email);
-              setFirstName(doc.data().userFirstName);
-              setLastName(doc.data().userLastName);
-              setBio(doc.data().biography);
-              setFullName(doc.data().userFirstName + " " + doc.data().userLastName);
+    auth.currentUser?.reload().then(() => {
+      db.collection("users")
+        .doc(auth.currentUser?.uid)
+        .update({
+          email: auth.currentUser?.email,
+        }).then(() => {
+          db.collection("users")
+            .where("email", "==", auth.currentUser?.email)
+            .get()
+            .then((querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                if (doc.data().profilepic != null) {
+                  setProfilepic(doc.data().profilepic);
+                }
+                setUsername(doc.data().username);
+                setEmail(doc.data().email);
+                setFirstName(doc.data().userFirstName);
+                setLastName(doc.data().userLastName);
+                setBio(doc.data().biography);
+                setFullName(doc.data().userFirstName + " " + doc.data().userLastName);
+              });
             });
-          });
-      })
+        });
+    });
   }, [EditProfile]);
 
   useEffect(() => {
-    db.collection("users")
-      .doc(auth.currentUser?.uid)
-      .update({
-        email: auth.currentUser?.email,
-      }).then(() => {
-        db.collection("users")
-          .where("email", "==", auth.currentUser?.email)
-          .get()
-          .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              postsUsername = doc.data().username;
-            });
-          })
-          .then(() => {
-            db.collection("images")
-              .where("user", "==", postsUsername)
-              .get()
-              .then((querySnapshot) => {
-                setPosts(querySnapshot.size);
-                counterLikes = 0;
-                querySnapshot.forEach((doc) => {
-                  if (!(doc.data().likes == null)) {
-                    counterLikes = counterLikes + doc.data().likes;
-                  }
-                });
-                setLikes(counterLikes);
+    auth.currentUser?.reload().then(() => {
+      db.collection("users")
+        .doc(auth.currentUser?.uid)
+        .update({
+          email: auth.currentUser?.email,
+        }).then(() => {
+          db.collection("users")
+            .where("email", "==", auth.currentUser?.email)
+            .get()
+            .then((querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                postsUsername = doc.data().username;
               });
-          });
-      })
+            })
+            .then(() => {
+              db.collection("images")
+                .where("user", "==", postsUsername)
+                .get()
+                .then((querySnapshot) => {
+                  setPosts(querySnapshot.size);
+                  counterLikes = 0;
+                  querySnapshot.forEach((doc) => {
+                    if (!(doc.data().likes == null)) {
+                      counterLikes = counterLikes + doc.data().likes;
+                    }
+                  });
+                  setLikes(counterLikes);
+                });
+            });
+        });
+    });
   }, []);
 
   async function doRefresh(event: CustomEvent<RefresherEventDetail>) {
@@ -149,48 +153,49 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
       setVerified("");
     }
 
-    db.collection("users")
-      .doc(auth.currentUser?.uid)
-      .update({
-        email: auth.currentUser?.email,
-      }).then(async () => {
-        await db
-          .collection("users")
-          .where("email", "==", auth.currentUser?.email)
-          .get()
-          .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              if (doc.data().profilepic != null) {
-                setProfilepic(doc.data().profilepic);
-              }
-              setUsername(doc.data().username);
-              setEmail(doc.data().email);
-              setFirstName(doc.data().userFirstName);
-              setLastName(doc.data().userLastName);
-              setBio(doc.data().biography);
-              postsUsername = doc.data().username;
-              setFullName(doc.data().userFirstName + " " + doc.data().userLastName);
-            });
-          })
-          .then(() => {
-            db.collection("images")
-              .where("user", "==", postsUsername)
-              .get()
-              .then((querySnapshot) => {
-                setPosts(querySnapshot.size);
-                counterLikes = 0;
-                querySnapshot.forEach((doc) => {
-                  if (!(doc.data().likes == null)) {
-                    counterLikes = counterLikes + doc.data().likes;
-                  }
-                });
-                setLikes(counterLikes);
+    auth.currentUser?.reload().then(() => {
+      db.collection("users")
+        .doc(auth.currentUser?.uid)
+        .update({
+          email: auth.currentUser?.email,
+        }).then(async () => {
+          await db
+            .collection("users")
+            .where("email", "==", auth.currentUser?.email)
+            .get()
+            .then((querySnapshot) => {
+              querySnapshot.forEach((doc) => {
+                if (doc.data().profilepic != null) {
+                  setProfilepic(doc.data().profilepic);
+                }
+                setUsername(doc.data().username);
+                setEmail(doc.data().email);
+                setFirstName(doc.data().userFirstName);
+                setLastName(doc.data().userLastName);
+                setBio(doc.data().biography);
+                postsUsername = doc.data().username;
+                setFullName(doc.data().userFirstName + " " + doc.data().userLastName);
               });
-          })
-      })
-      .then(() => {
-        event.detail.complete();
-      });
+            })
+            .then(() => {
+              db.collection("images")
+                .where("user", "==", postsUsername)
+                .get()
+                .then((querySnapshot) => {
+                  setPosts(querySnapshot.size);
+                  counterLikes = 0;
+                  querySnapshot.forEach((doc) => {
+                    if (!(doc.data().likes == null)) {
+                      counterLikes = counterLikes + doc.data().likes;
+                    }
+                  });
+                  setLikes(counterLikes);
+                });
+            })
+        })
+    }).then(() => {
+      event.detail.complete();
+    });
   }
 
   return (
@@ -536,12 +541,12 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
                                   .get()
                                   .then((querySnapshot) => {
                                     querySnapshot.forEach(async (doc) => {
-                                      let imageData: Image = doc.data() as Image;
-                                      imageData.user = String(username);
                                       await db
                                         .collection("images")
                                         .doc(doc.data().id)
-                                        .set(imageData);
+                                        .update({
+                                          user: username,
+                                        });
                                     });
                                   });
                               }
