@@ -92,17 +92,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
       
    // })();
-  }, [
-    image.id,
-    image,
-    user,
-    db,
-    user?.uid,
-    setLikeIcon,
-    heart,    
-    setLikeColor,
-    setLikeNumber,
-  ]);
+  });
 
   const onLikeClick = useCallback(async () => {
     console.log("Function onLikeClick");
