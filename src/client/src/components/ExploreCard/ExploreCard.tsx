@@ -12,6 +12,7 @@ import {
   IonLabel,
   IonPopover,
   IonText,
+  useIonViewWillEnter,
 } from "@ionic/react";
 import { heartOutline, pin, heart } from "ionicons/icons";
 import React, {
@@ -42,46 +43,69 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [likeIcon, setLikeIcon] = useState(heartOutline);
   const [likeColor, setLikeColor] = useState("dark");
   const [flag, setFlag] = useState(false);
-  const [showUser, setShowUser] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
   const user = useContext(UserContext);
 
   const [userProfilModel, setuserProfilModel] = useState(false);
 
   useEffect(() => {
-    (async () => {
-    await db.collection("images")
-      .doc(image.id)
-      .get()
-      .then(async (documentSnapshot) => {
-        if (documentSnapshot.data()?.likes === undefined) {
-          return;
-        } else {
-          await db
-            .collection("users")
-            .doc(user?.uid)
-            .get()
-            .then(async (documentSnapshot) => {
-              let likedImages: string[] = documentSnapshot.data()?.likedImage;
+    //(async () => {
+      db
+        .collection("images")
+        .doc(image.id)
+        .get()
+        .then(async (documentSnapshot) => {
+          //if image have no likes -> return
+          if (
+            documentSnapshot.data()?.likes === undefined ||
+            documentSnapshot.data()?.likes === 0
+          ) {
+            return;
+          }
+          //image have likes
+          else {
+            await db
+              .collection("users")
+              .doc(user?.uid)
+              .get()
+              .then(async (documentSnapshot) => {
+                // speichere die vom User geliketen bilder in  "likedImages"
+                let likedImages: string[] = documentSnapshot.data()?.likedImage;
 
-              let bol: boolean = false;
-              if (likedImages !== undefined)
-                bol = likedImages.find((i) => i === image.id) != undefined;
+                let bol: boolean = false;
 
-              //if true delike
-              if (bol) {
-                setLikeIcon(heart);
-                setLikeColor("danger");
-              }
-            });
+                //hat der user bilder geliket suche das aktuelle bild in dem array
+                // ist es vorhanden -> setzte bol auf true
+                if (likedImages !== undefined) {
+                  bol = likedImages.find((i) => i === image.id) !== undefined;
+                }
+                //if bol = true setze das icon heart und die farbe danger
+                if (bol) {
+                  setLikeIcon(heart);
+                  setLikeColor("danger");
+                }
+              });
+               
+          }
+          //in alle Fälle setzte die anzahl an likes
           setLikeNumber(documentSnapshot.data()?.likes);
-        }
-      });
+        });
 
-    })();
-  },[image.id, image, user, db, user?.uid, setLikeIcon, heart,"danger", "users", "images",  setLikeColor, setLikeNumber]);
+      
+   // })();
+  }, [
+    image.id,
+    image,
+    user,
+    db,
+    user?.uid,
+    setLikeIcon,
+    heart,    
+    setLikeColor,
+    setLikeNumber,
+  ]);
 
   const onLikeClick = useCallback(async () => {
+    console.log("Function onLikeClick");
     if (flag === false) {
       setFlag(true);
       setTimeout(() => setFlag(false), 1000);
