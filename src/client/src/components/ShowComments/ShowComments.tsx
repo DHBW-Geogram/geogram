@@ -70,7 +70,6 @@ const ShowComments: React.FC<ContainerProps> = ({
           }
 
           let a: String[] = [];
-          let b: String[] = [];
 
           commentsInCollection.forEach(async (s) => {
             var ss = s.split(":")[0];
@@ -81,18 +80,17 @@ const ShowComments: React.FC<ContainerProps> = ({
               .collection("users")
               .doc(ss)
               .get()
-              .then((documentSnapshot) => {
-                b.push(documentSnapshot.data()?.username + ":");
-
+              .then(async (documentSnapshot) => {
                 a.push(
-                  documentSnapshot.data()?.username +
+                  (await documentSnapshot.data()?.username) +
                     ": " +
                     s.substr(ss.length + 2)
                 );
               });
           });
 
-          setuserNameComments(b);
+          console.log(a);
+
           setComments(a);
         });
     })();
@@ -122,10 +120,13 @@ const ShowComments: React.FC<ContainerProps> = ({
     setshowCommentsModal(false);
   }, [false, setshowCommentsModal]);
 
-  const onClickShowUserProfil = useCallback(() => {
-    setNameOfUser("Josua");
-    setuserProfilModel(false);
-  }, [setuserProfilModel, true, setNameOfUser]);
+  const onClickShowUserProfil = useCallback(
+    async (userName: string) => {
+      setNameOfUser(userName);
+      setuserProfilModel(true);
+    },
+    [setuserProfilModel, true, setNameOfUser]
+  );
 
   return (
     <IonModal
@@ -137,9 +138,6 @@ const ShowComments: React.FC<ContainerProps> = ({
         <IonButton fill="clear" color="primary" onClick={closeModal}>
           Close
         </IonButton>
-      </div>
-
-      <IonContent>
         <IonItem>
           <IonTextarea
             placeholder="Comment"
@@ -160,15 +158,15 @@ const ShowComments: React.FC<ContainerProps> = ({
             Add
           </IonButton>
         </IonItem>
+      </div>
 
+      <IonContent>
         {comments?.map((comment, id) => {
           return (
             <IonGrid key={id}>
               <IonText
-                onClick={() => {
-                  setNameOfUser( comment.split(":")[0]);
-                  setuserProfilModel(true);
-                }}
+                onClick={async () => await onClickShowUserProfil(comment.split(":")[0])}
+                color="primary"
               >
                 {comment.split(":")[0] + ":"}
               </IonText>
