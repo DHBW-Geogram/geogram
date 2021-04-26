@@ -6,6 +6,7 @@ import {
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
+  IonCol,
   IonGrid,
   IonIcon,
   IonImg,
@@ -13,6 +14,7 @@ import {
   IonItem,
   IonLabel,
   IonPopover,
+  IonRow,
   IonText,
   IonTextarea,
   IonTitle,
@@ -35,7 +37,8 @@ import { delikeFunction, likeFunction } from "../../hooks/like";
 import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
 import ShowComments from "../ShowComments/ShowComments";
 
-import "./ExploreCard.css"
+import "./ExploreCard.css";
+import { endianness } from "node:os";
 
 interface ContainerProps {
   image: Image;
@@ -48,7 +51,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [likeColor, setLikeColor] = useState("dark");
   const [comment, setComment] = useState<any>("");
   const [flag, setFlag] = useState(false);
-  const [nameOfUser, setNameOfUser]= useState<string>("");
+  const [nameOfUser, setNameOfUser] = useState<string>("");
 
   const [lastComment, setLastComment] = useState<String>();
   const [userComment, setUserComment] = useState<String>("");
@@ -60,40 +63,40 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [showCommentsModal, setshowCommentsModal] = useState(false);
 
   useEffect(() => {
-   // setNameOfUser(image.user);
-        
-    //likes    
+    // setNameOfUser(image.user);
+
+    //likes
     (async () => {
-    await db.collection("images")
-      .doc(image.id)
-      .get()
-      .then(async (documentSnapshot) => {
-        if (documentSnapshot.data()?.likes === undefined) {
-          return;
-        } else {
-          await db
-            .collection("users")
-            .doc(user?.uid)
-            .get()
-            .then(async (documentSnapshot) => {
-              let likedImages: string[] = documentSnapshot.data()?.likedImage;
+      await db
+        .collection("images")
+        .doc(image.id)
+        .get()
+        .then(async (documentSnapshot) => {
+          if (documentSnapshot.data()?.likes === undefined) {
+            return;
+          } else {
+            await db
+              .collection("users")
+              .doc(user?.uid)
+              .get()
+              .then(async (documentSnapshot) => {
+                let likedImages: string[] = documentSnapshot.data()?.likedImage;
 
-              let bol: boolean = false;
-              if (likedImages !== undefined)
-                bol = likedImages.find((i) => i === image.id) != undefined;
+                let bol: boolean = false;
+                if (likedImages !== undefined)
+                  bol = likedImages.find((i) => i === image.id) != undefined;
 
-              //if true delike
-              if (bol) {
-                setLikeIcon(heart);
-                setLikeColor("danger");
-              }
-            });
-          setLikeNumber(documentSnapshot.data()?.likes);
-        }
-      });
+                //if true delike
+                if (bol) {
+                  setLikeIcon(heart);
+                  setLikeColor("danger");
+                }
+              });
+            setLikeNumber(documentSnapshot.data()?.likes);
+          }
+        });
 
-    //set last comment
-    
+      //set last comment
       await db
         .collection("images")
         .doc(image.id)
@@ -120,10 +123,18 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           setCommentTrue(true);
           setLastComment(s);
         });
-    
-  })();
-},[image.id, image, user, db, user?.uid, setLikeIcon, heart,"danger", "users", "images",  setLikeColor, setLikeNumber]);
-   
+    })();
+  }, [
+    image.id,
+    image,
+    user,
+    db,
+    user?.uid,
+    heart,
+    "danger",
+    "users",
+    "images",
+  ]);
 
   const onLikeClick = useCallback(async () => {
     if (flag === false) {
@@ -186,20 +197,19 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     }
   }, [user, image, comment]);
 
-  const onReadCommentClick = useCallback(() => {    
+  const onReadCommentClick = useCallback(() => {
     setshowCommentsModal(true);
   }, [true, setshowCommentsModal]);
 
   const showUserProfil = useCallback(() => {
-    setNameOfUser(image.user);    
+    setNameOfUser(image.user);
     setuserProfilModel(true);
   }, [image.user, setNameOfUser, setuserProfilModel]);
 
-
-  const onCommetShowUserProfilClick = useCallback(() => {   
+  const onCommetShowUserProfilClick = useCallback(() => {
     setNameOfUser(userComment?.split(":")[0]);
     setuserProfilModel(true);
-  },[setuserProfilModel, true, setNameOfUser, userComment] )
+  }, [setuserProfilModel, true, setNameOfUser, userComment]);
 
   return (
     <IonCard className="my-ion-card">
@@ -230,27 +240,42 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
       <IonCardHeader>
         <IonCardSubtitle onClick={showUserProfil}>{image.user}</IonCardSubtitle>
-        <IonCardTitle onClick={() => {
-          let descriptionElement: any = document.getElementById(`${image.id}-2`);
-          if(descriptionElement.classList.length > 0){
-            descriptionElement.classList.remove("hide-text-overflow");
-          }else{
-            descriptionElement.classList.add("hide-text-overflow")
-          }
-        }}><h2 style={{fontSize: "1.3rem"}} id={`${image.id}-2`} className="hide-text-overflow">{image.title}</h2></IonCardTitle>
+        <IonCardTitle
+          onClick={() => {
+            let descriptionElement: any = document.getElementById(
+              `${image.id}-2`
+            );
+            if (descriptionElement.classList.length > 0) {
+              descriptionElement.classList.remove("hide-text-overflow");
+            } else {
+              descriptionElement.classList.add("hide-text-overflow");
+            }
+          }}
+        >
+          <h2
+            style={{ fontSize: "1.3rem" }}
+            id={`${image.id}-2`}
+            className="hide-text-overflow"
+          >
+            {image.title}
+          </h2>
+        </IonCardTitle>
       </IonCardHeader>
 
       <IonCardContent>
         <IonImg src={image.url}></IonImg>
-        <br />
-        <IonButtons slot="start">
-          <IonButton color={likeColor} onClick={onLikeClick}>
+
+        <IonItem lines="none">
+          <IonButton fill="clear" color={likeColor} onClick={onLikeClick}>
             <IonIcon icon={likeIcon} />
           </IonButton>
-          <IonText>{likeNumber}</IonText>
+          <IonText> {likeNumber}</IonText>
 
-          <IonButton onClick={onReadCommentClick}>Read Comments</IonButton>
-        </IonButtons>
+          <IonButton slot="end" fill="clear" onClick={onReadCommentClick}>
+            Read Comments
+          </IonButton>
+        </IonItem>
+
         <IonItem>
           <IonTextarea
             placeholder="Comment"
@@ -273,24 +298,34 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         </IonItem>
 
         {commentTrue ? (
-          <IonGrid  >
-            <IonText color="primary" onClick={onCommetShowUserProfilClick} >{userComment}</IonText>
-
-            <IonText>  {lastComment} </IonText>
+          <IonGrid>
+            <IonText color="primary" onClick={onCommetShowUserProfilClick}>
+              {userComment}
+            </IonText>
+            <IonText> {lastComment} </IonText>
           </IonGrid>
         ) : (
           false
-        )} 
+        )}
 
         <br />
-        <IonText onClick={() => {
-          let descriptionElement: any = document.getElementById(`${image.id}-1`);
-            if(descriptionElement.classList.length > 0){
+        <IonText
+          onClick={() => {
+            let descriptionElement: any = document.getElementById(
+              `${image.id}-1`
+            );
+            if (descriptionElement.classList.length > 0) {
               descriptionElement.classList.remove("hide-text-overflow");
-            }else{
-              descriptionElement.classList.add("hide-text-overflow")
+            } else {
+              descriptionElement.classList.add("hide-text-overflow");
             }
-        }} style={{ fontSize: "large" }}><p id={`${image.id}-1`} className="hide-text-overflow">{image.description}</p></IonText>
+          }}
+          style={{ fontSize: "large" }}
+        >
+          <p id={`${image.id}-1`} className="hide-text-overflow">
+            {image.description}
+          </p>
+        </IonText>
       </IonCardContent>
 
       <ShowUserProfil

@@ -46,17 +46,13 @@ const ShowComments: React.FC<ContainerProps> = ({
 }) => {
   const onCommentChange = useCallback((e) => setComment(e.detail?.value), []);
   const [comment, setComment] = useState<any>("");
-  const [userComment, setUserComment] = useState<String>();
   const [comments, setComments] = useState<String[]>();
-  const [userNameComments, setuserNameComments] = useState<String[]>();
   const [userProfilModel, setuserProfilModel] = useState(false);
   const [nameOfUser, setNameOfUser] = useState<string>("");
-  const [commentLength, setCommentLength] = useState<number>();
   const user = useContext(UserContext);
 
-  useEffect(() => {
-    (async () => {
-      await db
+  useEffect(() => {    
+       db
         .collection("images")
         .doc(image.id)
         .get()
@@ -67,7 +63,7 @@ const ShowComments: React.FC<ContainerProps> = ({
 
           if (commentsInCollection === undefined) {
             return;
-          }
+          }else{
 
           let a: String[] = [];
 
@@ -88,12 +84,9 @@ const ShowComments: React.FC<ContainerProps> = ({
                 );
               });
           });
-
-          console.log(a);
-
           setComments(a);
-        });
-    })();
+        }
+        });    
   }, [image, user, image.id, db]);
 
   const onAddCommentClick = useCallback(async () => {
@@ -125,8 +118,7 @@ const ShowComments: React.FC<ContainerProps> = ({
       setNameOfUser(userName);
       setuserProfilModel(true);
     },
-    [setuserProfilModel, true, setNameOfUser]
-  );
+    [setuserProfilModel, true, setNameOfUser]);
 
   return (
     <IonModal
@@ -165,7 +157,9 @@ const ShowComments: React.FC<ContainerProps> = ({
           return (
             <IonGrid key={id}>
               <IonText
-                onClick={async () => await onClickShowUserProfil(comment.split(":")[0])}
+                onClick={async () =>
+                  await onClickShowUserProfil(comment.split(":")[0])
+                }
                 color="primary"
               >
                 {comment.split(":")[0] + ":"}
