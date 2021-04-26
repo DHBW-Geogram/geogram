@@ -297,18 +297,6 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           </IonButton>
         </IonItem>
 
-        {commentTrue ? (
-          <IonGrid>
-            <IonText color="primary" onClick={onCommetShowUserProfilClick}>
-              {userComment}
-            </IonText>
-            <IonText> {lastComment} </IonText>
-          </IonGrid>
-        ) : (
-          false
-        )}
-
-        <br />
         <IonText
           onClick={() => {
             let descriptionElement: any = document.getElementById(
@@ -326,6 +314,22 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
             {image.description}
           </p>
         </IonText>
+
+        <br />
+        
+        {commentTrue ? (
+          <IonGrid>
+            <IonText color="primary" onClick={onCommetShowUserProfilClick}>
+              {userComment}
+            </IonText>
+            <IonText>
+              {" "}
+              <p className="hide-text-overflow">{lastComment}</p>{" "}
+            </IonText>
+          </IonGrid>
+        ) : (
+          false
+        )}
       </IonCardContent>
 
       <ShowUserProfil

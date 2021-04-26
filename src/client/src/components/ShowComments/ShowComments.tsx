@@ -31,6 +31,8 @@ import firebase from "firebase/app";
 import { UserContext } from "../..";
 import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
 
+import { v4 as uuidv4 } from 'uuid';
+
 interface ContainerProps {
   image: Image;
   active: boolean;
@@ -93,16 +95,17 @@ const ShowComments: React.FC<ContainerProps> = ({
     if (comment === "") {
       return;
     } else {
-      var mes = user?.uid + ": " + comment;
+      var mes = comment;
 
       await db
         .collection("images")
         .doc(image.id)
         .update({
-          comment: firebase.firestore.FieldValue.arrayUnion(mes),
-          // comment: [{comment: [mes, user?.uid]}],
-          // , { merge: true }
-        })
+            comments: firebase.firestore.FieldValue.arrayUnion({comment: mes,
+            userid: user?.uid,
+            timestamp: Date.now(),
+            id: uuidv4()})
+       })
         .catch((err) => presentAlert(err.message));
 
       setComment("");
@@ -185,3 +188,5 @@ const ShowComments: React.FC<ContainerProps> = ({
 };
 
 export default ShowComments;
+
+
