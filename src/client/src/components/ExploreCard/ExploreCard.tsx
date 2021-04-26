@@ -60,7 +60,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [showCommentsModal, setshowCommentsModal] = useState(false);
 
   useEffect(() => {
-    setNameOfUser(image.user);
+   // setNameOfUser(image.user);
         
     //likes    
     (async () => {
@@ -93,7 +93,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
       });
 
     //set last comment
-    (async () => {
+    
       await db
         .collection("images")
         .doc(image.id)
@@ -120,7 +120,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           setCommentTrue(true);
           setLastComment(s);
         });
-    })();
+    
   })();
 },[image.id, image, user, db, user?.uid, setLikeIcon, heart,"danger", "users", "images",  setLikeColor, setLikeNumber]);
    
@@ -197,8 +197,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
 
   const onCommetShowUserProfilClick = useCallback(() => {   
-    setNameOfUser(userComment?.split(":")[0])
-    setuserProfilModel(false);
+    setNameOfUser(userComment?.split(":")[0]);
+    setuserProfilModel(true);
   },[setuserProfilModel, true, setNameOfUser, userComment] )
 
   return (
@@ -273,14 +273,14 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         </IonItem>
 
         {commentTrue ? (
-          <IonGrid>
-            <IonInput onClick={onCommetShowUserProfilClick} disabled={false}>{userComment}</IonInput>
+          <IonGrid  >
+            <IonText color="primary" onClick={onCommetShowUserProfilClick} >{userComment}</IonText>
 
-            <IonInput>{lastComment}</IonInput>
+            <IonText>  {lastComment} </IonText>
           </IonGrid>
         ) : (
           false
-        )}
+        )} 
 
         <br />
         <IonText onClick={() => {

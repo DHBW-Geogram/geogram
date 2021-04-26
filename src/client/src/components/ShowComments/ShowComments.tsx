@@ -8,6 +8,7 @@ import {
   IonItem,
   IonLabel,
   IonModal,
+  IonText,
   IonTextarea,
   IonTitle,
   IonToolbar,
@@ -49,7 +50,8 @@ const ShowComments: React.FC<ContainerProps> = ({
   const [comments, setComments] = useState<String[]>();
   const [userNameComments, setuserNameComments] = useState<String[]>();
   const [userProfilModel, setuserProfilModel] = useState(false);
-  const [nameOfUser, setNameOfUser]= useState<string>("");
+  const [nameOfUser, setNameOfUser] = useState<string>("");
+  const [commentLength, setCommentLength] = useState<number>();
   const user = useContext(UserContext);
 
   useEffect(() => {
@@ -61,18 +63,19 @@ const ShowComments: React.FC<ContainerProps> = ({
         .then(async (documentSnapshot) => {
           let commentsInCollection: string[] = documentSnapshot.data()?.comment;
 
-         // setComments(await documentSnapshot.data()?.comment);
+          // setComments(await documentSnapshot.data()?.comment);
 
           if (commentsInCollection === undefined) {
             return;
           }
 
           let a: String[] = [];
-
           let b: String[] = [];
 
           commentsInCollection.forEach(async (s) => {
             var ss = s.split(":")[0];
+
+            //a.push(s)
 
             await db
               .collection("users")
@@ -81,19 +84,19 @@ const ShowComments: React.FC<ContainerProps> = ({
               .then((documentSnapshot) => {
                 b.push(documentSnapshot.data()?.username + ":");
 
-                a.push(documentSnapshot.data()?.username + ": " + s.substr(ss.length + 2));
-                
+                a.push(
+                  documentSnapshot.data()?.username +
+                    ": " +
+                    s.substr(ss.length + 2)
+                );
               });
-          });        
+          });
 
-          var d: String[][] = [a,b] 
-
-          
           setuserNameComments(b);
           setComments(a);
         });
     })();
-  }, [image]);
+  }, [image, user, image.id, db]);
 
   const onAddCommentClick = useCallback(async () => {
     if (comment === "") {
@@ -120,10 +123,10 @@ const ShowComments: React.FC<ContainerProps> = ({
   }, [false, setshowCommentsModal]);
 
   const onClickShowUserProfil = useCallback(() => {
-    
     setNameOfUser("Josua");
-    setuserProfilModel(true);
-  },[setuserProfilModel, true, setNameOfUser])
+    setuserProfilModel(false);
+  }, [setuserProfilModel, true, setNameOfUser]);
+
   return (
     <IonModal
       isOpen={active}
@@ -158,18 +161,24 @@ const ShowComments: React.FC<ContainerProps> = ({
           </IonButton>
         </IonItem>
 
-        {comments?.map((comment, id) => { 
-
-            // for(var i =0; i < comments?.length; i++){
-            return(
+        {comments?.map((comment, id) => {
+          return (
             <IonGrid key={id}>
-              <IonLabel>{}</IonLabel>
-              <IonTextarea onClick={onClickShowUserProfil} rows={1} autoGrow={true} disabled={true}>
-                {comment}
-              </IonTextarea>
+              <IonText
+                onClick={() => {
+                  setNameOfUser( comment.split(":")[0]);
+                  setuserProfilModel(true);
+                }}
+              >
+                {comment.split(":")[0] + ":"}
+              </IonText>
+              <br />
+              <IonText>
+                {comment.substr(comment.split(":")[0].length + 2)}
+              </IonText>
             </IonGrid>
-           ) // }
-           })}
+          );
+        })}
       </IonContent>
 
       <ShowUserProfil
