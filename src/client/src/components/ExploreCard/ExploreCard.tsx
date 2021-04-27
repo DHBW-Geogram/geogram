@@ -1,23 +1,17 @@
 import {
   IonButton,
-  IonButtons,
   IonCard,
   IonCardContent,
   IonCardHeader,
   IonCardSubtitle,
   IonCardTitle,
-  IonCol,
   IonGrid,
   IonIcon,
   IonImg,
-  IonInput,
   IonItem,
   IonLabel,
-  IonPopover,
-  IonRow,
   IonText,
   IonTextarea,
-  IonTitle,
 } from "@ionic/react";
 import { heartOutline, pin, heart } from "ionicons/icons";
 import React, {
@@ -51,7 +45,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [comment, setComment] = useState<any>("");
   const [flag, setFlag] = useState(false);
   const [nameOfUser, setNameOfUser] = useState<string>("");
-
+  
   const [lastComment, setLastComment] = useState<String>();
   const [userComment, setUserComment] = useState<String>("");
 
@@ -61,81 +55,58 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [userProfilModel, setuserProfilModel] = useState(false);
   const [showCommentsModal, setshowCommentsModal] = useState(false);
 
-  useEffect(() => {
-    // setNameOfUser(image.user);
-
-    //likes
-    (async () => {
-      await db
-        .collection("images")
-        .doc(image.id)
-        .get()
-        .then(async (documentSnapshot) => {
-          if (documentSnapshot.data()?.likes === undefined) {
-            return;
-          } else {
-            await db
-              .collection("users")
-              .doc(user?.uid)
-              .get()
-              .then(async (documentSnapshot) => {
-                let likedImages: string[] = documentSnapshot.data()?.likedImage;
-
-                let bol: boolean = false;
-                if (likedImages !== undefined)
-                  bol = likedImages.find((i) => i === image.id) != undefined;
-
-                //if true delike
-                if (bol) {
-                  setLikeIcon(heart);
-                  setLikeColor("danger");
-                }
-              });
-            setLikeNumber(documentSnapshot.data()?.likes);
-          }
-        });
-
-      //set last comment
-      await db
-        .collection("images")
-        .doc(image.id)
-        .get()
-        .then(async (documentSnapshot) => {
-          let commentsInCollection: string[] = documentSnapshot.data()?.comment;
-
-          if (commentsInCollection === undefined) {
-            return;
-          }
-
-          var len = commentsInCollection.length - 1;
-          var last = commentsInCollection[len].split(":")[0];
-          var s = commentsInCollection[len].substr(last.length + 1);
-
+  useEffect(() => {    
+    db
+      .collection("images")
+      .doc(image.id)
+      .get()
+      .then(async (documentSnapshot) => {
+        //if image have no likes -> return
+        if (
+          documentSnapshot.data()?.likes === undefined ||
+          documentSnapshot.data()?.likes === 0
+        ) {
+          return;
+        }
+        //image have likes
+        else {
           await db
             .collection("users")
-            .doc(last)
+            .doc(user?.uid)
             .get()
-            .then((documentSnapshot) => {
-              setUserComment(documentSnapshot.data()?.username + ":");
-            });
+            .then(async (documentSnapshot) => {
+              // speichere die vom User geliketen bilder in  "likedImages"
+              let likedImages: string[] = documentSnapshot.data()?.likedImage;
 
-          setCommentTrue(true);
-          setLastComment(s);
-        });
-    })();
-  }, [
-    image.id,
-    image,
-    user,
-    db,
-    user?.uid,
-    heart,
-    "danger",
-    "users",
-    "images",
-  ]);
+              let bol: boolean = false;
+
+              //hat der user bilder geliket suche das aktuelle bild in dem array
+              // ist es vorhanden -> setzte bol auf true
+              if (likedImages !== undefined) {
+                bol = likedImages.find((i) => i === image.id) !== undefined;
+              }
+              //if bol = true setze das icon heart und die farbe danger
+              if (bol) {
+                setLikeIcon(heart);
+                setLikeColor("danger");
+              }else {                  
+                setLikeIcon(heartOutline);
+                setLikeColor("dark");
+              }
+              
+            });
+             
+        }
+        //in alle Fälle setzte die anzahl an likes
+        setLikeNumber(documentSnapshot.data()?.likes);
+      });
+ 
+});
+               
+
 
   const onLikeClick = useCallback(async () => {
+    console.log("Function onLikeClick");
     if (flag === false) {
       setFlag(true);
       setTimeout(() => setFlag(false), 1000);
