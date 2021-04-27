@@ -1,7 +1,7 @@
 export interface Comment {
   comments: {
     comment: string;
-    userid: string;
+    userId: string;
     commentTimestamp: number;
     commentId: string;
   };

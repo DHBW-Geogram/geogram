@@ -52,40 +52,28 @@ const ShowComments: React.FC<ContainerProps> = ({
   const [comment, setComment] = useState<any>("");
   const [userProfilModel, setuserProfilModel] = useState(false);
   const [nameOfUser, setNameOfUser] = useState<string>("");
-
-  const [comments, setComments] = useState<Comment[]>();
+  const [comments, setComments] = useState<Array<Comment>>([]);
 
   const user = useContext(UserContext);
 
-
-
   useEffect(() => {
-   db.collection("images")
-     .doc(image.id)
-     .get()
-     .then(async (documentSnapshot) => {
+    db.collection("images")
+      .doc(image.id)
+      .get()
+      .then(async (documentSnapshot) => {
+        let commentArr: Comment[] = [];
 
-       let c: Comment[] = [];
+        if ((await documentSnapshot.data()?.comments) === undefined) {          
+          return;
+        } else {
+          commentArr = await documentSnapshot.data()?.comments;
 
-       if (await documentSnapshot.data()?.comments === undefined) {
-         console.log("15 mal hier")
-         return;
-       } else {
+          console.log("arr commentArr", commentArr);
 
-        c = await documentSnapshot.data()?.comments;
-
-        console.log("arr c", c)
-
-        setComments(c)
-
-        console.log("arr comments", comments)   
-             
-       } 
-       
-
-     });
-    // }, [image, user, image.id, db]);
-  },[]);
+          setComments(commentArr);
+        }
+      });
+  }, []);
 
   const onAddCommentClick = useCallback(async () => {
     if (comment === "") {
@@ -153,23 +141,24 @@ const ShowComments: React.FC<ContainerProps> = ({
       </div>
 
       <IonContent>
-        {/* {comments?.map((comment) => {
+        {comments.map((c) => {
+          console.log("in comments.map ", c);
+
           return (
-            <IonGrid key={comment.comments?.commentId}>
+            <IonGrid key={ c.comments?.commentId}>
               <IonText
                 // onClick={async () =>
                 // await onClickShowUserProfil(comment.split(":")[0])
                 // }
                 color="primary"
               >
-                {comment.comments?.userid}
-                {comment.comments?.commentTimestamp}
+                {c.comments?.userId}
               </IonText>
               <br />
-              <IonText>{comment.comments?.comment}</IonText>
+              <IonText>{c.comments?.comment}</IonText>
             </IonGrid>
           );
-        })} */}
+        })}
       </IonContent>
 
       <ShowUserProfil
