@@ -1,5 +1,5 @@
 export interface Image {
-  description: string;  
+  description: string;
   likes: number;
   location: {
     coords: {
@@ -20,4 +20,10 @@ export interface Image {
   distance: number | undefined;
   timestamp: number;
   id: string;
+  comments: {
+    comment: string;
+    userid: string;
+    commentTimestamp: number;
+    commentid: string;
+  };
 }

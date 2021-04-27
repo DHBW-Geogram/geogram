@@ -25,13 +25,15 @@ import React, {
 import { db } from "../../helper/firebase";
 import { presentAlert } from "../../hooks/alert";
 import { Image } from "../../model/Image";
-import "./ShowComments.css";
 
+import { Comment } from "../../model/Comment";
 import firebase from "firebase/app";
 import { UserContext } from "../..";
 import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
 
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
+
+import "./ShowComments.css";
 
 interface ContainerProps {
   image: Image;
@@ -48,64 +50,48 @@ const ShowComments: React.FC<ContainerProps> = ({
 }) => {
   const onCommentChange = useCallback((e) => setComment(e.detail?.value), []);
   const [comment, setComment] = useState<any>("");
-  const [comments, setComments] = useState<String[]>();
+  // const [comments, setComments] = useState<String[]>();
   const [userProfilModel, setuserProfilModel] = useState(false);
   const [nameOfUser, setNameOfUser] = useState<string>("");
+
+  const [comments, setComments] = useState<Array<Comment>>([]);
+
   const user = useContext(UserContext);
 
-  useEffect(() => {    
-       db
-        .collection("images")
-        .doc(image.id)
-        .get()
-        .then(async (documentSnapshot) => {
-          let commentsInCollection: string[] = documentSnapshot.data()?.comment;
+  useEffect(() => {
+    db.collection("images")
+      .doc(image.id)
+      .get()
+      .then(async (documentSnapshot) => {
+        let c: Comment[] = [];
 
-          // setComments(await documentSnapshot.data()?.comment);
-
-          if (commentsInCollection === undefined) {
-            return;
-          }else{
-
-          let a: String[] = [];
-
-          commentsInCollection.forEach(async (s) => {
-            var ss = s.split(":")[0];
-
-            //a.push(s)
-
-            await db
-              .collection("users")
-              .doc(ss)
-              .get()
-              .then(async (documentSnapshot) => {
-                a.push(
-                  (await documentSnapshot.data()?.username) +
-                    ": " +
-                    s.substr(ss.length + 2)
-                );
-              });
+        if (documentSnapshot.data()?.comments === undefined) {
+          return;
+        } else {
+          documentSnapshot.data()?.comments.forEach((e: any) => {
+            c.push(e.comments);
           });
-          setComments(a);
         }
-        });    
-  }, [image, user, image.id, db]);
+        setComments(c);
+      });
+    // }, [image, user, image.id, db]);
+  });
 
   const onAddCommentClick = useCallback(async () => {
     if (comment === "") {
       return;
     } else {
-      var mes = comment;
-
       await db
         .collection("images")
         .doc(image.id)
         .update({
-            comments: firebase.firestore.FieldValue.arrayUnion({comment: mes,
+          comments: firebase.firestore.FieldValue.arrayUnion({
+            comment: comment,
             userid: user?.uid,
             timestamp: Date.now(),
-            id: uuidv4()})
-       })
+            id: uuidv4(),
+          }),
+        })
         .catch((err) => presentAlert(err.message));
 
       setComment("");
@@ -121,7 +107,8 @@ const ShowComments: React.FC<ContainerProps> = ({
       setNameOfUser(userName);
       setuserProfilModel(true);
     },
-    [setuserProfilModel, true, setNameOfUser]);
+    [setuserProfilModel, true, setNameOfUser]
+  );
 
   return (
     <IonModal
@@ -156,21 +143,20 @@ const ShowComments: React.FC<ContainerProps> = ({
       </div>
 
       <IonContent>
-        {comments?.map((comment, id) => {
+        {comments?.map((comment) => {
           return (
-            <IonGrid key={id}>
+            <IonGrid key={comment.comments.commentId}>
               <IonText
-                onClick={async () =>
-                  await onClickShowUserProfil(comment.split(":")[0])
-                }
+                // onClick={async () =>
+                // await onClickShowUserProfil(comment.split(":")[0])
+                // }
                 color="primary"
               >
-                {comment.split(":")[0] + ":"}
+                {comment.comments.userid}
+                {comment.comments.commentTimestamp}
               </IonText>
               <br />
-              <IonText>
-                {comment.substr(comment.split(":")[0].length + 2)}
-              </IonText>
+              <IonText>{comment.comments.comment}</IonText>
             </IonGrid>
           );
         })}
@@ -188,5 +174,3 @@ const ShowComments: React.FC<ContainerProps> = ({
 };
 
 export default ShowComments;
-
-

@@ -36,9 +36,8 @@ import firebase from "firebase/app";
 import { delikeFunction, likeFunction } from "../../hooks/like";
 import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
 import ShowComments from "../ShowComments/ShowComments";
-
+import { v4 as uuidv4 } from 'uuid';
 import "./ExploreCard.css";
-import { endianness } from "node:os";
 
 interface ContainerProps {
   image: Image;
@@ -183,13 +182,14 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     if (comment === "") {
       return;
     } else {
-      var mes = user?.uid + ": " + comment;
-
-      await db
+       await db
         .collection("images")
         .doc(image.id)
         .update({
-          comment: firebase.firestore.FieldValue.arrayUnion(mes),
+          comments: firebase.firestore.FieldValue.arrayUnion({comment: comment,
+            userid: user?.uid,
+            timestamp: Date.now(),
+            id: uuidv4()})
         })
         .catch((err) => presentAlert(err.message));
 
@@ -212,7 +212,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   }, [setuserProfilModel, true, setNameOfUser, userComment]);
 
   return (
-    <IonCard className="my-ion-card">
+    <IonCard className="my-ion-card" >
       {/* Coordinated */}
       <IonItem>
         <IonIcon icon={pin} slot="start" />
