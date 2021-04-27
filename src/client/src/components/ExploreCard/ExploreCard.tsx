@@ -293,9 +293,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
             <IonText color="primary" onClick={onCommetShowUserProfilClick}>
               {userComment}
             </IonText>
-            <IonText>
-              {" "}
-              <p className="hide-text-overflow">{lastComment}</p>{" "}
+            <IonText>              
+              <p className="hide-text-overflow">{lastComment}</p>
             </IonText>
           </IonGrid>
         ) : (
