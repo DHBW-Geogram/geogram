@@ -30,7 +30,7 @@ import firebase from "firebase/app";
 import { delikeFunction, likeFunction } from "../../hooks/like";
 import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
 import ShowComments from "../ShowComments/ShowComments";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import "./ExploreCard.css";
 
 interface ContainerProps {
@@ -45,7 +45,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [comment, setComment] = useState<any>("");
   const [flag, setFlag] = useState(false);
   const [nameOfUser, setNameOfUser] = useState<string>("");
-  
+
   const [lastComment, setLastComment] = useState<String>();
   const [userComment, setUserComment] = useState<String>("");
 
@@ -55,9 +55,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [userProfilModel, setuserProfilModel] = useState(false);
   const [showCommentsModal, setshowCommentsModal] = useState(false);
 
-  useEffect(() => {    
-    db
-      .collection("images")
+  useEffect(() => {
+    db.collection("images")
       .doc(image.id)
       .get()
       .then(async (documentSnapshot) => {
@@ -89,24 +88,34 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
               if (bol) {
                 setLikeIcon(heart);
                 setLikeColor("danger");
-              }else {                  
+              } else {
                 setLikeIcon(heartOutline);
                 setLikeColor("dark");
               }
-              
             });
-             
         }
         //in alle Fälle setzte die anzahl an likes
-        setLikeNumber(documentSnapshot.data()?.likes);
-      });
- 
-});
-               
+        setLikeNumber(await documentSnapshot.data()?.likes);
+        
+        //set last Comment
+      //   let c: Comment[] = [];
 
+      //  if (await documentSnapshot.data()?.comments === undefined) {
+      //    console.log("15 mal hier")
+      //    return;
+      //  } else {
+      //     c = await documentSnapshot.data()?.comments;
+      //     console.log("expl c", c)
+      //     c.forEach((e: any) => {
+      //       console.log("halo");
+      //       setCommentTrue(true);
+      //       setUserComment(e.userid);
+      //     });
+      //   }
+      });
+  });
 
   const onLikeClick = useCallback(async () => {
-    console.log("Function onLikeClick");
     if (flag === false) {
       setFlag(true);
       setTimeout(() => setFlag(false), 1000);
@@ -153,14 +162,16 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     if (comment === "") {
       return;
     } else {
-       await db
+      await db
         .collection("images")
         .doc(image.id)
         .update({
-          comments: firebase.firestore.FieldValue.arrayUnion({comment: comment,
+          comments: firebase.firestore.FieldValue.arrayUnion({
+            comment: comment,
             userid: user?.uid,
             timestamp: Date.now(),
-            id: uuidv4()})
+            id: uuidv4(),
+          }),
         })
         .catch((err) => presentAlert(err.message));
 
@@ -183,7 +194,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   }, [setuserProfilModel, true, setNameOfUser, userComment]);
 
   return (
-    <IonCard className="my-ion-card" >
+    <IonCard className="my-ion-card">
       {/* Coordinated */}
       <IonItem>
         <IonIcon icon={pin} slot="start" />
@@ -268,6 +279,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           </IonButton>
         </IonItem>
 
+        <br />
+
         <IonText
           onClick={() => {
             let descriptionElement: any = document.getElementById(
@@ -287,13 +300,13 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         </IonText>
 
         <br />
-        
+
         {commentTrue ? (
           <IonGrid>
             <IonText color="primary" onClick={onCommetShowUserProfilClick}>
               {userComment}
             </IonText>
-            <IonText>              
+            <IonText>
               <p className="hide-text-overflow">{lastComment}</p>
             </IonText>
           </IonGrid>

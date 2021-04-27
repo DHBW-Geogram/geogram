@@ -13,7 +13,7 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import { chevronBackOutline } from "ionicons/icons";
+import { arrowBack, chevronBackOutline } from "ionicons/icons";
 import React, {
   Dispatch,
   SetStateAction,
@@ -50,32 +50,42 @@ const ShowComments: React.FC<ContainerProps> = ({
 }) => {
   const onCommentChange = useCallback((e) => setComment(e.detail?.value), []);
   const [comment, setComment] = useState<any>("");
-  // const [comments, setComments] = useState<String[]>();
   const [userProfilModel, setuserProfilModel] = useState(false);
   const [nameOfUser, setNameOfUser] = useState<string>("");
 
-  const [comments, setComments] = useState<Array<Comment>>([]);
+  const [comments, setComments] = useState<Comment[]>();
 
   const user = useContext(UserContext);
 
-  useEffect(() => {
-    db.collection("images")
-      .doc(image.id)
-      .get()
-      .then(async (documentSnapshot) => {
-        let c: Comment[] = [];
 
-        if (documentSnapshot.data()?.comments === undefined) {
-          return;
-        } else {
-          documentSnapshot.data()?.comments.forEach((e: any) => {
-            c.push(e.comments);
-          });
-        }
-        setComments(c);
-      });
+
+  useEffect(() => {
+   db.collection("images")
+     .doc(image.id)
+     .get()
+     .then(async (documentSnapshot) => {
+
+       let c: Comment[] = [];
+
+       if (await documentSnapshot.data()?.comments === undefined) {
+         console.log("15 mal hier")
+         return;
+       } else {
+
+        c = await documentSnapshot.data()?.comments;
+
+        console.log("arr c", c)
+
+        setComments(c)
+
+        console.log("arr comments", comments)   
+             
+       } 
+       
+
+     });
     // }, [image, user, image.id, db]);
-  });
+  },[]);
 
   const onAddCommentClick = useCallback(async () => {
     if (comment === "") {
@@ -143,23 +153,23 @@ const ShowComments: React.FC<ContainerProps> = ({
       </div>
 
       <IonContent>
-        {comments?.map((comment) => {
+        {/* {comments?.map((comment) => {
           return (
-            <IonGrid key={comment.comments.commentId}>
+            <IonGrid key={comment.comments?.commentId}>
               <IonText
                 // onClick={async () =>
                 // await onClickShowUserProfil(comment.split(":")[0])
                 // }
                 color="primary"
               >
-                {comment.comments.userid}
-                {comment.comments.commentTimestamp}
+                {comment.comments?.userid}
+                {comment.comments?.commentTimestamp}
               </IonText>
               <br />
-              <IonText>{comment.comments.comment}</IonText>
+              <IonText>{comment.comments?.comment}</IonText>
             </IonGrid>
           );
-        })}
+        })} */}
       </IonContent>
 
       <ShowUserProfil

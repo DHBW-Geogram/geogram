@@ -24,6 +24,6 @@ export interface Image {
     comment: string;
     userid: string;
     commentTimestamp: number;
-    commentid: string;
+    commentId: string;
   };
 }
