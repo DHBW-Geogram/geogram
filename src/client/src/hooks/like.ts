@@ -11,6 +11,7 @@ export async function likeFunction(
 ): Promise<number> {
 
   console.log("In LikeFunction")
+
   //add liked image to user collection
   await db
     .collection("users")
@@ -42,6 +43,7 @@ export async function delikeFunction(
 ): Promise<number> {
 
   console.log("In DelikeFunction")
+  
   //remove deliked image in collection user
   await db
     .collection("users")
