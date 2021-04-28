@@ -34,6 +34,7 @@ import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
 import { v4 as uuidv4 } from "uuid";
 
 import "./ShowComments.css";
+import { timeConverter } from "../../hooks/timeConverter";
 
 interface ContainerProps {
   image: Image;
@@ -77,9 +78,15 @@ const ShowComments: React.FC<ContainerProps> = ({
               .doc(cc.comments.userId)
               .get()
               .then(async (documentSnapshot) => {
-                cc.comments.userId = documentSnapshot.data()?.userName;
+                //get username to uid
+                cc.comments.userId = documentSnapshot.data()?.userName + ": ";
               });
+
+              //convert Timestamp
+              cc.comments.convertedTimestamp = await timeConverter(cc.comments.commentTimestamp);
           });
+
+
 
           setComments(commentArr);
         }
@@ -158,12 +165,12 @@ const ShowComments: React.FC<ContainerProps> = ({
           return (
             <IonGrid key={c.comments?.commentId}>
               <IonText
-                // onClick={async () =>
-                // await onClickShowUserProfil(comment.split(":")[0])
-                // }
+                 onClick={async () =>
+                 await onClickShowUserProfil(c.comments?.userId)
+                 }
                 color="primary"
               >
-                {c.comments?.userId}
+                {c.comments?.userId}{c.comments?.convertedTimestamp}
               </IonText>
               <br />
               <IonText>{c.comments?.comment}</IonText>
