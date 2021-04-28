@@ -27,7 +27,6 @@ import ProfilePicSelectionModal from "../../components/ProfilePicSelectionModal/
 import { auth, db } from "../../helper/firebase";
 import { checkUsername } from "./checkUsername";
 import { RefresherEventDetail } from "@ionic/core";
-import { Image } from "../../model/Image";
 
 const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   setLoading,
@@ -78,6 +77,10 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   const [isLoginSuccessfull, setLoginSuccessfull] = useState<boolean>(false);
 
   const [showLoading, setShowLoading] = useState(false);
+
+  let imageListCounter: string[] = [];
+  let imageListListCounter: string[][] = [];
+  const [imageList, setImageList] = useState<string[][]>([]);
 
   useEffect(() => {
     if (auth.currentUser?.emailVerified) {
@@ -138,8 +141,20 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
                     if (!(doc.data().likes == null)) {
                       counterLikes = counterLikes + doc.data().likes;
                     }
+                    imageListCounter.push(doc.data().url as string);
                   });
                   setLikes(counterLikes);
+
+                  for (var i = 0; imageListCounter.length > 0; i++) {
+                    imageListListCounter[i] = [];
+                    for (var j = 0; j < 3; j++) {
+                      if (imageListCounter.length > 0) {
+                        imageListListCounter[i].push(imageListCounter.pop() as string);
+                      }
+                    }
+                  }
+
+                  setImageList(imageListListCounter);
                 });
             });
         });
@@ -188,8 +203,20 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
                     if (!(doc.data().likes == null)) {
                       counterLikes = counterLikes + doc.data().likes;
                     }
+                    imageListCounter.push(doc.data().url as string);
                   });
                   setLikes(counterLikes);
+
+                  for (var i = 0; imageListCounter.length > 0; i++) {
+                    imageListListCounter[i] = [];
+                    for (var j = 0; j < 3; j++) {
+                      if (imageListCounter.length > 0) {
+                        imageListListCounter[i].push(imageListCounter.pop() as string);
+                      }
+                    }
+                  }
+
+                  setImageList(imageListListCounter);
                 });
             })
         })
@@ -288,6 +315,23 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
                 Verify Email
               </IonButton>
             </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonGrid>
+              {
+                imageList.map(image => {
+                  return <IonRow>
+                    {
+                      image.map(img => {
+                        return <IonCol size="4">
+                          <IonImg src={img} style={{ height: "100%", objectFit: "cover" }} />
+                        </IonCol>
+                      })
+                    }
+                  </IonRow>
+                })
+              }
+            </IonGrid>
           </IonRow>
         </IonGrid>
         <IonAlert
