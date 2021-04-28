@@ -324,7 +324,9 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
                     {
                       image.map(img => {
                         return <IonCol size="4">
-                          <IonImg src={img} style={{ height: "100%", objectFit: "cover" }} />
+                          <IonImg src={img} style={{ height: "100%", objectFit: "cover" }} onClick={() => {
+                            console.log(img);
+                          }}/>
                         </IonCol>
                       })
                     }
