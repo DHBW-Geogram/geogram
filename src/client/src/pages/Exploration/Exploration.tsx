@@ -65,7 +65,7 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
         setImages(images);
       });
     })();
-  });
+  },[]);
 
   async function fetchImages(i?: number): Promise<Image[]> {
     // fetch images from firebase

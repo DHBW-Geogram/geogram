@@ -41,7 +41,7 @@ const Search: React.FC = () => {
         setImages(images);
       });
     })();
-  });
+  },[]);
  
   async function fetchImages(): Promise<Image[]> {
     // fetch images from firebase
