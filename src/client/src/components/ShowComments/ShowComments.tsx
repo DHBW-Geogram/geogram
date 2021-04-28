@@ -63,12 +63,23 @@ const ShowComments: React.FC<ContainerProps> = ({
       .then(async (documentSnapshot) => {
         let commentArr: Comment[] = [];
 
-        if ((await documentSnapshot.data()?.comments) === undefined) {          
+        if ((await documentSnapshot.data()?.comments) === undefined) {
           return;
         } else {
           commentArr = await documentSnapshot.data()?.comments;
 
           console.log("arr commentArr", commentArr);
+
+          commentArr.forEach(async (cc) => {
+            console.log("cc", cc.comments?.userId);
+            await db
+              .collection("users")
+              .doc(cc.comments.userId)
+              .get()
+              .then(async (documentSnapshot) => {
+                cc.comments.userId = documentSnapshot.data()?.userName;
+              });
+          });
 
           setComments(commentArr);
         }
@@ -145,7 +156,7 @@ const ShowComments: React.FC<ContainerProps> = ({
           console.log("in comments.map ", c);
 
           return (
-            <IonGrid key={ c.comments?.commentId}>
+            <IonGrid key={c.comments?.commentId}>
               <IonText
                 // onClick={async () =>
                 // await onClickShowUserProfil(comment.split(":")[0])
