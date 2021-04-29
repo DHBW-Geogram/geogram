@@ -138,8 +138,6 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
             t.map((t: any) => {
               let name: string = "";
 
-              // name = users.find((u: any) => u.id  === c.userid);
-
               for (var i = 0; i < users.length; i++) {
                 if (users[i][1] === t.userid) {
                   name = users[i][0];
@@ -158,7 +156,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         })();
         /*** */
       });
-  }, []);
+  }, [image, user]);
 
   const onLikeClick = useCallback(async () => {
     if (flag === false) {
@@ -228,7 +226,28 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     setshowCommentsModal(true);
   }, [true, setshowCommentsModal]);
 
-  const onCommetShowUserProfilClick = useCallback(
+  // const onCommetShowUserProfilClick = useCallback(
+  //   async (username: any) => {
+  //     await db
+  //       .collection("users")
+  //       .where("username", "==", username)
+  //       .get()
+  //       .then(async (querySnapshot) => {
+  //         querySnapshot.forEach(async (doc) => {
+  //           if (doc.id === user?.uid) {
+  //             setRedirect("profile");
+  //             return;
+  //           } else {
+  //             setNameOfUser(username);
+  //             setuserProfilModel(true);
+  //           }
+  //         });
+  //       });
+  //   },
+  //   [image]
+  // );
+
+  const showUserProfil = useCallback(
     async (username: any) => {
       await db
         .collection("users")
@@ -248,24 +267,6 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     },
     [image]
   );
-
-  const showUserProfil = useCallback(async () => {
-    await db
-      .collection("users")
-      .where("username", "==", image.user)
-      .get()
-      .then(async (querySnapshot) => {
-        querySnapshot.forEach(async (doc) => {
-          if (doc.id === user?.uid) {
-            setRedirect("profile");
-            return;
-          } else {
-            setNameOfUser(image.user);
-            setuserProfilModel(true);
-          }
-        });
-      });
-  }, [image]);
 
   return (
     <IonCard className="my-ion-card">
@@ -295,7 +296,9 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
       )}
 
       <IonCardHeader>
-        <IonCardSubtitle onClick={showUserProfil}>{image.user}</IonCardSubtitle>
+        <IonCardSubtitle onClick={async () => await showUserProfil(image.user)}>
+          {image.user}
+        </IonCardSubtitle>
         <IonCardTitle
           onClick={() => {
             let descriptionElement: any = document.getElementById(
@@ -385,9 +388,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
               <IonGrid>
                 <IonText
                   color="primary"
-                  onClick={async () =>
-                    await onCommetShowUserProfilClick(c.userid)
-                  }
+                  onClick={async () => await showUserProfil(c.userid)}
                 >
                   {c.userid} {time}
                 </IonText>

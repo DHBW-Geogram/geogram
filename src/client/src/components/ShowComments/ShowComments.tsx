@@ -115,7 +115,7 @@ const ShowComments: React.FC<ContainerProps> = ({
 
   const closeModal = useCallback(() => {
     setshowCommentsModal(false);
-  }, [false, setshowCommentsModal]);
+  }, [false]);
 
   const onClickShowUserProfil = useCallback(
     async (username: any) => {
