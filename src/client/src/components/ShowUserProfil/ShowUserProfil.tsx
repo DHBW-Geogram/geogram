@@ -36,7 +36,6 @@ interface ContainerProps {
   activeShowUserProfil: boolean;
   setuserProfilModel: Dispatch<SetStateAction<boolean>>;
   setLoading?: Dispatch<SetStateAction<boolean>>;
- 
 }
 
 const ShowUserProfil: React.FC<ContainerProps> = ({
@@ -45,7 +44,6 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   activeShowUserProfil,
   setuserProfilModel,
   setLoading,
-  
 }) => {
   const [username, setUsername] = useState<string>();
   const [firstName, setFirstName] = useState<string>();
@@ -122,7 +120,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
             setImageList(imageListListCounter);
           });
       });
-  }, []);
+  }, [nameOfUser]);
 
   const closeModal = useCallback(() => {
     setuserProfilModel(false);
@@ -199,7 +197,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
           <IonGrid>
             {imageList.map((image, id) => {
               return (
-                <IonRow key={id}> 
+                <IonRow key={id}>
                   {image.map((img, id) => {
                     return (
                       <IonCol size="4" key={id}>

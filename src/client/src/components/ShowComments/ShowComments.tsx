@@ -1,17 +1,11 @@
 import {
   IonButton,
-  IonButtons,
   IonContent,
   IonGrid,
-  IonHeader,
-  IonIcon,
   IonItem,
-  IonLabel,
   IonModal,
   IonText,
   IonTextarea,
-  IonTitle,
-  IonToolbar,
 } from "@ionic/react";
 import { arrowBack, chevronBackOutline } from "ionicons/icons";
 import React, {
@@ -35,6 +29,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import "./ShowComments.css";
 import { timeConverter } from "../../hooks/timeConverter";
+import { UsernameAndId } from "../../model/UsernameAndId";
 
 interface ContainerProps {
   image: Image;
@@ -53,47 +48,47 @@ const ShowComments: React.FC<ContainerProps> = ({
   const [comment, setComment] = useState<any>("");
   const [userProfilModel, setuserProfilModel] = useState(false);
   const [nameOfUser, setNameOfUser] = useState<string>("");
-  const [comments, setComments] = useState<Array<Comment>>([]);
+  const [comments, setComments] = useState<any[]>([]);
 
   const user = useContext(UserContext);
 
   useEffect(() => {
-    db.collection("images")
-      .doc(image.id)
-      .get()
-      .then(async (documentSnapshot) => {
-        let commentArr: Comment[] = [];
 
-        if ((await documentSnapshot.data()?.comments) === undefined) {
-          return;
-        } else {
-           commentArr = await documentSnapshot.data()?.comments;
+    (async() => {
+    // alle user holen
+    let users: any[] = [];
+    const ref = db.collection("users");
+    const data = await ref.get();
 
-          console.log("arr commentArr", commentArr);
+     data.docs.forEach((doc: any) => users.push([doc.data().username, doc.id]))
 
-          //  commentArr.forEach(async (cc) => {
 
-          // if(cc.comments.convertedTimestamp === undefined)
-          // cc.comments.convertedTimestamp = "12345"
+     // image.comments durchiterrieren
+     image.comments?.map((c: any) => {
+       // it c.userid user in array suchen
+       let name: string = "";
 
-          //   console.log("cc", cc.comments?.userId);
-          //   await db
-          //     .collection("users")
-          //     .doc(cc.comments.userId)
-          //     .get()
-          //     .then(async (documentSnapshot) => {
-          //       //get username to uid
-          //       cc.comments.userId = documentSnapshot.data()?.userName + ": ";
-          //     });
+       // name = users.find((u: any) => u.id  === c.userid);
 
-          //     //convert Timestamp
-          //     cc.comments.convertedTimestamp = await timeConverter(cc.comments.commentTimestamp);
-          //  });
+       for(var i = 0; i < users.length; i++){      
+         if(users[i][1] === c.userid){
+           name = users[i][0]
+           console.log(name)
+         }
+       }
 
-          setComments(commentArr);
-        }
-      });
-  }, []);
+     setComments((pstate: any) => {
+       return [...pstate,
+         {
+           ...c,
+           userid: name,
+         },
+       ];
+     });
+
+     });
+  })()
+  }, [image]);
 
   const onAddCommentClick = useCallback(async () => {
     if (comment === "") {
@@ -161,26 +156,26 @@ const ShowComments: React.FC<ContainerProps> = ({
       </div>
 
       <IonContent>
-        {comments.map((c) => {
-          
-            console.log("in comments.map ", c);
-          
-          return (
-            <IonGrid key={c.comments?.commentId}>
-              <IonText
-                onClick={async () =>
-                  await onClickShowUserProfil(c.comments?.userId)
-                }
-                color="primary"
-              >
-                {c.comments?.userId}
-                {c.comments?.convertedTimestamp}
-              </IonText>
-              <br />
-              <IonText>{c.comments?.comment}</IonText>
-            </IonGrid>
-          );
-        })}
+        {comments &&
+          comments.map((c) => {
+            //.filter
+
+            return (
+              <IonGrid key={c.id}>
+                <IonText
+                  // onClick={async () =>
+                  //   await onClickShowUserProfil(c.comments?.userId)
+                  // }
+                  color="primary"
+                >
+                  {c.userid}
+                  {new Date(c.timestamp).toUTCString()}
+                </IonText>
+                <br />
+                <IonText>{c.comment}</IonText>
+              </IonGrid>
+            );
+          })}
       </IonContent>
 
       <ShowUserProfil

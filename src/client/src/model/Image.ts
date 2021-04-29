@@ -19,11 +19,7 @@ export interface Image {
   user: string;
   distance: number | undefined;
   timestamp: number;
-  id: string;
-  comments: {
-    comment: string;
-    userid: string;
-    commentTimestamp: number;
-    commentId: string;
-  };
+  id: string;  
+  comments?: Comment[] | undefined;
+  
 }

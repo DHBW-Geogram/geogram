@@ -198,19 +198,19 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   }, [true, setshowCommentsModal]);
 
 
-  const onCommetShowUserProfilClick = useCallback(() => {
+  const onCommetShowUserProfilClick = useCallback(() => { 
     setNameOfUser(userComment?.split(":")[0]);
     setuserProfilModel(true);
   }, [setuserProfilModel, true, setNameOfUser, userComment]);
 
-  const showUserProfil = useCallback(() => {
-    db.collection("users")
+  const showUserProfil = useCallback(async() => {
+  await  db.collection("users")
       .where("username", "==", image.user)
       .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
+      .then(async(querySnapshot) => {
+        querySnapshot.forEach(async (doc) => {
           if (doc.id === user?.uid) {
-            setRedirect("profile");            
+           setRedirect("profile");            
             return;
           } else { 
             setNameOfUser(image.user);           
