@@ -35,7 +35,6 @@ import ShowComments from "../ShowComments/ShowComments";
 import { v4 as uuidv4 } from "uuid";
 import "./ExploreCard.css";
 
-
 import { Route, Router } from "workbox-routing";
 import Profile from "../../pages/Profile/Profile";
 import { IonReactRouter } from "@ionic/react-router";
@@ -43,6 +42,8 @@ import ProfilePicSelectionModal from "../ProfilePicSelectionModal/ProfilePicSele
 import { render } from "react-dom";
 
 import { Redirect } from "react-router";
+import { canConstructReadableStream } from "workbox-core/_private";
+import { timeConverter } from "../../hooks/timeConverter";
 
 interface ContainerProps {
   image: Image;
@@ -65,9 +66,10 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [commentTrue, setCommentTrue] = useState<boolean>(false);
   const [redirect, setRedirect] = useState("");
 
-
   const [userProfilModel, setuserProfilModel] = useState(false);
   const [showCommentsModal, setshowCommentsModal] = useState(false);
+
+  const [comments, setComments] = useState<any[]>([]);
 
   useEffect(() => {
     db.collection("images")
@@ -110,47 +112,53 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         }
         //in alle Fälle setzte die anzahl an likes
         setLikeNumber(await documentSnapshot.data()?.likes);
-        
+
         //set last Comment
         (async () => {
           // alle user holen
           let users: any[] = [];
           const ref = db.collection("users");
           const data = await ref.get();
-    
+
           data.docs.forEach((doc: any) =>
             users.push([doc.data().username, doc.id])
           );
 
           //  image.comments?.filter((c: any) => c.timestamp )
-         image.comments?.forEach((cc) => {
+          var temp = 0;
+          image.comments?.forEach((cc: any) => {
+            if (cc.timestamp >= temp) {
+              temp = cc.timestamp;
+            }
+          });
 
-            
+          const t = image.comments?.filter((f: any) => f.timestamp === temp);
 
+          if (t !== undefined)
+            t.map((t: any) => {
+              let name: string = "";
 
+              // name = users.find((u: any) => u.id  === c.userid);
 
-         })
-
-         
-         
-         
-          // image.comments?.map((c: any) => {
-          //   // it c.userid user in array suchen
-          //   let name: string = "";
-    
-          //   for (var i = 0; i < users.length; i++) {
-          //     if (users[i][1] === c.userid) {
-          //       name = users[i][0];                
-          //     }
-          //   }
-    
-            
-          // });
+              for (var i = 0; i < users.length; i++) {
+                if (users[i][1] === t.userid) {
+                  name = users[i][0];
+                }
+              }
+              setComments((pstate: any) => {
+                return [
+                  ...pstate,
+                  {
+                    ...t,
+                    userid: name,
+                  },
+                ];
+              });
+            });
         })();
         /*** */
-
       });
-  });
+  }, []);
 
   const onLikeClick = useCallback(async () => {
     if (flag === false) {
@@ -220,35 +228,39 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     setshowCommentsModal(true);
   }, [true, setshowCommentsModal]);
 
-
-  const onCommetShowUserProfilClick = useCallback(async () => { 
-    await  db.collection("users")
-      .where("username", "==", image.user)
-      .get()
-      .then(async(querySnapshot) => {
-        querySnapshot.forEach(async (doc) => {
-          if (doc.id === user?.uid) {
-           setRedirect("profile");            
-            return;
-          } else { 
-            setNameOfUser(image.user);           
-            setuserProfilModel(true);
-          }
+  const onCommetShowUserProfilClick = useCallback(
+    async (username: any) => {
+      await db
+        .collection("users")
+        .where("username", "==", username)
+        .get()
+        .then(async (querySnapshot) => {
+          querySnapshot.forEach(async (doc) => {
+            if (doc.id === user?.uid) {
+              setRedirect("profile");
+              return;
+            } else {
+              setNameOfUser(username);
+              setuserProfilModel(true);
+            }
+          });
         });
-      });
-  }, [image]);
+    },
+    [image]
+  );
 
-  const showUserProfil = useCallback(async() => {
-  await  db.collection("users")
+  const showUserProfil = useCallback(async () => {
+    await db
+      .collection("users")
       .where("username", "==", image.user)
       .get()
-      .then(async(querySnapshot) => {
+      .then(async (querySnapshot) => {
         querySnapshot.forEach(async (doc) => {
           if (doc.id === user?.uid) {
-           setRedirect("profile");            
+            setRedirect("profile");
             return;
-          } else { 
-            setNameOfUser(image.user);           
+          } else {
+            setNameOfUser(image.user);
             setuserProfilModel(true);
           }
         });
@@ -363,18 +375,31 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
         <br />
 
-        {commentTrue ? (
-          <IonGrid>
-            <IonText color="primary" onClick={onCommetShowUserProfilClick}>
-              {userComment}
-            </IonText>
-            <IonText>
-              <p className="hide-text-overflow">{lastComment}</p>
-            </IonText>
-          </IonGrid>
-        ) : (
+        {/* {commentTrue ? ( */}
+
+        {comments &&
+          comments.map((c) => {
+            var time = timeConverter(c.timestamp);
+
+            return (
+              <IonGrid>
+                <IonText
+                  color="primary"
+                  onClick={async () =>
+                    await onCommetShowUserProfilClick(c.userid)
+                  }
+                >
+                  {c.userid} {time}
+                </IonText>
+                <IonText>
+                  <p className="hide-text-overflow">{c.comment}</p>
+                </IonText>
+              </IonGrid>
+            );
+          })}
+        {/* ) : (
           false
-        )}
+        )} */}
       </IonCardContent>
 
       <ShowUserProfil
@@ -391,10 +416,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         setshowCommentsModal={setshowCommentsModal}
         setLoading={setLoading}
       />
-   
 
       {redirect !== "" && <Redirect to={`/${redirect}`}></Redirect>}
-
     </IonCard>
   );
 };

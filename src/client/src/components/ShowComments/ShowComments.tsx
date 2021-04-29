@@ -76,7 +76,6 @@ const ShowComments: React.FC<ContainerProps> = ({
         for (var i = 0; i < users.length; i++) {
           if (users[i][1] === c.userid) {
             name = users[i][0];
-            
           }
         }
 
@@ -118,23 +117,26 @@ const ShowComments: React.FC<ContainerProps> = ({
     setshowCommentsModal(false);
   }, [false, setshowCommentsModal]);
 
-  const onClickShowUserProfil = useCallback(async (username: any) => {
-    await db
-      .collection("users")
-      .where("username", "==", username)
-      .get()
-      .then(async (querySnapshot) => {
-        querySnapshot.forEach(async (doc) => {
-          if (doc.id === user?.uid) {
-            setRedirect("profile");
-            return;
-          } else {
-            setNameOfUser(username);
-            setuserProfilModel(true);
-          }
+  const onClickShowUserProfil = useCallback(
+    async (username: any) => {
+      await db
+        .collection("users")
+        .where("username", "==", username)
+        .get()
+        .then(async (querySnapshot) => {
+          querySnapshot.forEach(async (doc) => {
+            if (doc.id === user?.uid) {
+              setRedirect("profile");
+              return;
+            } else {
+              setNameOfUser(username);
+              setuserProfilModel(true);
+            }
+          });
         });
-      });
-  }, [image]);
+    },
+    [image]
+  );
 
   return (
     <IonModal
@@ -199,7 +201,6 @@ const ShowComments: React.FC<ContainerProps> = ({
       />
 
       {redirect !== "" && <Redirect to={`/${redirect}`}></Redirect>}
-
     </IonModal>
   );
 };
