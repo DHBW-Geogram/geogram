@@ -20,7 +20,6 @@ import { Image } from "../../model/Image";
 import { GeolocationPosition, Plugins } from "@capacitor/core";
 import { distanceInKm } from "../../hooks/evaluateDistance";
 import ExploreCard from "../../components/ExploreCard/ExploreCard";
-import "./Search.css";
 
 const { Geolocation } = Plugins;
 
