@@ -67,26 +67,28 @@ const ShowComments: React.FC<ContainerProps> = ({
         if ((await documentSnapshot.data()?.comments) === undefined) {
           return;
         } else {
-          commentArr = await documentSnapshot.data()?.comments;
+           commentArr = await documentSnapshot.data()?.comments;
 
           console.log("arr commentArr", commentArr);
 
-          commentArr.forEach(async (cc) => {
-            console.log("cc", cc.comments?.userId);
-            await db
-              .collection("users")
-              .doc(cc.comments.userId)
-              .get()
-              .then(async (documentSnapshot) => {
-                //get username to uid
-                cc.comments.userId = documentSnapshot.data()?.userName + ": ";
-              });
+          //  commentArr.forEach(async (cc) => {
 
-              //convert Timestamp
-              cc.comments.convertedTimestamp = await timeConverter(cc.comments.commentTimestamp);
-          });
+          // if(cc.comments.convertedTimestamp === undefined)
+          // cc.comments.convertedTimestamp = "12345"
 
+          //   console.log("cc", cc.comments?.userId);
+          //   await db
+          //     .collection("users")
+          //     .doc(cc.comments.userId)
+          //     .get()
+          //     .then(async (documentSnapshot) => {
+          //       //get username to uid
+          //       cc.comments.userId = documentSnapshot.data()?.userName + ": ";
+          //     });
 
+          //     //convert Timestamp
+          //     cc.comments.convertedTimestamp = await timeConverter(cc.comments.commentTimestamp);
+          //  });
 
           setComments(commentArr);
         }
@@ -160,17 +162,19 @@ const ShowComments: React.FC<ContainerProps> = ({
 
       <IonContent>
         {comments.map((c) => {
-          console.log("in comments.map ", c);
-
+          
+            console.log("in comments.map ", c);
+          
           return (
             <IonGrid key={c.comments?.commentId}>
               <IonText
-                 onClick={async () =>
-                 await onClickShowUserProfil(c.comments?.userId)
-                 }
+                onClick={async () =>
+                  await onClickShowUserProfil(c.comments?.userId)
+                }
                 color="primary"
               >
-                {c.comments?.userId}{c.comments?.convertedTimestamp}
+                {c.comments?.userId}
+                {c.comments?.convertedTimestamp}
               </IonText>
               <br />
               <IonText>{c.comments?.comment}</IonText>
