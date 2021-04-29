@@ -15,7 +15,13 @@ import {
   IonListHeader,
   IonRange,
 } from "@ionic/react";
-import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { GeolocationPosition, Plugins } from "@capacitor/core";
 import { funnel } from "ionicons/icons";
 import React from "react";
@@ -25,8 +31,10 @@ import { db } from "../../helper/firebase";
 import { sortImageArray } from "../../hooks/sortImageArray";
 import { evaluateLocation } from "../../hooks/evaluateLocation";
 import ExploreCard from "../../components/ExploreCard/ExploreCard";
+import { wait } from "@testing-library/react";
 import { checkAuthEmailWithUserCollectionEmail } from "../../hooks/checkAuthEmailWithUserCollectionEmail";
 import { UserContext } from "../..";
+import { useStateWithPromise } from "../../hooks/useStateWithPromise";
 
 const { Geolocation } = Plugins;
 
@@ -34,7 +42,7 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   setLoading,
 }) => {
   // Geoinformation
-  const [location, setLocation] = useState<GeolocationPosition | undefined>();
+  const [location, setLocation] = useStateWithPromise();
 
   //images to display
   const [images, setImages] = useState<Array<Image>>([]);
@@ -50,23 +58,28 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
     open: false,
     event: undefined,
   });
-  
+
   const user = useContext(UserContext);
 
   useEffect(() => {
     (async () => {
-      
       checkAuthEmailWithUserCollectionEmail(user);
       // push location to state
-      setLocation(await Geolocation.getCurrentPosition());
 
-      console.log("Initial load...");
+      Geolocation.getCurrentPosition().then(s => {
 
-      fetchImages(filter).then((images) => setImages(images));
+        setLocation(s);
+
+        fetchImages(filter, s).then((images) => {
+          setImages(images);
+        });
+
+      })
+
     })();
   }, []);
 
-  async function fetchImages(i?: number): Promise<Image[]> {
+  async function fetchImages(i?: number, l?: any): Promise<Image[]> {
     // fetch images from firebase
     const ref = db.collection("images");
     const data = await ref.get();
@@ -80,6 +93,8 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
       return sortImageArray(a, b);
     });
 
+    console.log("log", location);
+
     if (location !== undefined) {
       if (i) {
         t = evaluateLocation(
@@ -88,23 +103,29 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
           location.coords.latitude,
           location.coords.longitude
         );
-      } else {
+        setLoading(false);
+        return t;
+      }
+    }else{
+      if (i) {
         t = evaluateLocation(
-          filter,
+          i,
           t,
-          location.coords.latitude,
-          location.coords.longitude
+          l.coords.latitude,
+          l.coords.longitude
         );
+        setLoading(false);
+        return t;
       }
     }
 
-    return t;
+    return [];
   }
 
   function doRefresh(event: CustomEvent<RefresherEventDetail>) {
     console.log("Begin async operation");
 
-    fetchImages(filter).then((images) => setImages(images));
+    fetchImages(filter, location).then((images) => setImages(images));
 
     setTimeout(() => {
       console.log("Async operation has ended");
@@ -188,7 +209,9 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
         </IonHeader>
         {images.length > 0 &&
           images.map((image, id) => {
-            return <ExploreCard key={id} image={image} setLoading={setLoading}/>;
+            return (
+              <ExploreCard key={id} image={image} setLoading={setLoading} />
+            );
           })}
       </IonContent>
     </IonPage>
