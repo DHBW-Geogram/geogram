@@ -22,6 +22,7 @@ import {
   useIonToast,
   IonLoading,
   IonActionSheet,
+  IonPopover,
 } from "@ionic/react";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import ProfilePicSelectionModal from "../../components/ProfilePicSelectionModal/ProfilePicSelectionModal";
@@ -29,6 +30,9 @@ import { auth, db } from "../../helper/firebase";
 import { checkUsername } from "./checkUsername";
 import { RefresherEventDetail } from "@ionic/core";
 import { trash, close, information } from "ionicons/icons";
+import { Image } from "../../model/Image";
+import ExploreCard from "../../components/ExploreCard/ExploreCard";
+import "./Profile.css";
 
 const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   setLoading,
@@ -86,6 +90,9 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   const [imageState, setImageState] = useState<string>("");
 
   const [showAlertDelete, setShowAlertDelete] = useState<boolean>(false);
+
+  const [popPic, setPopPic] = useState<Image>();
+  const [showPopup, setShowPopup] = useState<boolean>(false);
 
   useEffect(() => {
     if (auth.currentUser?.emailVerified) {
@@ -362,7 +369,18 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
             handler: () => {
               console.log('Info clicked');
               setShowActionSheet(false);
-              //find image with "imageState"
+
+              db.collection("images")
+                .where("url", "==", imageState as string)
+                .get()
+                .then((querySnapshot) => {
+                  querySnapshot.forEach(doc => {
+                    setPopPic(doc.data() as Image);
+                  });
+                })
+                .then(() => {
+                  setShowPopup(true);
+                });
             }
           }, {
             text: 'Delete',
@@ -386,6 +404,15 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
           ]}
         >
         </IonActionSheet>
+        <IonPopover
+          cssClass="my-pop-over"
+          backdropDismiss={true}
+          showBackdrop={false}
+          isOpen={showPopup}
+          onDidDismiss={() => setShowPopup(false)}
+        >
+          <ExploreCard image={popPic as Image} />
+        </IonPopover>
         <IonAlert
           isOpen={showAlertDelete}
           header={"Are you sure?"}
