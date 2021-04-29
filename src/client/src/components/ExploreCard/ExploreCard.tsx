@@ -11,6 +11,7 @@ import {
   IonItem,
   IonLabel,
   IonPopover,
+  IonRouterOutlet,
   IonText,
   useIonViewWillEnter,
 } from "@ionic/react";
@@ -31,7 +32,14 @@ import { Image } from "../../model/Image";
 import { delikeFunction, likeFunction } from "../../hooks/like";
 import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
 
-import "./ExploreCard.css"
+import "./ExploreCard.css";
+import { Route, Router } from "workbox-routing";
+import Profile from "../../pages/Profile/Profile";
+import { IonReactRouter } from "@ionic/react-router";
+import ProfilePicSelectionModal from "../ProfilePicSelectionModal/ProfilePicSelectionModal";
+import { render } from "react-dom";
+
+import { Redirect } from "react-router";
 
 interface ContainerProps {
   image: Image;
@@ -45,54 +53,53 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [flag, setFlag] = useState(false);
   const user = useContext(UserContext);
 
+  const [redirect, setRedirect] = useState("");
+
+
   const [userProfilModel, setuserProfilModel] = useState(false);
 
-  useEffect(() => {    
-      db
-        .collection("images")
-        .doc(image.id)
-        .get()
-        .then(async (documentSnapshot) => {
-          //if image have no likes -> return
-          if (
-            documentSnapshot.data()?.likes === undefined ||
-            documentSnapshot.data()?.likes === 0
-          ) {
-            return;
-          }
-          //image have likes
-          else {
-            await db
-              .collection("users")
-              .doc(user?.uid)
-              .get()
-              .then(async (documentSnapshot) => {
-                // speichere die vom User geliketen bilder in  "likedImages"
-                let likedImages: string[] = documentSnapshot.data()?.likedImage;
+  useEffect(() => {
+    db.collection("images")
+      .doc(image.id)
+      .get()
+      .then(async (documentSnapshot) => {
+        //if image have no likes -> return
+        if (
+          documentSnapshot.data()?.likes === undefined ||
+          documentSnapshot.data()?.likes === 0
+        ) {
+          return;
+        }
+        //image have likes
+        else {
+          await db
+            .collection("users")
+            .doc(user?.uid)
+            .get()
+            .then(async (documentSnapshot) => {
+              // speichere die vom User geliketen bilder in  "likedImages"
+              let likedImages: string[] = documentSnapshot.data()?.likedImage;
 
-                let bol: boolean = false;
+              let bol: boolean = false;
 
-                //hat der user bilder geliket suche das aktuelle bild in dem array
-                // ist es vorhanden -> setzte bol auf true
-                if (likedImages !== undefined) {
-                  bol = likedImages.find((i) => i === image.id) !== undefined;
-                }
-                //if bol = true setze das icon heart und die farbe danger
-                if (bol) {
-                  setLikeIcon(heart);
-                  setLikeColor("danger");
-                }else {                  
-                  setLikeIcon(heartOutline);
-                  setLikeColor("dark");
-                }
-                
-              });
-               
-          }
-          //in alle Fälle setzte die anzahl an likes
-          setLikeNumber(documentSnapshot.data()?.likes);
-        });
-   
+              //hat der user bilder geliket suche das aktuelle bild in dem array
+              // ist es vorhanden -> setzte bol auf true
+              if (likedImages !== undefined) {
+                bol = likedImages.find((i) => i === image.id) !== undefined;
+              }
+              //if bol = true setze das icon heart und die farbe danger
+              if (bol) {
+                setLikeIcon(heart);
+                setLikeColor("danger");
+              } else {
+                setLikeIcon(heartOutline);
+                setLikeColor("dark");
+              }
+            });
+        }
+        //in alle Fälle setzte die anzahl an likes
+        setLikeNumber(documentSnapshot.data()?.likes);
+      });
   });
 
   const onLikeClick = useCallback(async () => {
@@ -138,9 +145,24 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     if (setLoading != undefined) setLoading(false);
   }, [likeNumber, image, user, db, flag]);
 
+
   const showUserProfil = useCallback(() => {
-    setuserProfilModel(true);
-  }, [setuserProfilModel, true]);
+    
+
+    db.collection("users")
+      .where("username", "==", image.user)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          if (doc.id === user?.uid) {
+            setRedirect("profile");            
+            return;
+          } else {            
+            setuserProfilModel(true);
+          }
+        });
+      });
+  }, []);
 
   return (
     <IonCard className="my-ion-card">
@@ -171,14 +193,26 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
       <IonCardHeader>
         <IonCardSubtitle onClick={showUserProfil}>{image.user}</IonCardSubtitle>
-        <IonCardTitle onClick={() => {
-          let descriptionElement: any = document.getElementById(`${image.id}-2`);
-          if(descriptionElement.classList.length > 0){
-            descriptionElement.classList.remove("hide-text-overflow");
-          }else{
-            descriptionElement.classList.add("hide-text-overflow")
-          }
-        }}><h2 style={{fontSize: "1.3rem"}} id={`${image.id}-2`} className="hide-text-overflow">{image.title}</h2></IonCardTitle>
+        <IonCardTitle
+          onClick={() => {
+            let descriptionElement: any = document.getElementById(
+              `${image.id}-2`
+            );
+            if (descriptionElement.classList.length > 0) {
+              descriptionElement.classList.remove("hide-text-overflow");
+            } else {
+              descriptionElement.classList.add("hide-text-overflow");
+            }
+          }}
+        >
+          <h2
+            style={{ fontSize: "1.3rem" }}
+            id={`${image.id}-2`}
+            className="hide-text-overflow"
+          >
+            {image.title}
+          </h2>
+        </IonCardTitle>
       </IonCardHeader>
 
       <IonCardContent>
@@ -191,14 +225,23 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           <IonText>{likeNumber}</IonText>
         </IonButtons>
         <br />
-        <IonText onClick={() => {
-          let descriptionElement: any = document.getElementById(`${image.id}-1`);
-            if(descriptionElement.classList.length > 0){
+        <IonText
+          onClick={() => {
+            let descriptionElement: any = document.getElementById(
+              `${image.id}-1`
+            );
+            if (descriptionElement.classList.length > 0) {
               descriptionElement.classList.remove("hide-text-overflow");
-            }else{
-              descriptionElement.classList.add("hide-text-overflow")
+            } else {
+              descriptionElement.classList.add("hide-text-overflow");
             }
-        }} style={{ fontSize: "large" }}><p id={`${image.id}-1`} className="hide-text-overflow">{image.description}</p></IonText>
+          }}
+          style={{ fontSize: "large" }}
+        >
+          <p id={`${image.id}-1`} className="hide-text-overflow">
+            {image.description}
+          </p>
+        </IonText>
       </IonCardContent>
 
       <ShowUserProfil
@@ -207,6 +250,11 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         setuserProfilModel={setuserProfilModel}
         setLoading={setLoading}
       />
+
+   
+
+      {redirect !== "" && <Redirect to={`/${redirect}`}></Redirect>}
+
     </IonCard>
   );
 };

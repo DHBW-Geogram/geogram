@@ -21,12 +21,14 @@ import {
   IonRefresherContent,
   useIonToast,
   IonLoading,
+  IonActionSheet,
 } from "@ionic/react";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import ProfilePicSelectionModal from "../../components/ProfilePicSelectionModal/ProfilePicSelectionModal";
 import { auth, db } from "../../helper/firebase";
 import { checkUsername } from "./checkUsername";
 import { RefresherEventDetail } from "@ionic/core";
+import { trash, close, information } from "ionicons/icons";
 
 const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   setLoading,
@@ -55,7 +57,6 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   const [errorUsernameLabel, setErrorUsernameLabel] = useState<string>("");
   const [errorUsernameText, setErrorUsernameText] = useState<string>("");
 
-  //const [isUsernameCorrect, setUsernameCorrect] = useState<boolean>(true);
   let isUsernameCorrect: boolean = true;
 
   let oldUsername: string = "";
@@ -63,7 +64,6 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   const [errorEmailLabel, setErrorEmailLabel] = useState<string>("");
   const [errorEmailText, setErrorEmailText] = useState<string>("");
 
-  //const [isEmailCorrect, setEmailCorrect] = useState<boolean>(true);
   let isEmailCorrect: boolean = true;
 
   const [presentToast, dismissToast] = useIonToast();
@@ -81,6 +81,11 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   let imageListCounter: string[] = [];
   let imageListListCounter: string[][] = [];
   const [imageList, setImageList] = useState<string[][]>([]);
+
+  const [showActionSheet, setShowActionSheet] = useState<boolean>(false);
+  const [imageState, setImageState] = useState<string>("");
+
+  const [showAlertDelete, setShowAlertDelete] = useState<boolean>(false);
 
   useEffect(() => {
     if (auth.currentUser?.emailVerified) {
@@ -116,6 +121,10 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   }, [EditProfile]);
 
   useEffect(() => {
+    refreshLikesPostsImages();
+  }, []);
+
+  function refreshLikesPostsImages() {
     auth.currentUser?.reload().then(() => {
       db.collection("users")
         .doc(auth.currentUser?.uid)
@@ -137,6 +146,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
                 .then((querySnapshot) => {
                   setPosts(querySnapshot.size);
                   counterLikes = 0;
+                  imageListCounter = [];
                   querySnapshot.forEach((doc) => {
                     if (!(doc.data().likes == null)) {
                       counterLikes = counterLikes + doc.data().likes;
@@ -144,6 +154,8 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
                     imageListCounter.push(doc.data().url as string);
                   });
                   setLikes(counterLikes);
+
+                  imageListListCounter = [];
 
                   for (var i = 0; imageListCounter.length > 0; i++) {
                     imageListListCounter[i] = [];
@@ -159,9 +171,9 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
             });
         });
     });
-  }, []);
+  }
 
-  async function doRefresh(event: CustomEvent<RefresherEventDetail>) {
+  async function refreshAll(event: CustomEvent<RefresherEventDetail>) {
     if (auth.currentUser?.emailVerified) {
       setVerified("none");
     } else {
@@ -199,6 +211,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
                 .then((querySnapshot) => {
                   setPosts(querySnapshot.size);
                   counterLikes = 0;
+                  imageListCounter = [];
                   querySnapshot.forEach((doc) => {
                     if (!(doc.data().likes == null)) {
                       counterLikes = counterLikes + doc.data().likes;
@@ -206,6 +219,8 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
                     imageListCounter.push(doc.data().url as string);
                   });
                   setLikes(counterLikes);
+
+                  imageListListCounter = [];
 
                   for (var i = 0; imageListCounter.length > 0; i++) {
                     imageListListCounter[i] = [];
@@ -319,12 +334,15 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
           <IonRow>
             <IonGrid>
               {
-                imageList.map(image => {
-                  return <IonRow>
+                imageList.map((image, id) => {
+                  return <IonRow key={id}>
                     {
-                      image.map(img => {
-                        return <IonCol size="4">
-                          <IonImg src={img} style={{ height: "100%", objectFit: "cover" }} />
+                      image.map((img, id) => {
+                        return <IonCol key={id} size="4">
+                          <IonImg src={img} style={{ height: "100%", objectFit: "cover" }} onClick={() => {
+                            setImageState(img as string);
+                            setShowActionSheet(true);
+                          }} />
                         </IonCol>
                       })
                     }
@@ -334,6 +352,90 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
             </IonGrid>
           </IonRow>
         </IonGrid>
+        <IonActionSheet
+          isOpen={showActionSheet}
+          onDidDismiss={() => setShowActionSheet(false)}
+          header="Image Settings"
+          buttons={[{
+            text: 'Info',
+            icon: information,
+            handler: () => {
+              console.log('Info clicked');
+              setShowActionSheet(false);
+              //find image with "imageState"
+            }
+          }, {
+            text: 'Delete',
+            role: 'destructive',
+            icon: trash,
+            handler: () => {
+              console.log('Delete clicked');
+              setShowActionSheet(false);
+              setShowAlertDelete(true);
+            }
+          },
+          {
+            text: 'Cancel',
+            icon: close,
+            role: 'cancel',
+            handler: () => {
+              console.log('Cancel clicked');
+              setShowActionSheet(false);
+            }
+          }
+          ]}
+        >
+        </IonActionSheet>
+        <IonAlert
+          isOpen={showAlertDelete}
+          header={"Are you sure?"}
+          message={
+            "Are you sure you want to delete the image?"
+          }
+          buttons={[
+            {
+              text: "Cancel",
+              role: "cancel",
+              cssClass: "secondary",
+              handler: () => {
+                console.log("Confirm Cancel");
+                setShowAlertDelete(false);
+              },
+            },
+            {
+              text: "Yes",
+              handler: () => {
+                setShowLoading(true);
+                console.log("Confirm Yes");
+                setShowAlertDelete(false);
+
+                db.collection("images")
+                  .where("url", "==", imageState as string)
+                  .get()
+                  .then((querySnapshot) => {
+                    querySnapshot.forEach(async (doc) => {
+                      await db
+                        .collection("images")
+                        .doc(doc.data().id)
+                        .delete()
+                        .then(() => {
+                          console.log("Delete successfull!");
+                        })
+                        .catch((error) => {
+                          console.log("Error delete image: ", error);
+                        });
+                    });
+                  })
+                  .then(() => {
+                    refreshLikesPostsImages();
+                  })
+                  .then(() => {
+                    setShowLoading(false);
+                  });
+              },
+            },
+          ]}
+        />
         <IonAlert
           isOpen={showAlertVerify}
           onDidDismiss={() => setShowAlertVerify(false)}
@@ -347,7 +449,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
           pullFactor={0.5}
           pullMin={100}
           pullMax={200}
-          onIonRefresh={doRefresh}
+          onIonRefresh={refreshAll}
         >
           <IonRefresherContent></IonRefresherContent>
         </IonRefresher>
