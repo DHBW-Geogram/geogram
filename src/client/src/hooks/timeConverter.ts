@@ -1,7 +1,7 @@
 
-export async function timeConverter(timestamp: any): Promise<string>{  
+export function timeConverter(timestamp: any){  
     
-    var a = new Date(await timestamp);
+    var a = new Date( timestamp);
     
     // var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     var monthsNummeric = ['01','02','03','04','05','06','07','08','09','10','11','12'];
@@ -13,8 +13,6 @@ export async function timeConverter(timestamp: any): Promise<string>{
     // var sec = a.getSeconds();
 
     var time = "- "+ date + '.' + month + '.' + year + ' ' + hour + ':' + min;
-
-    console.log("Time", time);
 
     return time;
 }

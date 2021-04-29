@@ -160,16 +160,32 @@ const ShowComments: React.FC<ContainerProps> = ({
           comments.map((c) => {
             //.filter
 
+    //         var a = new Date(c.timestamp);    
+    //  var monthsNummeric = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+    // var year = a.getFullYear();
+    // var month = monthsNummeric[a.getMonth()];
+    // var date = a.getDate();
+    // var hour = a.getHours();
+    // var min = a.getMinutes();
+   
+
+    // var time = "- "+ date + '.' + month + '.' + year + ' ' + hour + ':' + min;
+
+          var time = timeConverter(c.timestamp);
+
+
             return (
               <IonGrid key={c.id}>
                 <IonText
-                  // onClick={async () =>
-                  //   await onClickShowUserProfil(c.comments?.userId)
-                  // }
+                   onClick={async () =>
+                     await onClickShowUserProfil(c.userid)
+                   }
                   color="primary"
                 >
-                  {c.userid}
-                  {new Date(c.timestamp).toUTCString()}
+                  {c.userid} 
+                  {" "}
+                  
+                  {time}
                 </IonText>
                 <br />
                 <IonText>{c.comment}</IonText>
