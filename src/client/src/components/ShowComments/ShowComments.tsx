@@ -30,6 +30,7 @@ import { v4 as uuidv4 } from "uuid";
 import "./ShowComments.css";
 import { timeConverter } from "../../hooks/timeConverter";
 import { UsernameAndId } from "../../model/UsernameAndId";
+import { Redirect } from "react-router";
 
 interface ContainerProps {
   image: Image;
@@ -50,44 +51,46 @@ const ShowComments: React.FC<ContainerProps> = ({
   const [nameOfUser, setNameOfUser] = useState<string>("");
   const [comments, setComments] = useState<any[]>([]);
 
+  const [redirect, setRedirect] = useState("");
+
   const user = useContext(UserContext);
 
   useEffect(() => {
+    (async () => {
+      // alle user holen
+      let users: any[] = [];
+      const ref = db.collection("users");
+      const data = await ref.get();
 
-    (async() => {
-    // alle user holen
-    let users: any[] = [];
-    const ref = db.collection("users");
-    const data = await ref.get();
+      data.docs.forEach((doc: any) =>
+        users.push([doc.data().username, doc.id])
+      );
 
-     data.docs.forEach((doc: any) => users.push([doc.data().username, doc.id]))
+      // image.comments durchiterrieren
+      image.comments?.map((c: any) => {
+        // it c.userid user in array suchen
+        let name: string = "";
 
+        // name = users.find((u: any) => u.id  === c.userid);
 
-     // image.comments durchiterrieren
-     image.comments?.map((c: any) => {
-       // it c.userid user in array suchen
-       let name: string = "";
+        for (var i = 0; i < users.length; i++) {
+          if (users[i][1] === c.userid) {
+            name = users[i][0];
+            
+          }
+        }
 
-       // name = users.find((u: any) => u.id  === c.userid);
-
-       for(var i = 0; i < users.length; i++){      
-         if(users[i][1] === c.userid){
-           name = users[i][0]
-           console.log(name)
-         }
-       }
-
-     setComments((pstate: any) => {
-       return [...pstate,
-         {
-           ...c,
-           userid: name,
-         },
-       ];
-     });
-
-     });
-  })()
+        setComments((pstate: any) => {
+          return [
+            ...pstate,
+            {
+              ...c,
+              userid: name,
+            },
+          ];
+        });
+      });
+    })();
   }, [image]);
 
   const onAddCommentClick = useCallback(async () => {
@@ -115,13 +118,23 @@ const ShowComments: React.FC<ContainerProps> = ({
     setshowCommentsModal(false);
   }, [false, setshowCommentsModal]);
 
-  const onClickShowUserProfil = useCallback(
-    async (userName: string) => {
-      setNameOfUser(userName);
-      setuserProfilModel(true);
-    },
-    [setuserProfilModel, true, setNameOfUser]
-  );
+  const onClickShowUserProfil = useCallback(async (username: any) => {
+    await db
+      .collection("users")
+      .where("username", "==", username)
+      .get()
+      .then(async (querySnapshot) => {
+        querySnapshot.forEach(async (doc) => {
+          if (doc.id === user?.uid) {
+            setRedirect("profile");
+            return;
+          } else {
+            setNameOfUser(username);
+            setuserProfilModel(true);
+          }
+        });
+      });
+  }, [image]);
 
   return (
     <IonModal
@@ -160,32 +173,15 @@ const ShowComments: React.FC<ContainerProps> = ({
           comments.map((c) => {
             //.filter
 
-    //         var a = new Date(c.timestamp);    
-    //  var monthsNummeric = ['01','02','03','04','05','06','07','08','09','10','11','12'];
-    // var year = a.getFullYear();
-    // var month = monthsNummeric[a.getMonth()];
-    // var date = a.getDate();
-    // var hour = a.getHours();
-    // var min = a.getMinutes();
-   
-
-    // var time = "- "+ date + '.' + month + '.' + year + ' ' + hour + ':' + min;
-
-          var time = timeConverter(c.timestamp);
-
+            var time = timeConverter(c.timestamp);
 
             return (
               <IonGrid key={c.id}>
                 <IonText
-                   onClick={async () =>
-                     await onClickShowUserProfil(c.userid)
-                   }
+                  onClick={async () => await onClickShowUserProfil(c.userid)}
                   color="primary"
                 >
-                  {c.userid} 
-                  {" "}
-                  
-                  {time}
+                  {c.userid} {time}
                 </IonText>
                 <br />
                 <IonText>{c.comment}</IonText>
@@ -201,6 +197,9 @@ const ShowComments: React.FC<ContainerProps> = ({
         setuserProfilModel={setuserProfilModel}
         setLoading={setLoading}
       />
+
+      {redirect !== "" && <Redirect to={`/${redirect}`}></Redirect>}
+
     </IonModal>
   );
 };
