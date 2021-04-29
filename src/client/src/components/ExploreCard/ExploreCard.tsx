@@ -121,20 +121,31 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           data.docs.forEach((doc: any) =>
             users.push([doc.data().username, doc.id])
           );
+
+          //  image.comments?.filter((c: any) => c.timestamp )
+         image.comments?.forEach((cc) => {
+
+            
+
+
+
+         })
+
+         
+         
+         
+          // image.comments?.map((c: any) => {
+          //   // it c.userid user in array suchen
+          //   let name: string = "";
     
-          // image.comments durchiterrieren
-          image.comments?.map((c: any) => {
-            // it c.userid user in array suchen
-            let name: string = "";
-    
-            for (var i = 0; i < users.length; i++) {
-              if (users[i][1] === c.userid) {
-                name = users[i][0];                
-              }
-            }
+          //   for (var i = 0; i < users.length; i++) {
+          //     if (users[i][1] === c.userid) {
+          //       name = users[i][0];                
+          //     }
+          //   }
     
             
-          });
+          // });
         })();
         /*** */
 
