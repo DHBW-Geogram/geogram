@@ -35,15 +35,17 @@ const Search: React.FC = () => {
   useEffect(() => {
     (async () => {
       // push location to state
-      setLocation(await Geolocation.getCurrentPosition());
+      Geolocation.getCurrentPosition().then((s) => {
+        setLocation(s);
 
-      fetchImages().then((images) => {
-        setImages(images);
+        fetchImages(s).then((images) => {
+          setImages(images);
+        });
       });
     })();
-  },[]);
- 
-  async function fetchImages(): Promise<Image[]> {
+  }, []);
+
+  async function fetchImages(l?: any): Promise<Image[]> {
     // fetch images from firebase
     const ref = db.collection("images");
     const data = await ref.get();
@@ -52,10 +54,10 @@ const Search: React.FC = () => {
     let t: Image[] = [];
     data.docs.forEach((doc: any) => t.push(doc.data()));
     t.forEach((element: Image) => {
-      if (location !== undefined && element.distance == undefined) {
+      if (l !== undefined && element.distance === undefined) {
         element.distance = distanceInKm(
-          location?.coords.latitude,
-          location?.coords.longitude,
+          l?.coords.latitude,
+          l?.coords.longitude,
           element.location.coords.latitude,
           element.location.coords.longitude
         );
@@ -66,17 +68,18 @@ const Search: React.FC = () => {
   }
 
   function filterItems(searchText: string) {
+    searchText = searchText.toLowerCase();
     console.log("filtering", searchText);
     if (searchText.length <= 3) {
       return;
     }
 
     if (searchText === "" || searchText === null || searchText === undefined) {
-      fetchImages().then((res) => {
+      fetchImages(location).then((res) => {
         setImages(res);
       });
     } else if (filter === "Location") {
-      fetchImages().then((res) => {
+      fetchImages(location).then((res) => {
         let i: Image[] = [];
         res.forEach((image) => {
           if (image.location.position?.includes(searchText)) {
@@ -86,7 +89,7 @@ const Search: React.FC = () => {
         setImages(i);
       });
     } else if (filter === "Title") {
-      fetchImages().then((res) => {
+      fetchImages(location).then((res) => {
         let i: Image[] = [];
         res.forEach((image) => {
           if (image.title.includes(searchText)) {
@@ -96,7 +99,7 @@ const Search: React.FC = () => {
         setImages(i);
       });
     } else if (filter === "User") {
-      fetchImages().then((res) => {
+      fetchImages(location).then((res) => {
         let i: Image[] = [];
         res.forEach((image) => {
           if (image.user.includes(searchText)) {
@@ -185,6 +188,7 @@ const Search: React.FC = () => {
                       right: "10px",
                       backgroundColor: "rgba(0,0,0,0.5)",
                       borderRadius: "5px",
+                      color: "white"
                     }}
                   >
                     {p.distance?.toPrecision(4)}
