@@ -334,11 +334,11 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
           <IonRow>
             <IonGrid>
               {
-                imageList.map(image => {
-                  return <IonRow>
+                imageList.map((image, id) => {
+                  return <IonRow key={id}>
                     {
-                      image.map(img => {
-                        return <IonCol size="4">
+                      image.map((img, id) => {
+                        return <IonCol key={id} size="4">
                           <IonImg src={img} style={{ height: "100%", objectFit: "cover" }} onClick={() => {
                             setImageState(img as string);
                             setShowActionSheet(true);

@@ -57,6 +57,12 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   let postsUsername: string = "";
   let counterLikes: number = 0;
   const [bio, setBio] = useState<string>();
+
+  const [imageState, setImageState] = useState<string>("");
+  let imageListCounter: string[] = [];
+  let imageListListCounter: string[][] = [];
+  const [imageList, setImageList] = useState<string[][]>([]);
+
   const [profilepic, setProfilepic] = useState(
     "https://im-coder.com/images4/15590312779219.png"
   );
@@ -89,30 +95,34 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
             setPosts(querySnapshot.size);
 
             counterLikes = 0;
+
+            imageListCounter = [];
+
             querySnapshot.forEach((doc) => {
               if (!(doc.data().likes == null)) {
                 counterLikes = counterLikes + doc.data().likes;
               }
+              imageListCounter.push(doc.data().url as string);
             });
             setLikes(counterLikes);
+
+            imageListListCounter = [];
+
+            for (var i = 0; imageListCounter.length > 0; i++) {
+              imageListListCounter[i] = [];
+              for (var j = 0; j < 3; j++) {
+                if (imageListCounter.length > 0) {
+                  imageListListCounter[i].push(
+                    imageListCounter.pop() as string
+                  );
+                }
+              }
+            }
+
+            setImageList(imageListListCounter);
           });
       });
-  }, [
-    image,
-    counterLikes,
-    image.likes,
-    image.user,
-    counterLikes,    
-    nameOfUser,
-    setPosts,
-    setLikes,
-    postsUsername,
-    setUsername,
-    setFirstName,
-    setLastName,
-    setBio,
-    setFullName,
-  ]);
+  }, []);
 
   const closeModal = useCallback(() => {
     setuserProfilModel(false);
@@ -185,6 +195,29 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
             </IonCol>
           </IonRow>
         </IonGrid>
+        <IonRow>
+          <IonGrid>
+            {imageList.map((image, id) => {
+              return (
+                <IonRow key={id}> 
+                  {image.map((img, id) => {
+                    return (
+                      <IonCol size="4" key={id}>
+                        <IonImg
+                          src={img}
+                          style={{ height: "100%", objectFit: "cover" }}
+                          onClick={() => {
+                            setImageState(img as string);
+                          }}
+                        />
+                      </IonCol>
+                    );
+                  })}
+                </IonRow>
+              );
+            })}
+          </IonGrid>
+        </IonRow>
       </IonContent>
     </IonModal>
   );

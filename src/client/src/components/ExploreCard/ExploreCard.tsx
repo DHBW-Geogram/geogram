@@ -10,6 +10,8 @@ import {
   IonImg,
   IonItem,
   IonLabel,
+  IonPopover,
+  IonRouterOutlet,
   IonText,
   IonTextarea,
 } from "@ionic/react";
@@ -33,6 +35,15 @@ import ShowComments from "../ShowComments/ShowComments";
 import { v4 as uuidv4 } from "uuid";
 import "./ExploreCard.css";
 
+
+import { Route, Router } from "workbox-routing";
+import Profile from "../../pages/Profile/Profile";
+import { IonReactRouter } from "@ionic/react-router";
+import ProfilePicSelectionModal from "../ProfilePicSelectionModal/ProfilePicSelectionModal";
+import { render } from "react-dom";
+
+import { Redirect } from "react-router";
+
 interface ContainerProps {
   image: Image;
   setLoading?: Dispatch<SetStateAction<boolean>>;
@@ -52,6 +63,9 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const onCommentChange = useCallback((e) => setComment(e.detail?.value), []);
   const user = useContext(UserContext);
   const [commentTrue, setCommentTrue] = useState<boolean>(false);
+  const [redirect, setRedirect] = useState("");
+
+
   const [userProfilModel, setuserProfilModel] = useState(false);
   const [showCommentsModal, setshowCommentsModal] = useState(false);
 
@@ -183,15 +197,28 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     setshowCommentsModal(true);
   }, [true, setshowCommentsModal]);
 
-  const showUserProfil = useCallback(() => {
-    setNameOfUser(image.user);
-    setuserProfilModel(true);
-  }, [image.user, setNameOfUser, setuserProfilModel]);
 
   const onCommetShowUserProfilClick = useCallback(() => {
     setNameOfUser(userComment?.split(":")[0]);
     setuserProfilModel(true);
   }, [setuserProfilModel, true, setNameOfUser, userComment]);
+
+  const showUserProfil = useCallback(() => {
+    db.collection("users")
+      .where("username", "==", image.user)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          if (doc.id === user?.uid) {
+            setRedirect("profile");            
+            return;
+          } else { 
+            setNameOfUser(image.user);           
+            setuserProfilModel(true);
+          }
+        });
+      });
+  }, []);
 
   return (
     <IonCard className="my-ion-card">
@@ -329,6 +356,10 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         setshowCommentsModal={setshowCommentsModal}
         setLoading={setLoading}
       />
+   
+
+      {redirect !== "" && <Redirect to={`/${redirect}`}></Redirect>}
+
     </IonCard>
   );
 };
