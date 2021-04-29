@@ -20,6 +20,7 @@ import { Image } from "../../model/Image";
 import { GeolocationPosition, Plugins } from "@capacitor/core";
 import { distanceInKm } from "../../hooks/evaluateDistance";
 import ExploreCard from "../../components/ExploreCard/ExploreCard";
+import "./Search.css";
 
 const { Geolocation } = Plugins;
 
@@ -187,7 +188,7 @@ const Search: React.FC = () => {
                       right: "10px",
                       backgroundColor: "rgba(0,0,0,0.5)",
                       borderRadius: "5px",
-                      color: "white"
+                      color: "white",
                     }}
                   >
                     {p.distance?.toPrecision(4)}
@@ -205,7 +206,7 @@ const Search: React.FC = () => {
           isOpen={showPopup}
           onDidDismiss={(e) => setShowPopup(false)}
         >
-          {popPic && <ExploreCard image={popPic} />}
+          <IonContent>{popPic && <ExploreCard image={popPic} />}</IonContent>
         </IonPopover>
       </IonContent>
     </IonPage>
