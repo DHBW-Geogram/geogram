@@ -52,11 +52,9 @@ const Login: React.FC = () => {
   return (
     <IonPage>
       <IonContent fullscreen>
-        <br />
-        <br />
-        <br />
+       
         <IonTitle className="Title">Geogram</IonTitle>
-        <br />
+     
         <IonGrid>
           <IonRow>
             <IonCol
