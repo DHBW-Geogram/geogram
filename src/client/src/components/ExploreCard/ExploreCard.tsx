@@ -385,7 +385,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
             var time = timeConverter(c.timestamp);
 
             return (
-              <IonGrid>
+              <IonGrid key={c.id}>
                 <IonText
                   color="primary"
                   onClick={async () => await showUserProfil(c.userid)}

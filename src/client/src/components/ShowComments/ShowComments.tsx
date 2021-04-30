@@ -28,9 +28,7 @@ import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
 import { v4 as uuidv4 } from "uuid";
 
 import "./ShowComments.css";
-import { timeConverter } from "../../hooks/timeConverter";
-import { UsernameAndId } from "../../model/UsernameAndId";
-import { Redirect } from "react-router";
+import { timeConverter } from "../../hooks/timeConverter";import { Redirect } from "react-router";
 
 interface ContainerProps {
   image: Image;
