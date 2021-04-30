@@ -404,7 +404,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
           ]}
         >
         </IonActionSheet>
-        <IonPopover
+        <IonModal
           cssClass="my-pop-over"
           backdropDismiss={true}
           showBackdrop={false}
@@ -412,7 +412,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
           onDidDismiss={() => setShowPopup(false)}
         >
           <ExploreCard image={popPic as Image} />
-        </IonPopover>
+        </IonModal>
         <IonAlert
           isOpen={showAlertDelete}
           header={"Are you sure?"}
