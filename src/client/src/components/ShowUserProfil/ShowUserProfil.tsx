@@ -56,7 +56,6 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   const [lastName, setLastName] = useState<string>();
   const [fullName, setFullName] = useState<string>();
   const [likes, setLikes] = useState<number>(0);
-  const [flag, setFlag] = useState(false);
   let postsUsername: string = "";
   let counterLikes: number = 0;
   const [bio, setBio] = useState<string>();
@@ -65,11 +64,6 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   
   const [location, setLocation] = useState<GeolocationPosition>();
   const [images, setImages] = useState<Array<Image>>([]);
-
-  const [imageState, setImageState] = useState<string>("");
-  let imageListCounter: string[] = [];
-  let imageListListCounter: string[][] = [];
-  const [imageList, setImageList] = useState<string[][]>([]);
 
   const [profilepic, setProfilepic] = useState(
     "https://im-coder.com/images4/15590312779219.png"
@@ -103,8 +97,6 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
             setPosts(querySnapshot.size);
 
             counterLikes = 0;
-
-            imageListCounter = [];
 
             querySnapshot.forEach((doc) => {
               if (!(doc.data().likes == null)) {
