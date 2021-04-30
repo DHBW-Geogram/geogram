@@ -22,7 +22,6 @@ import {
   useIonToast,
   IonLoading,
   IonActionSheet,
-  IonPopover,
 } from "@ionic/react";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import ProfilePicSelectionModal from "../../components/ProfilePicSelectionModal/ProfilePicSelectionModal";
@@ -406,12 +405,12 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
         </IonActionSheet>
         <IonModal
           cssClass="my-pop-over"
-          backdropDismiss={true}
-          showBackdrop={false}
           isOpen={showPopup}
           onDidDismiss={() => setShowPopup(false)}
         >
-          <ExploreCard image={popPic as Image} />
+          <IonContent>
+            <ExploreCard image={popPic as Image} />
+          </IonContent>
         </IonModal>
         <IonAlert
           isOpen={showAlertDelete}
