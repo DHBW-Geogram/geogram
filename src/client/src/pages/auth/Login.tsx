@@ -52,12 +52,11 @@ const Login: React.FC = () => {
   return (
     <IonPage>
       <IonContent fullscreen>
-        <br />
-        <br />
-        <br />
-        <IonTitle className="Title">Geogram</IonTitle>
-        <br />
+
         <IonGrid>
+          <IonRow>
+            <IonTitle className="Title">Geogram</IonTitle>
+          </IonRow>
           <IonRow>
             <IonCol
               size="12"
@@ -172,8 +171,8 @@ const Login: React.FC = () => {
               auth.sendPasswordResetEmail(data.emailPasswordForgoten);
               presentAlert(
                 "A Passowrd reset Email was send to " +
-                  data.emailPasswordForgoten +
-                  "."
+                data.emailPasswordForgoten +
+                "."
               );
             },
           },

@@ -1,12 +1,14 @@
 .LogInButton {
-  text-align: center;
+  text-align: center;  
 }
 
 .Title {
   font-family: Lucida Handwriting, cursive;
   text-align: center;
-  font-size: xx-large;
-  /* margin   */
+  font-size: xx-large;  
+  margin: 13%;  
+  padding: 0px;
+  position: relative;
 }
 
 .Icon {
