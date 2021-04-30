@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   IonContent,
   IonHeader,
@@ -43,7 +43,7 @@ const Search: React.FC = () => {
         });
       });
     })();
-  }, []);
+  }, [setLocation, setImages, GeolocationPositionError ]);
 
   async function fetchImages(l?: any): Promise<Image[]> {
     // fetch images from firebase

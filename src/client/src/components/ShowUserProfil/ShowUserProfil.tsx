@@ -32,14 +32,16 @@ import "./ShowUserProfil.css";
 
 interface ContainerProps {
   image: Image;
-  active: boolean;
+  nameOfUser: string;
+  activeShowUserProfil: boolean;
   setuserProfilModel: Dispatch<SetStateAction<boolean>>;
   setLoading?: Dispatch<SetStateAction<boolean>>;
 }
 
 const ShowUserProfil: React.FC<ContainerProps> = ({
   image,
-  active,
+  nameOfUser,
+  activeShowUserProfil,
   setuserProfilModel,
   setLoading,
 }) => {
@@ -67,7 +69,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
 
   useEffect(() => {
     db.collection("users")
-      .where("username", "==", image.user)
+      .where("username", "==", nameOfUser)
       .get()
       .then(async (querySnapshot) => {
         querySnapshot.forEach(async (doc) => {
@@ -118,7 +120,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
             setImageList(imageListListCounter);
           });
       });
-  }, []);
+  }, [nameOfUser]);
 
   const closeModal = useCallback(() => {
     setuserProfilModel(false);
@@ -126,7 +128,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
 
   return (
     <IonModal
-      isOpen={active}
+      isOpen={activeShowUserProfil}
       cssClass="modal"
       onWillDismiss={() => setuserProfilModel(false)}
     >
@@ -195,7 +197,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
           <IonGrid>
             {imageList.map((image, id) => {
               return (
-                <IonRow key={id}> 
+                <IonRow key={id}>
                   {image.map((img, id) => {
                     return (
                       <IonCol size="4" key={id}>

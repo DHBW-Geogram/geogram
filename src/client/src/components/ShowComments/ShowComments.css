@@ -1,0 +1,10 @@
+.modalComment .modal-wrapper {
+    position: relative;    
+    width: 80%;
+    height: 80%;
+
+  }
+
+  .closeButton {
+    text-align: center;
+  }
