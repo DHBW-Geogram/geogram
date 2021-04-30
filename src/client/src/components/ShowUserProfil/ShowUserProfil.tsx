@@ -123,7 +123,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
       })();
 
 
-  }, [nameOfUser]);
+  }, [nameOfUser, images]);
 
   async function fetchImages(l?: any): Promise<Image[]> {
     // fetch images from firebase
