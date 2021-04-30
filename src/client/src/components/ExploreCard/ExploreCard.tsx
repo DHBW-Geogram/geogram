@@ -127,25 +127,21 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
      
        var temp =0;
-        image.comments?.forEach((cc: any) => {
-          if (cc.timestamp >= temp) {
-            temp = cc.timestamp;
-          }
-        });
+         image.comments?.forEach((cc: any) => {
+           if (cc.timestamp >= temp) {
+             temp = cc.timestamp;
+           }
+         });
       
 
-       const t = image.comments?.filter((f: any) => f.timestamp === temp);
+        const t = image.comments?.filter((f: any) => f.timestamp === temp);
 
 
 
 
-      //  const t = image.comments?.filter((a: any, b: any) => a.timestamp < b.timestamp);
-
-
-
-
-
-      console.log("t", t);
+        // const t = image.comments?.filter(so);
+        
+        // console.log("t", t);
 
       if (t !== undefined)
         t.map((t: any) => {
@@ -166,6 +162,23 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     })();
     /*** */
   }, [image, user]);
+
+
+
+  // function so(a:any){
+  //   var temp =0;
+
+        
+  //      if (a.timestamp >= temp) {
+  //           temp = a.timestamp;
+  //         }
+       
+
+  //   return temp;
+  
+  // };
+  
+
 
   const onLikeClick = useCallback(async () => {
     if (flag === false) {
