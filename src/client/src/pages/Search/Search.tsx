@@ -14,6 +14,7 @@ import {
   IonGrid,
   IonImg,
   IonPopover,
+  IonModal,
 } from "@ionic/react";
 import { db } from "../../helper/firebase";
 import { Image } from "../../model/Image";
@@ -43,7 +44,7 @@ const Search: React.FC = () => {
         });
       });
     })();
-  }, [setLocation, setImages, GeolocationPositionError ]);
+  }, [setLocation, setImages, GeolocationPositionError]);
 
   async function fetchImages(l?: any): Promise<Image[]> {
     // fetch images from firebase
@@ -199,16 +200,17 @@ const Search: React.FC = () => {
             })}
           </IonRow>
         </IonGrid>
-        <IonPopover
+
+        <IonModal
           cssClass="my-pop-over"
-          backdropDismiss={true}
-          showBackdrop={false}
           isOpen={showPopup}
-          onDidDismiss={(e) => setShowPopup(false)}
+          showBackdrop={true}
+          onWillDismiss={(e) => setShowPopup(false)}
         >
           <IonContent>{popPic && <ExploreCard image={popPic} />}</IonContent>
-        </IonPopover>
+        </IonModal>
       </IonContent>
+      
     </IonPage>
   );
 };
