@@ -29,6 +29,10 @@ import React, {
 import { Image } from "../../model/Image";
 import { auth, db } from "../../helper/firebase";
 import "./ShowUserProfil.css";
+import ExploreCard from "../ExploreCard/ExploreCard";
+
+import { GeolocationPosition, Plugins } from "@capacitor/core";
+import { distanceInKm } from "../../hooks/evaluateDistance";
 
 interface ContainerProps {
   image: Image;
@@ -37,6 +41,8 @@ interface ContainerProps {
   setuserProfilModel: Dispatch<SetStateAction<boolean>>;
   setLoading?: Dispatch<SetStateAction<boolean>>;
 }
+
+const { Geolocation } = Plugins;
 
 const ShowUserProfil: React.FC<ContainerProps> = ({
   image,
@@ -49,17 +55,15 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   const [firstName, setFirstName] = useState<string>();
   const [lastName, setLastName] = useState<string>();
   const [fullName, setFullName] = useState<string>();
-  const [showPopup, setShowPopup] = useState(false);
   const [likes, setLikes] = useState<number>(0);
-  const [flag, setFlag] = useState(false);
   let postsUsername: string = "";
   let counterLikes: number = 0;
   const [bio, setBio] = useState<string>();
-
-  const [imageState, setImageState] = useState<string>("");
-  let imageListCounter: string[] = [];
-  let imageListListCounter: string[][] = [];
-  const [imageList, setImageList] = useState<string[][]>([]);
+  const [popPic, setPopPic] = useState<Image>();
+  const [showPopup, setShowPopup] = useState(false);
+  
+  const [location, setLocation] = useState<GeolocationPosition>();
+  const [images, setImages] = useState<Array<Image>>([]);
 
   const [profilepic, setProfilepic] = useState(
     "https://im-coder.com/images4/15590312779219.png"
@@ -94,33 +98,59 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
 
             counterLikes = 0;
 
-            imageListCounter = [];
-
             querySnapshot.forEach((doc) => {
               if (!(doc.data().likes == null)) {
                 counterLikes = counterLikes + doc.data().likes;
               }
-              imageListCounter.push(doc.data().url as string);
+            
             });
             setLikes(counterLikes);
 
-            imageListListCounter = [];
-
-            for (var i = 0; imageListCounter.length > 0; i++) {
-              imageListListCounter[i] = [];
-              for (var j = 0; j < 3; j++) {
-                if (imageListCounter.length > 0) {
-                  imageListListCounter[i].push(
-                    imageListCounter.pop() as string
-                  );
-                }
-              }
-            }
-
-            setImageList(imageListListCounter);
+        
           });
       });
-  }, [nameOfUser]);
+
+      //show images of user
+      (async () => {
+        // push location to state
+        Geolocation.getCurrentPosition().then((s) => {
+          setLocation(s);
+  
+          fetchImages(s).then((images) => {
+            setImages(images);
+          });
+        });
+      })();
+
+
+  }, [nameOfUser, images]);
+
+  async function fetchImages(l?: any): Promise<Image[]> {
+    // fetch images from firebase
+    const ref = db.collection("images");
+    const data = await ref.get();
+
+    // load images to typed docs
+    let t: Image[] = [];    
+
+    data.docs.filter((doc: any)=> doc.data().user === postsUsername).forEach((doc: any) => t.push(doc.data()));
+
+
+    t.forEach((element: Image) => {
+      if (l !== undefined && element.distance === undefined) {
+        element.distance = distanceInKm(
+          l?.coords.latitude,
+          l?.coords.longitude,
+          element.location.coords.latitude,
+          element.location.coords.longitude
+        );
+      }
+    });
+
+    return t;
+  }
+
+   
 
   const closeModal = useCallback(() => {
     setuserProfilModel(false);
@@ -193,30 +223,54 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
             </IonCol>
           </IonRow>
         </IonGrid>
-        <IonRow>
+        
           <IonGrid>
-            {imageList.map((image, id) => {
+          <IonRow>
+          {images.map((p: Image, i: number) => {
               return (
-                <IonRow key={id}>
-                  {image.map((img, id) => {
-                    return (
-                      <IonCol size="4" key={id}>
-                        <IonImg
-                          src={img}
-                          style={{ height: "100%", objectFit: "cover" }}
-                          onClick={() => {
-                            setImageState(img as string);
-                          }}
-                        />
-                      </IonCol>
-                    );
-                  })}
-                </IonRow>
+                <IonCol size="4" key={i}>
+                  <IonImg
+                    onClick={(e) => {
+                      setShowPopup(true);
+                      setPopPic(p);
+                    }}
+                    src={p.url}
+                    style={{
+                      objectFit: "cover",
+                      height: "100%",
+                      // width: "100%",
+                    }}
+                  ></IonImg>
+                  <p
+                    style={{
+                      position: "absolute",
+                      bottom: "-10px",
+                      right: "10px",
+                      backgroundColor: "rgba(0,0,0,0.5)",
+                      borderRadius: "5px",
+                      color: "white",
+                    }}
+                  >
+                    {p.distance?.toPrecision(4)}
+                    km
+                  </p>
+                </IonCol>
               );
             })}
+             </IonRow>
           </IonGrid>
-        </IonRow>
+       
       </IonContent>
+
+      <IonModal
+          cssClass="my-pop-over"
+          showBackdrop={true}
+          isOpen={showPopup}
+          onWillDismiss={(e) => setShowPopup(false)}
+        >
+          <IonContent>{popPic && <ExploreCard image={popPic} />}</IonContent>
+        </IonModal>
+        
     </IonModal>
   );
 };
