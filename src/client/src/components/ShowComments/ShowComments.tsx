@@ -170,7 +170,7 @@ const ShowComments: React.FC<ContainerProps> = ({
 
       <IonContent>
         {comments &&
-          comments.map((c) => {
+          comments.sort((a, b) => b.timestamp - a.timestamp ).map((c) => {
             //.filter
 
             var time = timeConverter(c.timestamp);

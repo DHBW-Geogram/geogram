@@ -112,50 +112,59 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         }
         //in alle Fälle setzte die anzahl an likes
         setLikeNumber(await documentSnapshot.data()?.likes);
-
-        //set last Comment
-        (async () => {
-          // alle user holen
-          let users: any[] = [];
-          const ref = db.collection("users");
-          const data = await ref.get();
-
-          data.docs.forEach((doc: any) =>
-            users.push([doc.data().username, doc.id])
-          );
-
-          //  image.comments?.filter((c: any) => c.timestamp )
-          var temp = 0;
-          image.comments?.forEach((cc: any) => {
-            if (cc.timestamp >= temp) {
-              temp = cc.timestamp;
-            }
-          });
-
-          const t = image.comments?.filter((f: any) => f.timestamp === temp);
-
-          if (t !== undefined)
-            t.map((t: any) => {
-              let name: string = "";
-
-              for (var i = 0; i < users.length; i++) {
-                if (users[i][1] === t.userid) {
-                  name = users[i][0];
-                }
-              }
-              setComments((pstate: any) => {
-                return [
-                  ...pstate,
-                  {
-                    ...t,
-                    userid: name,
-                  },
-                ];
-              });
-            });
-        })();
-        /*** */
       });
+
+    //set last Comment
+    (async () => {
+      // alle user holen
+      let users: any[] = [];
+      const ref = db.collection("users");
+      const data = await ref.get();
+
+      data.docs.forEach((doc: any) => {
+        users.push({ username: doc.data().username, id: doc.id });
+      });
+
+     
+       var temp =0;
+        image.comments?.forEach((cc: any) => {
+          if (cc.timestamp >= temp) {
+            temp = cc.timestamp;
+          }
+        });
+      
+
+       const t = image.comments?.filter((f: any) => f.timestamp === temp);
+
+
+
+
+      //  const t = image.comments?.filter((a: any, b: any) => a.timestamp < b.timestamp);
+
+
+
+
+
+      console.log("t", t);
+
+      if (t !== undefined)
+        t.map((t: any) => {
+          let name: string = "";
+        
+          name = users.find((e) => e.id === t.userid).username;
+         
+          setComments((pstate: any) => {
+            return [
+              ...pstate,
+              {
+                ...t,
+                userid: name,
+              },
+            ];
+          });
+        });
+    })();
+    /*** */
   }, [image, user]);
 
   const onLikeClick = useCallback(async () => {
@@ -225,27 +234,6 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const onReadCommentClick = useCallback(() => {
     setshowCommentsModal(true);
   }, [true, setshowCommentsModal]);
-
-  // const onCommetShowUserProfilClick = useCallback(
-  //   async (username: any) => {
-  //     await db
-  //       .collection("users")
-  //       .where("username", "==", username)
-  //       .get()
-  //       .then(async (querySnapshot) => {
-  //         querySnapshot.forEach(async (doc) => {
-  //           if (doc.id === user?.uid) {
-  //             setRedirect("profile");
-  //             return;
-  //           } else {
-  //             setNameOfUser(username);
-  //             setuserProfilModel(true);
-  //           }
-  //         });
-  //       });
-  //   },
-  //   [image]
-  // );
 
   const showUserProfil = useCallback(
     async (username: any) => {
@@ -378,8 +366,6 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
         <br />
 
-        {/* {commentTrue ? ( */}
-
         {comments &&
           comments.map((c) => {
             var time = timeConverter(c.timestamp);
@@ -398,9 +384,6 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
               </IonGrid>
             );
           })}
-        {/* ) : (
-          false
-        )} */}
       </IonCardContent>
 
       <ShowUserProfil
