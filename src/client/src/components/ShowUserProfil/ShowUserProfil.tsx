@@ -117,6 +117,8 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
         
           });
       });
+
+      //show images of user
       (async () => {
         // push location to state
         Geolocation.getCurrentPosition().then((s) => {
