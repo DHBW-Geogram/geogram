@@ -31,7 +31,8 @@ import { RefresherEventDetail } from "@ionic/core";
 import { v4 as uuidv4 } from "uuid";
 
 import "./ShowComments.css";
-import { timeConverter } from "../../hooks/timeConverter";import { Redirect } from "react-router";
+import { timeConverter } from "../../hooks/timeConverter";
+import { Redirect } from "react-router";
 
 interface ContainerProps {
   image: Image;
@@ -57,86 +58,52 @@ const ShowComments: React.FC<ContainerProps> = ({
   const user = useContext(UserContext);
 
   useEffect(() => {
-    
     console.log("useeffect - ShowComments");
 
-    (async () => {
-      // alle user holen
-      let users: any[] = [];
-      const ref = db.collection("users");
-      const data = await ref.get();
+    setCommentsInModal();
 
-      data.docs.forEach((doc: any) =>
-        users.push([doc.data().username, doc.id])
-      );
-
-      // image.comments durchiterrieren
-      image.comments?.map((c: any) => {
-        // it c.userid user in array suchen
-        let name: string = "";
-
-        // name = users.find((u: any) => u.id  === c.userid);
-
-        for (var i = 0; i < users.length; i++) {
-          if (users[i][1] === c.userid) {
-            name = users[i][0];
-          }
-        }
-
-        setComments((pstate: any) => {
-          return [
-            ...pstate,
-            {
-              ...c,
-              userid: name,
-            },
-          ];
-        });
-      });
-    })();
   }, []);
 
-  function doRefresh(event: CustomEvent<RefresherEventDetail>) {
-    (async () => {
-      // alle user holen
-      let users: any[] = [];
-      const ref = db.collection("users");
-      const data = await ref.get();
+  const doRefresh = useCallback((event: CustomEvent<RefresherEventDetail>) => {
 
-      data.docs.forEach((doc: any) =>
-        users.push([doc.data().username, doc.id])
-      );
-
-      // image.comments durchiterrieren
-      image.comments?.map((c: any) => {
-        // it c.userid user in array suchen
-        let name: string = "";
-
-        // name = users.find((u: any) => u.id  === c.userid);
-
-        for (var i = 0; i < users.length; i++) {
-          if (users[i][1] === c.userid) {
-            name = users[i][0];
-          }
-        }
-
-        setComments((pstate: any) => {
-          return [
-            ...pstate,
-            {
-              ...c,
-              userid: name,
-            },
-          ];
-        });
-      });
-    })();
+    setCommentsInModal();
 
     setTimeout(() => {
-     
       event.detail.complete();
     }, 2000);
-  }
+
+  },[comments])
+
+  const setCommentsInModal = useCallback(async () => {
+    // alle user holen
+    let users: any[] = [];
+    const ref = db.collection("users");
+    const data = await ref.get();
+
+    data.docs.forEach((doc: any) => {
+      users.push({ username: doc.data().username, id: doc.id });
+    });
+
+    // image.comments durchiterrieren
+    image.comments?.map((c: any) => {
+      // it c.userid user in array suchen
+      let name: string = "";
+
+      // name = users.find((u: any) => u.id  === c.userid);
+
+      name = users.find((e) => e.id === c.userid).username;
+
+      setComments((pstate: any) => {
+        return [
+          ...pstate,
+          {
+            ...c,
+            userid: name,
+          },
+        ];
+      });
+    });
+  }, []);
 
   const onAddCommentClick = useCallback(async () => {
     if (comment === "") {
@@ -190,7 +157,6 @@ const ShowComments: React.FC<ContainerProps> = ({
       cssClass="modalComment"
       onWillDismiss={() => setshowCommentsModal(false)}
     >
-      
       <div className="closeButton">
         <IonButton fill="clear" color="primary" onClick={closeModal}>
           Close
@@ -218,36 +184,37 @@ const ShowComments: React.FC<ContainerProps> = ({
       </div>
 
       <IonContent>
-        
-      <IonRefresher
+        <IonRefresher
           slot="fixed"
           onIonRefresh={doRefresh}
           pullFactor={0.5}
           pullMin={100}
           pullMax={200}
         >
-           <IonRefresherContent></IonRefresherContent>
+          <IonRefresherContent></IonRefresherContent>
         </IonRefresher>
 
         {comments &&
-          comments.sort((a, b) => b.timestamp - a.timestamp ).map((c) => {
-            //.filter
+          comments
+            .sort((a, b) => b.timestamp - a.timestamp)
+            .map((c) => {
+              //.filter
 
-            var time = timeConverter(c.timestamp);
+              var time = timeConverter(c.timestamp);
 
-            return (
-              <IonGrid key={c.id}>
-                <IonText
-                  onClick={async () => await onClickShowUserProfil(c.userid)}
-                  color="primary"
-                >
-                  {c.userid} {time}
-                </IonText>
-                <br />
-                <IonText>{c.comment}</IonText>
-              </IonGrid>
-            );
-          })}
+              return (
+                <IonGrid key={c.id}>
+                  <IonText
+                    onClick={async () => await onClickShowUserProfil(c.userid)}
+                    color="primary"
+                  >
+                    {c.userid} {time}
+                  </IonText>
+                  <br />
+                  <IonText>{c.comment}</IonText>
+                </IonGrid>
+              );
+            })}
       </IonContent>
 
       <ShowUserProfil
