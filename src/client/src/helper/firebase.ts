@@ -1,6 +1,7 @@
 import firebase from "firebase";
 
 const firebaseConfig = {
+    //backup
     apiKey: "AIzaSyBXSt86U-kxZjHd6K6n_Ja13z0naCXnw0w",
     authDomain: "geogram-backup.firebaseapp.com",
     projectId: "geogram-backup",
@@ -8,7 +9,7 @@ const firebaseConfig = {
     messagingSenderId: "308731272904",
     appId: "1:308731272904:web:4503db99c094a163eccffd",
     measurementId: "G-DYTVK15115"
-
+    
     //   apiKey: "AIzaSyCuOUn1kd_QKs91UYx2Pv015QYAwNfpkWg",
     //   authDomain: "geogram-4906f.firebaseapp.com",
     //   projectId: "geogram-4906f",
