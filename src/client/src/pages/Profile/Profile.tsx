@@ -415,7 +415,7 @@ console.log("useeffect - Profile 1")
           onDidDismiss={() => setShowPopup(false)}
         >
           <IonContent>
-            <ExploreCard image={popPic as Image} />
+            {popPic && <ExploreCard image={popPic as Image} />}
           </IonContent>
         </IonModal>
         <IonAlert
