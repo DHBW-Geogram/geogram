@@ -62,10 +62,13 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   const user = useContext(UserContext);
 
   useEffect(() => {
+    
+    console.log("useeffect - Exploration");
+
     (async () => {
       checkAuthEmailWithUserCollectionEmail(user);
-      // push location to state
 
+      // push location to state
       Geolocation.getCurrentPosition().then(s => {
 
         setLocation(s);
@@ -93,7 +96,7 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
       return sortImageArray(a, b);
     });
 
-    console.log("log", location);
+    
 
     if (location !== undefined) {
       if (i) {
