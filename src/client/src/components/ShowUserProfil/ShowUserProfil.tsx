@@ -110,20 +110,22 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
           });
       });
 
+
       //show images of user
       (async () => {
         // push location to state
         Geolocation.getCurrentPosition().then((s) => {
           setLocation(s);
-  
+
+          console.log("ShowUserProfil")
+
           fetchImages(s).then((images) => {
             setImages(images);
           });
         });
       })();
 
-
-  }, [nameOfUser, images]);
+  }, [nameOfUser, setLocation, setImages, GeolocationPositionError]);
 
   async function fetchImages(l?: any): Promise<Image[]> {
     // fetch images from firebase
