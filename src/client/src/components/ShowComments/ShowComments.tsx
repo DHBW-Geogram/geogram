@@ -4,6 +4,8 @@ import {
   IonGrid,
   IonItem,
   IonModal,
+  IonRefresher,
+  IonRefresherContent,
   IonText,
   IonTextarea,
 } from "@ionic/react";
@@ -25,6 +27,7 @@ import firebase from "firebase/app";
 import { UserContext } from "../..";
 import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
 
+import { RefresherEventDetail } from "@ionic/core";
 import { v4 as uuidv4 } from "uuid";
 
 import "./ShowComments.css";
@@ -91,7 +94,49 @@ const ShowComments: React.FC<ContainerProps> = ({
         });
       });
     })();
-  }, [image]);
+  }, []);
+
+  function doRefresh(event: CustomEvent<RefresherEventDetail>) {
+    (async () => {
+      // alle user holen
+      let users: any[] = [];
+      const ref = db.collection("users");
+      const data = await ref.get();
+
+      data.docs.forEach((doc: any) =>
+        users.push([doc.data().username, doc.id])
+      );
+
+      // image.comments durchiterrieren
+      image.comments?.map((c: any) => {
+        // it c.userid user in array suchen
+        let name: string = "";
+
+        // name = users.find((u: any) => u.id  === c.userid);
+
+        for (var i = 0; i < users.length; i++) {
+          if (users[i][1] === c.userid) {
+            name = users[i][0];
+          }
+        }
+
+        setComments((pstate: any) => {
+          return [
+            ...pstate,
+            {
+              ...c,
+              userid: name,
+            },
+          ];
+        });
+      });
+    })();
+
+    setTimeout(() => {
+     
+      event.detail.complete();
+    }, 2000);
+  }
 
   const onAddCommentClick = useCallback(async () => {
     if (comment === "") {
@@ -145,6 +190,7 @@ const ShowComments: React.FC<ContainerProps> = ({
       cssClass="modalComment"
       onWillDismiss={() => setshowCommentsModal(false)}
     >
+      
       <div className="closeButton">
         <IonButton fill="clear" color="primary" onClick={closeModal}>
           Close
@@ -172,6 +218,17 @@ const ShowComments: React.FC<ContainerProps> = ({
       </div>
 
       <IonContent>
+        
+      <IonRefresher
+          slot="fixed"
+          onIonRefresh={doRefresh}
+          pullFactor={0.5}
+          pullMin={100}
+          pullMax={200}
+        >
+           <IonRefresherContent></IonRefresherContent>
+        </IonRefresher>
+
         {comments &&
           comments.sort((a, b) => b.timestamp - a.timestamp ).map((c) => {
             //.filter
