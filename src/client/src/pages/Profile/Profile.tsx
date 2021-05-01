@@ -409,7 +409,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
           onDidDismiss={() => setShowPopup(false)}
         >
           <IonContent>
-            <ExploreCard image={popPic as Image} />
+            {popPic && <ExploreCard image={popPic as Image} />}
           </IonContent>
         </IonModal>
         <IonAlert
