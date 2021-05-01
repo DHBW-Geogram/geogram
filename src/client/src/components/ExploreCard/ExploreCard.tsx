@@ -259,8 +259,9 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
               setRedirect("profile");
               return;
             } else {
-              setNameOfUser(username);
+              setNameOfUser(username);              
               setuserProfilModel(true);
+              //    setshowCommentsModal(false)
             }
           });
         });

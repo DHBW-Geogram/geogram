@@ -9,7 +9,6 @@ import {
   IonText,
   IonTextarea,
 } from "@ionic/react";
-import { arrowBack, chevronBackOutline } from "ionicons/icons";
 import React, {
   Dispatch,
   SetStateAction,
@@ -22,7 +21,6 @@ import { db } from "../../helper/firebase";
 import { presentAlert } from "../../hooks/alert";
 import { Image } from "../../model/Image";
 
-import { Comment } from "../../model/Comment";
 import firebase from "firebase/app";
 import { UserContext } from "../..";
 import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
@@ -64,16 +62,26 @@ const ShowComments: React.FC<ContainerProps> = ({
 
   }, []);
 
-  const doRefresh = useCallback((event: CustomEvent<RefresherEventDetail>) => {
-
+  function doRefresh(event: CustomEvent<RefresherEventDetail>) {
+   
     setCommentsInModal();
 
-    setTimeout(() => {
+    setTimeout(() => {     
       event.detail.complete();
     }, 2000);
+  }
+  // refresh comments
+  // const doRefresh = useCallback(async (event: CustomEvent<RefresherEventDetail>) => {
 
-  },[comments])
+  //   await setCommentsInModal();
 
+  //   setTimeout(() => {
+  //     event.detail.complete();
+  //   }, 2000);
+
+  // },[comments])
+
+  //set comments
   const setCommentsInModal = useCallback(async () => {
     // alle user holen
     let users: any[] = [];
@@ -103,7 +111,7 @@ const ShowComments: React.FC<ContainerProps> = ({
         ];
       });
     });
-  }, []);
+  }, [db, image, comments]);
 
   const onAddCommentClick = useCallback(async () => {
     if (comment === "") {
@@ -144,6 +152,7 @@ const ShowComments: React.FC<ContainerProps> = ({
             } else {
               setNameOfUser(username);
               setuserProfilModel(true);
+              //setshowCommentsModal(false)
             }
           });
         });
