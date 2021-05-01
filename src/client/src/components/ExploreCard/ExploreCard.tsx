@@ -128,7 +128,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
       });
 
      
-       var temp =0;
+       var temp = 0;
          image.comments?.forEach((cc: any) => {
            if (cc.timestamp >= temp) {
              temp = cc.timestamp;
@@ -160,7 +160,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         });
     })();
     /*** */
-  }, [image, user]);
+  }, []);
 
 
 

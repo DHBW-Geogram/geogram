@@ -32,7 +32,7 @@ export function evaluateLocation(
   long: number
 ): Image[] {
   let pictures: Image[] = [];
-  console.log(range);
+  
 
   images.forEach((image) => {
     let distance: number = distanceInKm(
@@ -51,7 +51,7 @@ export function evaluateLocation(
     return sortImageArray(a, b);
   });
 
-  console.log("pictures",pictures);
+  
 
   return pictures;
 }

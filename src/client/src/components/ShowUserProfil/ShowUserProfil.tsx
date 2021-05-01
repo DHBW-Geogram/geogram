@@ -76,7 +76,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   useEffect(() => {
 
     console.log("useeffect - ShowUserProfil")
-    
+
     db.collection("users")
       .where("username", "==", nameOfUser)
       .get()
@@ -115,7 +115,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
           });
       });
 
-      console.log(postsUsername);
+      
       
       if(postsUsername !== "")
       //show images of user
