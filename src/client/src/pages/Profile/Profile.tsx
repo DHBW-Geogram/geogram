@@ -94,6 +94,9 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
   useEffect(() => {
+console.log("useeffect - Profile 1")
+    
+
     if (auth.currentUser?.emailVerified) {
       setVerified("none");
     } else {
@@ -127,6 +130,9 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   }, [EditProfile]);
 
   useEffect(() => {
+
+    console.log("useeffect - Profile 2")
+
     refreshLikesPostsImages();
   }, []);
 

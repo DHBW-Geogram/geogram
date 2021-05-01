@@ -62,6 +62,9 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   const user = useContext(UserContext);
 
   useEffect(() => {
+    
+    console.log("useeffect - Exploration");
+
     (async () => {
       checkAuthEmailWithUserCollectionEmail(user);
       // push location to state

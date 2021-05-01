@@ -33,6 +33,7 @@ import ExploreCard from "../ExploreCard/ExploreCard";
 
 import { GeolocationPosition, Plugins } from "@capacitor/core";
 import { distanceInKm } from "../../hooks/evaluateDistance";
+import { fetchImages } from "../../hooks/fetchImages";
 
 interface ContainerProps {
   image: Image;
@@ -56,8 +57,9 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   const [lastName, setLastName] = useState<string>();
   const [fullName, setFullName] = useState<string>();
   const [likes, setLikes] = useState<number>(0);
-  let postsUsername: string = "";
+  // let postsUsername: string = "";
   let counterLikes: number = 0;
+  const [postsUsername, setpostsUsername] = useState<string>("");
   const [bio, setBio] = useState<string>();
   const [popPic, setPopPic] = useState<Image>();
   const [showPopup, setShowPopup] = useState(false);
@@ -72,6 +74,9 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   const [posts, setPosts] = useState<number>(0);
 
   useEffect(() => {
+
+    console.log("useeffect - ShowUserProfil")
+    
     db.collection("users")
       .where("username", "==", nameOfUser)
       .get()
@@ -86,7 +91,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
           setBio(doc.data().biography);
           setFullName(doc.data().userFirstName + " " + doc.data().userLastName);
 
-          postsUsername = doc.data().username;
+          setpostsUsername( doc.data().username)
         });
       })
       .then(() => {
@@ -110,47 +115,49 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
           });
       });
 
-
+      console.log(postsUsername);
+      
+      if(postsUsername !== "")
       //show images of user
       (async () => {
         // push location to state
         Geolocation.getCurrentPosition().then((s) => {
-          setLocation(s);
+          setLocation(s);          
 
-          console.log("ShowUserProfil")
+          console.log("ShowUserProfil", postsUsername)
 
-          fetchImages(s).then((images) => {
+          fetchImages(s, postsUsername).then((images) => {
             setImages(images);
           });
         });
       })();
 
-  }, [nameOfUser, setLocation, setImages, GeolocationPositionError]);
+  }, [nameOfUser, postsUsername, GeolocationPositionError]);
 
-  async function fetchImages(l?: any): Promise<Image[]> {
-    // fetch images from firebase
-    const ref = db.collection("images");
-    const data = await ref.get();
+  // async function fetchImages(l?: any): Promise<Image[]> {
+  //   // fetch images from firebase
+  //   const ref = db.collection("images");
+  //   const data = await ref.get();
 
-    // load images to typed docs
-    let t: Image[] = [];    
+  //   // load images to typed docs
+  //   let t: Image[] = [];    
 
-    data.docs.filter((doc: any)=> doc.data().user === postsUsername).forEach((doc: any) => t.push(doc.data()));
+  //   data.docs.filter((doc: any)=> doc.data().user === postsUsername).forEach((doc: any) => t.push(doc.data()));
 
 
-    t.forEach((element: Image) => {
-      if (l !== undefined && element.distance === undefined) {
-        element.distance = distanceInKm(
-          l?.coords.latitude,
-          l?.coords.longitude,
-          element.location.coords.latitude,
-          element.location.coords.longitude
-        );
-      }
-    });
+  //   t.forEach((element: Image) => {
+  //     if (l !== undefined && element.distance === undefined) {
+  //       element.distance = distanceInKm(
+  //         l?.coords.latitude,
+  //         l?.coords.longitude,
+  //         element.location.coords.latitude,
+  //         element.location.coords.longitude
+  //       );
+  //     }
+  //   });
 
-    return t;
-  }
+  //   return t;
+  // }
 
    
 

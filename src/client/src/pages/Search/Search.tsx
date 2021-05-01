@@ -22,6 +22,7 @@ import { GeolocationPosition, Plugins } from "@capacitor/core";
 import { distanceInKm } from "../../hooks/evaluateDistance";
 import ExploreCard from "../../components/ExploreCard/ExploreCard";
 import "./Search.css";
+import { fetchImages } from "../../hooks/fetchImages";
 
 const { Geolocation } = Plugins;
 
@@ -34,39 +35,44 @@ const Search: React.FC = () => {
   const [location, setLocation] = useState<GeolocationPosition>();
 
   useEffect(() => {
+
+    console.log("useeffect - Search");
+
     (async () => {
       // push location to state
       Geolocation.getCurrentPosition().then((s) => {
         setLocation(s);
 
+        console.log("serach ")
+        
         fetchImages(s).then((images) => {
           setImages(images);
         });
       });
     })();
-  }, [setLocation, setImages, GeolocationPositionError]);
+  }, [ GeolocationPositionError]);
 
-  async function fetchImages(l?: any): Promise<Image[]> {
-    // fetch images from firebase
-    const ref = db.collection("images");
-    const data = await ref.get();
+  // async function fetchImages(l?: any): Promise<Image[]> {
+  //   // fetch images from firebase
+  //   const ref = db.collection("images");
+  //   const data = await ref.get();
 
-    // load images to typed docs
-    let t: Image[] = [];
-    data.docs.forEach((doc: any) => t.push(doc.data()));
-    t.forEach((element: Image) => {
-      if (l !== undefined && element.distance === undefined) {
-        element.distance = distanceInKm(
-          l?.coords.latitude,
-          l?.coords.longitude,
-          element.location.coords.latitude,
-          element.location.coords.longitude
-        );
-      }
-    });
+  //   // load images to typed docs
+  //   let t: Image[] = [];
+  //   data.docs.forEach((doc: any) => t.push(doc.data()));
+  //   t.forEach((element: Image) => {
+  //     if (l !== undefined && element.distance === undefined) {
+  //       element.distance = distanceInKm(
+  //         l?.coords.latitude,
+  //         l?.coords.longitude,
+  //         element.location.coords.latitude,
+  //         element.location.coords.longitude
+  //       );
+  //     }
+  //   });
 
-    return t;
-  }
+  //   return t;
+  // }
 
   function filterItems(searchText: string) {
     searchText = searchText.toLowerCase();

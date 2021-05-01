@@ -66,12 +66,14 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [commentTrue, setCommentTrue] = useState<boolean>(false);
   const [redirect, setRedirect] = useState("");
 
-  const [userProfilModel, setuserProfilModel] = useState(false);
-  const [showCommentsModal, setshowCommentsModal] = useState(false);
+  const [userProfilModel, setuserProfilModel] = useState<boolean>(false);
+  const [showCommentsModal, setshowCommentsModal] = useState<boolean>(false);
 
   const [comments, setComments] = useState<any[]>([]);
 
-  useEffect(() => {
+  useEffect(() => {      
+    console.log("useeffect - Explorcard");
+
     db.collection("images")
       .doc(image.id)
       .get()
@@ -135,9 +137,6 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
       
 
         const t = image.comments?.filter((f: any) => f.timestamp === temp);
-
-
-
 
         // const t = image.comments?.filter(so);
         
@@ -246,10 +245,10 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
   const onReadCommentClick = useCallback(() => {
     setshowCommentsModal(true);
-  }, [true, setshowCommentsModal]);
+  }, [true]);
 
   const showUserProfil = useCallback(
-    async (username: any) => {
+    async (username: any) => {      
       await db
         .collection("users")
         .where("username", "==", username)
@@ -266,7 +265,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           });
         });
     },
-    [image]
+    [image, user, db] 
   );
 
   return (

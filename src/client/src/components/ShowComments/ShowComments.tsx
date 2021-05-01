@@ -54,6 +54,9 @@ const ShowComments: React.FC<ContainerProps> = ({
   const user = useContext(UserContext);
 
   useEffect(() => {
+    
+    console.log("useeffect - ShowComments");
+
     (async () => {
       // alle user holen
       let users: any[] = [];

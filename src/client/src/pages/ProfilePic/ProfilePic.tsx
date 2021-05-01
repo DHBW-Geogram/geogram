@@ -51,6 +51,9 @@ const ProfilePic: React.FC<any> = (props) => {
   const [redirect, setRedirect] = useState("");
 
   useEffect(() => {
+
+    console.log("useeffect - ProfilPic")
+
     if (props.location.state !== undefined) {
       setImage(props.location.state.image);
     }
