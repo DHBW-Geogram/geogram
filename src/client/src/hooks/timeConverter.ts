@@ -1,6 +1,5 @@
 export function timeConverter(timestamp: any) {
   var a = new Date(timestamp);
-  var b = "";
   var time = "";
 
   // var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -21,20 +20,24 @@ export function timeConverter(timestamp: any) {
   var year = a.getFullYear();
   var month = monthsNummeric[a.getMonth()];
 
-  var date = a.getDate();
+  var date: any = a.getDate();
   if (date <= 9) {
-    b = "0" + date;
+    date = "0" + date;
   }
 
-  var hour = a.getHours();
-  var min = a.getMinutes();
+  var hour: any = a.getHours();
+  if (hour <= 9) {
+    hour = "0" + hour;
+  }
+
+  var min: any = a.getMinutes();
+  if (min <= 9) {
+    min = "0" + min;
+  }
   // var sec = a.getSeconds();
 
-  if (date > 9) {
     time = "- " + date + "." + month + "." + year + " " + hour + ":" + min;
-  } else {
-    time = "- " + b + "." + month + "." + year + " " + hour + ":" + min;
-  }
+
 
   return time;
 }
