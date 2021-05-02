@@ -50,7 +50,7 @@ const ShowComments: React.FC<ContainerProps> = ({
   const [comment, setComment] = useState<any>("");
   const [userProfilModel, setuserProfilModel] = useState(false);
   const [nameOfUser, setNameOfUser] = useState<string>("");
-  const [comments, setComments] = useState<any[]>([]);
+  const [comments, setComments] = useState<any[] | undefined>([]);
 
   const [redirect, setRedirect] = useState("");
 
@@ -58,30 +58,24 @@ const ShowComments: React.FC<ContainerProps> = ({
 
   useEffect(() => {
     console.log("useeffect - ShowComments");
-
+    
     setCommentsInModal();
   }, []);
 
   function doRefresh(event: CustomEvent<RefresherEventDetail>) {
+      
+    setComments([])
+
     setCommentsInModal();
 
     setTimeout(() => {
       event.detail.complete();
     }, 2000);
   }
-  // refresh comments
-  // const doRefresh = useCallback(async (event: CustomEvent<RefresherEventDetail>) => {
-
-  //   await setCommentsInModal();
-
-  //   setTimeout(() => {
-  //     event.detail.complete();
-  //   }, 2000);
-
-  // },[])
-
+  
   //set comments
   const setCommentsInModal = useCallback(async () => {
+    
     // alle user holen
     let users: any[] = [];
     const ref = db.collection("users");
@@ -91,36 +85,47 @@ const ShowComments: React.FC<ContainerProps> = ({
       users.push({ username: doc.data().username, id: doc.id });
     });
 
-    // let cc: Image[] = [];
+    
     const refImage = db.collection("images");
 
     let dataImage: Comment[] = [];
 
     dataImage = (await refImage.doc(image.id).get()).data()?.comments;
 
-    console.log("im", image);
-    console.log("cc", dataImage);
-
+    
     //image.comments durchiterrieren
-    //image.comments?.map(async (c: any) => {
     if (dataImage !== undefined)
       dataImage.map((c: any) => {
+
         // it c.userid user in array suchen
         let name: string = "";
 
         // name = users.find((u: any) => u.id  === c.userid);
 
         name = users.find((e) => e.id === c.userid).username;
+        
 
-        setComments((pstate: any) => {
-          return [
-            ...pstate,
-            {
-              ...c,
-              userid: name,
-            },
-          ];
-        });
+        let nn = undefined;
+        nn = ((ss: any) => [
+          ...ss,{
+            ...c,
+            userid: name,
+          }])
+
+        setComments(nn)
+
+
+        
+        // setComments((pstate: any) => {
+        //   return [
+        //     ...pstate,
+        //     {
+        //       ...c,
+        //       userid: name,
+        //     },
+        //   ];        
+        // });
+        
       });
   }, []);
 
@@ -128,6 +133,9 @@ const ShowComments: React.FC<ContainerProps> = ({
     if (comment === "") {
       return;
     } else {
+      //setComments empty
+      setComments([])
+      //setComments
       await db
         .collection("images")
         .doc(image.id)
@@ -210,13 +218,13 @@ const ShowComments: React.FC<ContainerProps> = ({
         {comments &&
           comments
             .sort((a, b) => b.timestamp - a.timestamp)
-            .map((c) => {
+            .map((c, id) => {
               //.filter
 
               var time = timeConverter(c.timestamp);
 
               return (
-                <IonGrid key={c.id}>
+                <IonGrid key={id}>
                   <IonText
                     onClick={async () => await onClickShowUserProfil(c.userid)}
                     color="primary"
