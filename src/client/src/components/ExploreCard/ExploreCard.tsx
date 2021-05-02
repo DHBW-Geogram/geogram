@@ -83,7 +83,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           documentSnapshot.data()?.likes === undefined ||
           documentSnapshot.data()?.likes === 0
         ) {
-          setLikeNumber(0);
+         // setLikeNumber(0);
           return;
         }
         //image have likes

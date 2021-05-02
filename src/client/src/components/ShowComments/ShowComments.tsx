@@ -83,17 +83,31 @@ const ShowComments: React.FC<ContainerProps> = ({
 
   //set comments
   const setCommentsInModal = useCallback(async () => {
-    // alle user holen
+    // alle user holen    
     let users: any[] = [];
     const ref = db.collection("users");
     const data = await ref.get();
 
+
+
     data.docs.forEach((doc: any) => {
-      users.push({ username: doc.data().username, id: doc.id });
+     users.push({ username: doc.data().username, id: doc.id });
     });
 
-    // image.comments durchiterrieren
-    image.comments?.map((c: any) => {
+    // let cc: Image[] = [];
+    // const refImage = db.collection("images");
+    // const dataImage = await refImage.doc(image.id).get();
+
+    // cc.push(dataImage.data()?.comments);
+  
+    
+    // console.log(dataImage.data()?.comments )
+
+    //image.comments durchiterrieren
+    image.comments?.map(async(c: any) => {
+
+    //cc?.map((c: any) => {
+   
       // it c.userid user in array suchen
       let name: string = "";
 
@@ -101,7 +115,7 @@ const ShowComments: React.FC<ContainerProps> = ({
 
       name = users.find((e) => e.id === c.userid).username;
 
-      setComments((pstate: any) => {
+     setComments((pstate: any) => {
         return [
           ...pstate,
           {
