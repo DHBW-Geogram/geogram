@@ -52,7 +52,6 @@ const ShowComments: React.FC<ContainerProps> = ({
   const [nameOfUser, setNameOfUser] = useState<string>("");
   const [comments, setComments] = useState<any[]>([]);
 
-  
   const [redirect, setRedirect] = useState("");
 
   const user = useContext(UserContext);
@@ -60,13 +59,10 @@ const ShowComments: React.FC<ContainerProps> = ({
   useEffect(() => {
     console.log("useeffect - ShowComments");
 
-   setCommentsInModal();
-
-   
+    setCommentsInModal();
   }, []);
 
   function doRefresh(event: CustomEvent<RefresherEventDetail>) {
-
     setCommentsInModal();
 
     setTimeout(() => {
@@ -99,39 +95,33 @@ const ShowComments: React.FC<ContainerProps> = ({
     const refImage = db.collection("images");
 
     let dataImage: Comment[] = [];
-    
-   
-    dataImage = (await refImage.doc(image.id).get()).data()?.comments ;
 
-    
+    dataImage = (await refImage.doc(image.id).get()).data()?.comments;
 
     console.log("im", image);
     console.log("cc", dataImage);
 
     //image.comments durchiterrieren
     //image.comments?.map(async (c: any) => {
-      if(dataImage !== undefined)  
+    if (dataImage !== undefined)
       dataImage.map((c: any) => {
+        // it c.userid user in array suchen
+        let name: string = "";
 
-      // it c.userid user in array suchen
-      let name: string = "";
+        // name = users.find((u: any) => u.id  === c.userid);
 
-      // name = users.find((u: any) => u.id  === c.userid);
+        name = users.find((e) => e.id === c.userid).username;
 
-      name = users.find((e) => e.id === c.userid).username;
-
-      
-      setComments((pstate: any) => {
-        return [
-          ...pstate,
-          {
-            ...c,
-            userid: name,
-          },
-        ];
+        setComments((pstate: any) => {
+          return [
+            ...pstate,
+            {
+              ...c,
+              userid: name,
+            },
+          ];
+        });
       });
-    });
-
   }, []);
 
   const onAddCommentClick = useCallback(async () => {
@@ -216,16 +206,6 @@ const ShowComments: React.FC<ContainerProps> = ({
       </div>
 
       <IonContent>
-        <IonRefresher
-          slot="fixed"
-          onIonRefresh={doRefresh}
-          pullFactor={0.5}
-          pullMin={100}
-          pullMax={200}
-        >
-          <IonRefresherContent></IonRefresherContent>
-        </IonRefresher>
-
         {comments &&
           comments
             .sort((a, b) => b.timestamp - a.timestamp)
@@ -247,6 +227,16 @@ const ShowComments: React.FC<ContainerProps> = ({
                 </IonGrid>
               );
             })}
+
+        <IonRefresher
+          slot="fixed"
+          onIonRefresh={doRefresh}
+          pullFactor={0.5}
+          pullMin={100}
+          pullMax={200}
+        >
+          <IonRefresherContent></IonRefresherContent>
+        </IonRefresher>
       </IonContent>
 
       <ShowUserProfil
