@@ -15,7 +15,7 @@ import {
   IonText,
   IonTextarea,
 } from "@ionic/react";
-import { heartOutline, pin, heart } from "ionicons/icons";
+import { heartOutline, pin, heart, filter } from "ionicons/icons";
 import React, {
   Dispatch,
   SetStateAction,
@@ -58,9 +58,6 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [flag, setFlag] = useState(false);
   const [nameOfUser, setNameOfUser] = useState<string>("");
 
-  const [lastComment, setLastComment] = useState<String>();
-  const [userComment, setUserComment] = useState<String>("");
-
   const onCommentChange = useCallback((e) => setComment(e.detail?.value), []);
   const user = useContext(UserContext);
   const [commentTrue, setCommentTrue] = useState<boolean>(false);
@@ -69,9 +66,9 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [userProfilModel, setuserProfilModel] = useState<boolean>(false);
   const [showCommentsModal, setshowCommentsModal] = useState<boolean>(false);
 
-  const [comments, setComments] = useState<any[]>([]);
+  const [comments, setComments] = useState<any[] | undefined>([]);
 
-  useEffect(() => {      
+  useEffect(() => {
     console.log("useeffect - Explorcard");
 
     db.collection("images")
@@ -83,7 +80,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           documentSnapshot.data()?.likes === undefined ||
           documentSnapshot.data()?.likes === 0
         ) {
-         // setLikeNumber(0);
+          // setLikeNumber(0);
           return;
         }
         //image have likes
@@ -117,68 +114,68 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         setLikeNumber(await documentSnapshot.data()?.likes);
       });
 
-    //set last Comment
-    (async () => {
-      // alle user holen
-      let users: any[] = [];
-      const ref = db.collection("users");
-      const data = await ref.get();
-
-      data.docs.forEach((doc: any) => {
-        users.push({ username: doc.data().username, id: doc.id });
-      });
-
-     
-       var temp = 0;
-         image.comments?.forEach((cc: any) => {
-           if (cc.timestamp >= temp) {
-             temp = cc.timestamp;
-           }
-         });
-      
-
-        const t = image.comments?.filter((f: any) => f.timestamp === temp);
-
-        // const t = image.comments?.filter(so);
-        
-        // console.log("t", t);
-
-      if (t !== undefined)
-        t.map((t: any) => {
-          let name: string = "";
-        
-          name = users.find((e) => e.id === t.userid).username;
-         
-          setComments((pstate: any) => {
-            return [
-              ...pstate,
-              {
-                ...t,
-                userid: name,
-              },
-            ];
-          });
-        });
-    })();
-    /*** */
+    setLastComment();
   }, []);
 
+  //set last Comment
+  const setLastComment = useCallback(async () => {
+    // alle user holen
+    let users: any[] = [];
+    const ref = db.collection("users");
+    const data = await ref.get();
 
+    data.docs.forEach((doc: any) => {
+      users.push({ username: doc.data().username, id: doc.id });
+    });
 
-  // function so(a:any){
-  //   var temp =0;
+    var temp = 0;
+    image.comments?.forEach((cc: any) => {
+      if (cc.timestamp >= temp) {
+        temp = cc.timestamp;
+      }
+    });
 
-        
-  //      if (a.timestamp >= temp) {
-  //           temp = a.timestamp;
-  //         }
-       
+    const refImage = db.collection("images");
 
-  //   return temp;
-  
-  // };
-  
+    let dataImage: Comment[] = [];
 
+    dataImage = (await refImage.doc(image.id).get())
+      .data()
+      ?.comments?.filter((f: any) => f.timestamp === temp);
+
+    console.log("t", dataImage);
+    // const t = image.comments?.filter((f: any) => f.timestamp === temp);
+
+    // const t = image.comments?.filter(so);
+
+    if (dataImage !== undefined)
+    dataImage.map((t: any) => {
+        let name: string = "";
+
+        name = users.find((e) => e.id === t.userid).username;
+
+        let nn = undefined;
+        nn = (ss: any) => [
+          ...ss,
+          {
+            ...t,
+            userid: name,
+          },
+        ];
+
+        setComments(nn);
+
+        // setComments((pstate: any) => {
+        //   return [
+        //     ...pstate,
+        //     {
+        //       ...t,
+        //       userid: name,
+        //     },
+        //   ];
+        // });
+      });
+  }, []);
 
   const onLikeClick = useCallback(async () => {
     if (flag === false) {
@@ -227,6 +224,9 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     if (comment === "") {
       return;
     } else {
+      //setComments empty
+      setComments([]);
+      //setLastComments
       await db
         .collection("images")
         .doc(image.id)
@@ -241,6 +241,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         .catch((err) => presentAlert(err.message));
 
       setComment("");
+
+      await setLastComment();
     }
   }, [user, image, comment]);
 
@@ -249,7 +251,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   }, [true]);
 
   const showUserProfil = useCallback(
-    async (username: any) => {      
+    async (username: any) => {
       await db
         .collection("users")
         .where("username", "==", username)
@@ -260,14 +262,14 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
               setRedirect("profile");
               return;
             } else {
-              setNameOfUser(username);              
+              setNameOfUser(username);
               setuserProfilModel(true);
               //    setshowCommentsModal(false)
             }
           });
         });
     },
-    [image, user, db] 
+    [image, user, db]
   );
 
   return (
