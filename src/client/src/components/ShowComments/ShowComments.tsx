@@ -142,9 +142,10 @@ const ShowComments: React.FC<ContainerProps> = ({
         .catch((err) => presentAlert(err.message));
 
       setComment("");
+      await setCommentsInModal();
     }
 
-    await setCommentsInModal();
+    
   }, [user, image, comment]);
 
   const closeModal = useCallback(() => {
