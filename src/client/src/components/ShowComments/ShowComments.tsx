@@ -20,6 +20,7 @@ import React, {
 import { db } from "../../helper/firebase";
 import { presentAlert } from "../../hooks/alert";
 import { Image } from "../../model/Image";
+import { Comment } from "../../model/Comment";
 
 import firebase from "firebase/app";
 import { UserContext } from "../..";
@@ -51,6 +52,7 @@ const ShowComments: React.FC<ContainerProps> = ({
   const [nameOfUser, setNameOfUser] = useState<string>("");
   const [comments, setComments] = useState<any[]>([]);
 
+  
   const [redirect, setRedirect] = useState("");
 
   const user = useContext(UserContext);
@@ -58,15 +60,16 @@ const ShowComments: React.FC<ContainerProps> = ({
   useEffect(() => {
     console.log("useeffect - ShowComments");
 
-    setCommentsInModal();
+   setCommentsInModal();
 
+   
   }, []);
 
   function doRefresh(event: CustomEvent<RefresherEventDetail>) {
-   
+
     setCommentsInModal();
 
-    setTimeout(() => {     
+    setTimeout(() => {
       event.detail.complete();
     }, 2000);
   }
@@ -79,35 +82,37 @@ const ShowComments: React.FC<ContainerProps> = ({
   //     event.detail.complete();
   //   }, 2000);
 
-  // },[comments])
+  // },[])
 
   //set comments
   const setCommentsInModal = useCallback(async () => {
-    // alle user holen    
+    // alle user holen
     let users: any[] = [];
     const ref = db.collection("users");
     const data = await ref.get();
 
-
-
     data.docs.forEach((doc: any) => {
-     users.push({ username: doc.data().username, id: doc.id });
+      users.push({ username: doc.data().username, id: doc.id });
     });
 
     // let cc: Image[] = [];
-    // const refImage = db.collection("images");
-    // const dataImage = await refImage.doc(image.id).get();
+    const refImage = db.collection("images");
 
-    // cc.push(dataImage.data()?.comments);
-  
+    let dataImage: Comment[] = [];
     
-    // console.log(dataImage.data()?.comments )
+   
+    dataImage = (await refImage.doc(image.id).get()).data()?.comments ;
+
+    
+
+    console.log("im", image);
+    console.log("cc", dataImage);
 
     //image.comments durchiterrieren
-    image.comments?.map(async(c: any) => {
+    //image.comments?.map(async (c: any) => {
+      if(dataImage !== undefined)  
+      dataImage.map((c: any) => {
 
-    //cc?.map((c: any) => {
-   
       // it c.userid user in array suchen
       let name: string = "";
 
@@ -115,7 +120,8 @@ const ShowComments: React.FC<ContainerProps> = ({
 
       name = users.find((e) => e.id === c.userid).username;
 
-     setComments((pstate: any) => {
+      
+      setComments((pstate: any) => {
         return [
           ...pstate,
           {
@@ -125,7 +131,8 @@ const ShowComments: React.FC<ContainerProps> = ({
         ];
       });
     });
-  }, [db, image, comments]);
+
+  }, []);
 
   const onAddCommentClick = useCallback(async () => {
     if (comment === "") {
@@ -147,8 +154,7 @@ const ShowComments: React.FC<ContainerProps> = ({
       setComment("");
     }
 
-    //await setCommentsInModal();
-
+    await setCommentsInModal();
   }, [user, image, comment]);
 
   const closeModal = useCallback(() => {
