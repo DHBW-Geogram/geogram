@@ -740,7 +740,7 @@ console.log("useeffect - Profile 1")
                                   ],
                                   message:
                                     "Username and Email already exists or invalid!",
-                                  duration: 5000,
+                                  duration: 4000,
                                   color: "danger",
                                 });
                               } else if (!isUsernameCorrect) {
@@ -753,7 +753,7 @@ console.log("useeffect - Profile 1")
                                   ],
                                   message:
                                     "Username already exists or invalid!",
-                                  duration: 5000,
+                                  duration: 4000,
                                   color: "danger",
                                 });
                               } else if (!isEmailCorrect) {
@@ -765,7 +765,7 @@ console.log("useeffect - Profile 1")
                                     },
                                   ],
                                   message: "Email already exists or invalid!",
-                                  duration: 5000,
+                                  duration: 4000,
                                   color: "danger",
                                 });
                               } else {
