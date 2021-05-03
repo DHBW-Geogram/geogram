@@ -114,8 +114,6 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
         
           });
       });
-
-      
       
       if(postsUsername !== "")
       //show images of user

@@ -58,13 +58,12 @@ const ShowComments: React.FC<ContainerProps> = ({
 
   useEffect(() => {
     console.log("useeffect - ShowComments");
-    
+
     setCommentsInModal();
   }, []);
 
   function doRefresh(event: CustomEvent<RefresherEventDetail>) {
-      
-    setComments([])
+    setComments([]);
 
     setCommentsInModal();
 
@@ -72,10 +71,9 @@ const ShowComments: React.FC<ContainerProps> = ({
       event.detail.complete();
     }, 2000);
   }
-  
+
   //set comments
   const setCommentsInModal = useCallback(async () => {
-    
     // alle user holen
     let users: any[] = [];
     const ref = db.collection("users");
@@ -85,37 +83,33 @@ const ShowComments: React.FC<ContainerProps> = ({
       users.push({ username: doc.data().username, id: doc.id });
     });
 
-    
     const refImage = db.collection("images");
 
     let dataImage: Comment[] = [];
 
     dataImage = (await refImage.doc(image.id).get()).data()?.comments;
 
-    
     //image.comments durchiterrieren
     if (dataImage !== undefined)
       dataImage.map((c: any) => {
-
         // it c.userid user in array suchen
         let name: string = "";
 
         // name = users.find((u: any) => u.id  === c.userid);
 
         name = users.find((e) => e.id === c.userid).username;
-        
 
         let nn = undefined;
-        nn = ((ss: any) => [
-          ...ss,{
+        nn = (ss: any) => [
+          ...ss,
+          {
             ...c,
             userid: name,
-          }])
+          },
+        ];
 
-        setComments(nn)
+        setComments(nn);
 
-
-        
         // setComments((pstate: any) => {
         //   return [
         //     ...pstate,
@@ -123,18 +117,22 @@ const ShowComments: React.FC<ContainerProps> = ({
         //       ...c,
         //       userid: name,
         //     },
-        //   ];        
+        //   ];
         // });
-        
       });
   }, []);
 
   const onAddCommentClick = useCallback(async () => {
     if (comment === "") {
       return;
-    } else {
+    } else {   
+
+      //Loading
+      if (setLoading != undefined) setLoading(true);
+      
+
       //setComments empty
-      setComments([])
+      setComments([]);
       //setComments
       await db
         .collection("images")
@@ -151,9 +149,10 @@ const ShowComments: React.FC<ContainerProps> = ({
 
       setComment("");
       await setCommentsInModal();
-    }
 
-    
+      //Loading false
+      if (setLoading != undefined) setLoading(false);
+    }
   }, [user, image, comment]);
 
   const closeModal = useCallback(() => {
