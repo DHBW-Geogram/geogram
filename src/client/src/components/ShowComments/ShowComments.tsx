@@ -59,8 +59,9 @@ const ShowComments: React.FC<ContainerProps> = ({
   useEffect(() => {
     console.log("useeffect - ShowComments");
 
-    setCommentsInModal();
-  }, []);
+    setCommentsInModal(); 
+
+  }, [setComments ]);
 
   function doRefresh(event: CustomEvent<RefresherEventDetail>) {
     setComments([]);
@@ -109,27 +110,15 @@ const ShowComments: React.FC<ContainerProps> = ({
         ];
 
         setComments(nn);
-
-        // setComments((pstate: any) => {
-        //   return [
-        //     ...pstate,
-        //     {
-        //       ...c,
-        //       userid: name,
-        //     },
-        //   ];
-        // });
       });
-  }, []);
+  }, [comments]);
 
   const onAddCommentClick = useCallback(async () => {
     if (comment === "") {
       return;
-    } else {   
-
+    } else {
       //Loading
       if (setLoading != undefined) setLoading(true);
-      
 
       //setComments empty
       setComments([]);
@@ -148,12 +137,14 @@ const ShowComments: React.FC<ContainerProps> = ({
         .catch((err) => presentAlert(err.message));
 
       setComment("");
+
+      //show all comments
       await setCommentsInModal();
 
       //Loading false
       if (setLoading != undefined) setLoading(false);
     }
-  }, [user, image, comment]);
+  }, [comment]);
 
   const closeModal = useCallback(() => {
     setshowCommentsModal(false);

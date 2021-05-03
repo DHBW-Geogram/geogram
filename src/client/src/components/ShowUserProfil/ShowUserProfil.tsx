@@ -59,11 +59,11 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   const [likes, setLikes] = useState<number>(0);
   // let postsUsername: string = "";
   let counterLikes: number = 0;
-  const [postsUsername, setpostsUsername] = useState<string>("");
+
   const [bio, setBio] = useState<string>();
   const [popPic, setPopPic] = useState<Image>();
   const [showPopup, setShowPopup] = useState(false);
-  
+
   const [location, setLocation] = useState<GeolocationPosition>();
   const [images, setImages] = useState<Array<Image>>([]);
 
@@ -73,9 +73,9 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
 
   const [posts, setPosts] = useState<number>(0);
 
+  //effect user profil information
   useEffect(() => {
-
-    console.log("useeffect - ShowUserProfil")
+    console.log("useeffect - ShowUserProfil - profilInformation");
 
     db.collection("users")
       .where("username", "==", nameOfUser)
@@ -85,18 +85,16 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
           if ((await doc.data().profilepic) != null) {
             setProfilepic(doc.data().profilepic);
           }
-          setUsername(doc.data().username);
+
           setFirstName(doc.data().userFirstName);
           setLastName(doc.data().userLastName);
           setBio(doc.data().biography);
           setFullName(doc.data().userFirstName + " " + doc.data().userLastName);
-
-          setpostsUsername( doc.data().username)
         });
       })
       .then(() => {
         db.collection("images")
-          .where("user", "==", postsUsername)
+          .where("user", "==", nameOfUser)
           .get()
           .then((querySnapshot) => {
             setPosts(querySnapshot.size);
@@ -107,61 +105,35 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
               if (!(doc.data().likes == null)) {
                 counterLikes = counterLikes + doc.data().likes;
               }
-            
             });
             setLikes(counterLikes);
-
-        
           });
       });
-      
-      if(postsUsername !== "")
+  }, [nameOfUser]);
+
+  //effect image from user
+  useEffect(() => {
+    console.log("useeffect - ShowUserProfil - userimage");
+
+    if (nameOfUser !== "")
       //show images of user
       (async () => {
         // push location to state
         Geolocation.getCurrentPosition().then((s) => {
-          setLocation(s);          
+          setLocation(s);
 
-          console.log("ShowUserProfil", postsUsername)
+          console.log("ShowUserProfil", nameOfUser);
 
-          fetchImages(s, postsUsername).then((images) => {
+          fetchImages(s, nameOfUser).then((images) => {
             setImages(images);
           });
         });
       })();
-
-  }, [nameOfUser, postsUsername, GeolocationPositionError]);
-
-  // async function fetchImages(l?: any): Promise<Image[]> {
-  //   // fetch images from firebase
-  //   const ref = db.collection("images");
-  //   const data = await ref.get();
-
-  //   // load images to typed docs
-  //   let t: Image[] = [];    
-
-  //   data.docs.filter((doc: any)=> doc.data().user === postsUsername).forEach((doc: any) => t.push(doc.data()));
-
-
-  //   t.forEach((element: Image) => {
-  //     if (l !== undefined && element.distance === undefined) {
-  //       element.distance = distanceInKm(
-  //         l?.coords.latitude,
-  //         l?.coords.longitude,
-  //         element.location.coords.latitude,
-  //         element.location.coords.longitude
-  //       );
-  //     }
-  //   });
-
-  //   return t;
-  // }
-
-   
+  }, [nameOfUser, GeolocationPositionError]);
 
   const closeModal = useCallback(() => {
     setuserProfilModel(false);
-  }, [false, setuserProfilModel]);
+  }, [setuserProfilModel]);
 
   return (
     <IonModal
@@ -176,7 +148,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
               <IonIcon icon={chevronBackOutline} />
             </IonButton>
           </IonButtons>
-          <IonTitle>{username}</IonTitle>
+          <IonTitle>{nameOfUser}</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent>
@@ -230,10 +202,10 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
             </IonCol>
           </IonRow>
         </IonGrid>
-        
-          <IonGrid>
+
+        <IonGrid>
           <IonRow>
-          {images.map((p: Image, i: number) => {
+            {images.map((p: Image, i: number) => {
               return (
                 <IonCol size="4" key={i}>
                   <IonImg
@@ -264,20 +236,18 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
                 </IonCol>
               );
             })}
-             </IonRow>
-          </IonGrid>
-       
+          </IonRow>
+        </IonGrid>
       </IonContent>
 
       <IonModal
-          cssClass="my-pop-over"
-          showBackdrop={true}
-          isOpen={showPopup}
-          onWillDismiss={(e) => setShowPopup(false)}
-        >
-          <IonContent>{popPic && <ExploreCard image={popPic} />}</IonContent>
-        </IonModal>
-        
+        cssClass="my-pop-over"
+        showBackdrop={true}
+        isOpen={showPopup}
+        onWillDismiss={(e) => setShowPopup(false)}
+      >
+        <IonContent>{popPic && <ExploreCard image={popPic} />}</IonContent>
+      </IonModal>
     </IonModal>
   );
 };

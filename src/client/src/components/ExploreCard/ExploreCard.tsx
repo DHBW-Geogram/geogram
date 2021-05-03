@@ -69,8 +69,9 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
   const [comments, setComments] = useState<any[] | undefined>([]);
 
+  const [dataCom, setDataCom] = useState<any[]>([]);
     
-  
+  //effect likes
   useEffect(() => {
     console.log("useeffect - Explorcard");
 
@@ -83,7 +84,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           documentSnapshot.data()?.likes === undefined ||
           documentSnapshot.data()?.likes === 0
         ) {
-          // setLikeNumber(0);
+          setLikeNumber(0);
           return;
         }
         //image have likes
@@ -112,13 +113,14 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
                 setLikeColor("dark");
               }
             });
-        }
         //in alle Fälle setzte die anzahl an likes
         setLikeNumber(await documentSnapshot.data()?.likes);
+        }
+        
       });
-    },[]);
+    },[setLikeNumber, image.likes]);
 
-    const [dataCom, setDataCom] = useState<any[]>([]);
+    
 
   useEffect(() => {
     console.log("useeffect - Explorcard 2");
@@ -148,7 +150,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
       await setLastComment(dataImage);
     })();
 
-  },[]);
+  },[setComments]);
 
   //set last Comment
   const setLastComment = useCallback(async (commentData: any) => {
