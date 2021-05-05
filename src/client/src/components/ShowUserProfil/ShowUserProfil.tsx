@@ -17,6 +17,10 @@ import {
   IonTitle,
   IonToolbar,
   useIonToast,
+  useIonViewDidEnter,
+  useIonViewDidLeave,
+  useIonViewWillEnter,
+  useIonViewWillLeave,
 } from "@ionic/react";
 import { chevronBackOutline, image } from "ionicons/icons";
 import React, {
@@ -36,7 +40,6 @@ import { distanceInKm } from "../../hooks/evaluateDistance";
 import { fetchImages } from "../../hooks/fetchImages";
 
 interface ContainerProps {
-  image: Image;
   nameOfUser: string;
   activeShowUserProfil: boolean;
   setuserProfilModel: Dispatch<SetStateAction<boolean>>;
@@ -45,8 +48,7 @@ interface ContainerProps {
 
 const { Geolocation } = Plugins;
 
-const ShowUserProfil: React.FC<ContainerProps> = ({
-  image,
+const ShowUserProfil: React.FC<ContainerProps> = ({  
   nameOfUser,
   activeShowUserProfil,
   setuserProfilModel,
@@ -75,8 +77,11 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
 
   const [posts, setPosts] = useState<number>(0);
 
+
   //effect user profil information
   useEffect(() => {
+
+    if (nameOfUser !== ""){
     console.log("useeffect - ShowUserProfil - profilInformation");
 
     db.collection("users")
@@ -111,13 +116,14 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
             setLikes(counterLikes);
           });
       });
-  }, [nameOfUser]);
+    }
+  },[nameOfUser]);
 
   //effect image from user
-  useEffect(() => {
-    console.log("useeffect - ShowUserProfil - userimage");
+  useEffect(() => {    
 
-    if (nameOfUser !== "")
+    if (nameOfUser !== ""){
+    console.log("useeffect - ShowUserProfil - userimage");
       //show images of user
       (async () => {
         // push location to state
@@ -131,6 +137,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
           });
         });
       })();
+    }
   }, [nameOfUser, GeolocationPositionError]);
 
   const closeModal = useCallback(() => {

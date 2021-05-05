@@ -13,7 +13,7 @@ import {
   IonText,
   IonTextarea,
 } from "@ionic/react";
-import { heartOutline, pin, heart,  } from "ionicons/icons";
+import { heartOutline, pin, heart } from "ionicons/icons";
 import React, {
   Dispatch,
   SetStateAction,
@@ -33,7 +33,7 @@ import ShowComments from "../ShowComments/ShowComments";
 import { v4 as uuidv4 } from "uuid";
 import "./ExploreCard.css";
 
-import { Redirect } from "react-router";
+import { Redirect, Route } from "react-router";
 import { timeConverter } from "../../hooks/timeConverter";
 
 interface ContainerProps {
@@ -60,10 +60,9 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const [comments, setComments] = useState<any[] | undefined>([]);
 
   const [tempComment, setTempComment] = useState<number>(0);
-    
+
   //effect likes
   useEffect(() => {
-    
     db.collection("images")
       .doc(image.id)
       .get()
@@ -102,17 +101,14 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
                 setLikeColor("dark");
               }
             });
-        //in alle Fälle setzte die anzahl an likes
-        setLikeNumber(await documentSnapshot.data()?.likes);
+          //in alle Fälle setzte die anzahl an likes
+          setLikeNumber(await documentSnapshot.data()?.likes);
         }
-        
       });
-    },[setLikeNumber, image.likes]);
+  }, [setLikeNumber, image.likes]);
 
-    
-
+  //effect comment
   useEffect(() => {
-   
     //set last Comment
     (async () => {
       setComments([]);
@@ -121,9 +117,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
       let dataImage: Comment[] = [];
 
-      dataImage = (await refImage.doc(image.id).get())
-        .data()
-        ?.comments;
+      dataImage = (await refImage.doc(image.id).get()).data()?.comments;
 
       var temp = 0;
       dataImage?.forEach((cc: any) => {
@@ -132,20 +126,17 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         }
       });
 
-     dataImage =  dataImage?.filter((f: any) => f.timestamp === temp);
+      dataImage = dataImage?.filter((f: any) => f.timestamp === temp);
 
-      
       await setLastComment(dataImage);
 
-      if(setLoading !== undefined)
-      setLoading(false)
+      if (setLoading !== undefined) setLoading(false);
     })();
-
-  },[setComments, tempComment, image.likes]);
+  }, [setComments, tempComment, image.likes]);
 
   //set last Comment
   const setLastComment = useCallback(async (commentData: any) => {
-    setComments([])
+    setComments([]);
 
     // alle user holen
     let users: any[] = [];
@@ -157,7 +148,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     });
 
     if (commentData !== undefined)
-    commentData.map((t: any) => {
+      commentData.map((t: any) => {
         let name: string = "";
 
         name = users.find((e) => e.id === t.userid).username;
@@ -172,7 +163,6 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         ];
 
         setComments(nn);
-   
       });
   }, []);
 
@@ -225,7 +215,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     } else {
       //Loading
       if (setLoading != undefined) setLoading(true);
-      
+
       //setComments empty
       setComments([]);
       //setLastComments
@@ -256,8 +246,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
       await setLastComment(commentData);
 
-       //Loading false
-       if (setLoading != undefined) setLoading(false);
+      //Loading false
+      if (setLoading != undefined) setLoading(false);
     }
   }, [user, image, comment]);
 
@@ -277,7 +267,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
             if (doc.id === user?.uid) {
               setRedirect("profile");
               return;
-            } else {
+            } else {              
               setNameOfUser(username);
               setuserProfilModel(true);
               //    setshowCommentsModal(false)
@@ -418,13 +408,14 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           })}
       </IonCardContent>
 
+                
       <ShowUserProfil
-        image={image}
         nameOfUser={nameOfUser}
         activeShowUserProfil={userProfilModel}
         setuserProfilModel={setuserProfilModel}
         setLoading={setLoading}
-      />
+      /> 
+    
 
       <ShowComments
         image={image}
@@ -438,6 +429,6 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
       {redirect !== "" && <Redirect to={`/${redirect}`}></Redirect>}
     </IonCard>
   );
-};
+}; 
 
-export default ExploreCard; 
+export default ExploreCard;

@@ -61,11 +61,13 @@ const ShowComments: React.FC<ContainerProps> = ({
   const user = useContext(UserContext);
 
   useEffect(() => {
+    
+   if(tempComment === 2){ 
     console.log("useeffect - ShowComments");
-
     setComments([]);
     setCommentsInModal();
-  }, [tempComment, image.likes]);
+  }
+  }, [tempComment, nameOfUser, image.likes]);
 
   function doRefresh(event: CustomEvent<RefresherEventDetail>) {
     setComments([]);
@@ -152,8 +154,8 @@ const ShowComments: React.FC<ContainerProps> = ({
 
   const closeModal = useCallback(() => {
     if (setLoading !== undefined) setLoading(true);
-
     setTempComment(1);
+    
     setshowCommentsModal(false);
   }, []);
 
@@ -249,8 +251,7 @@ const ShowComments: React.FC<ContainerProps> = ({
         </IonRefresher>
       </IonContent>
 
-      <ShowUserProfil
-        image={image}
+      <ShowUserProfil        
         nameOfUser={nameOfUser}
         activeShowUserProfil={userProfilModel}
         setuserProfilModel={setuserProfilModel}

@@ -55,9 +55,8 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Exploration from "./pages/Exploration/Exploration";
 import ProfilePic from "./pages/ProfilePic/ProfilePic";
-import LoadingPage from "./pages/auth/LoadingPage";
-import ShowUserProfil from "./components/ShowUserProfil/ShowUserProfil";
 import { auth } from "./helper/firebase";
+import ShowUserProfil from "./components/ShowUserProfil/ShowUserProfil";
 
 const PublicRoutes = () => {
   return (
@@ -97,7 +96,9 @@ const PrivateRoutes = () => {
           />
           <Route
             path="/profile-pic"
-            render={(props) => <ProfilePic {...props} setLoading={setLoading} />}
+            render={(props) => (
+              <ProfilePic {...props} setLoading={setLoading} />
+            )}
           />
 
           <Route exact path="/login">
@@ -137,8 +138,7 @@ const PrivateRoutes = () => {
             onClick={() => {
               if (auth.currentUser?.emailVerified) {
                 setShowActionSheet(true);
-              }
-              else {
+              } else {
                 setShowAlertNotVerified(true);
               }
             }}
