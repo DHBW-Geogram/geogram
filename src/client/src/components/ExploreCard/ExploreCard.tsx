@@ -10,12 +10,10 @@ import {
   IonImg,
   IonItem,
   IonLabel,
-  IonPopover,
-  IonRouterOutlet,
   IonText,
   IonTextarea,
 } from "@ionic/react";
-import { heartOutline, pin, heart, filter } from "ionicons/icons";
+import { heartOutline, pin, heart,  } from "ionicons/icons";
 import React, {
   Dispatch,
   SetStateAction,
@@ -35,16 +33,8 @@ import ShowComments from "../ShowComments/ShowComments";
 import { v4 as uuidv4 } from "uuid";
 import "./ExploreCard.css";
 
-import { Route, Router } from "workbox-routing";
-import Profile from "../../pages/Profile/Profile";
-import { IonReactRouter } from "@ionic/react-router";
-import ProfilePicSelectionModal from "../ProfilePicSelectionModal/ProfilePicSelectionModal";
-import { render } from "react-dom";
-
 import { Redirect } from "react-router";
-import { canConstructReadableStream } from "workbox-core/_private";
 import { timeConverter } from "../../hooks/timeConverter";
-import { on } from "node:cluster";
 
 interface ContainerProps {
   image: Image;
@@ -73,8 +63,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     
   //effect likes
   useEffect(() => {
-    console.log("useeffect - Explorcard");
-
+    
     db.collection("images")
       .doc(image.id)
       .get()
@@ -123,8 +112,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     
 
   useEffect(() => {
-    console.log("useeffect - Explorcard 2");
-
+   
     //set last Comment
     (async () => {
       setComments([]);
