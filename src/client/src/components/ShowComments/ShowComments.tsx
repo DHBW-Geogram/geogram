@@ -62,10 +62,11 @@ const ShowComments: React.FC<ContainerProps> = ({
 
   useEffect(() => {
     console.log("useeffect - ShowComments");
-
+    
+    setComments([]);
     setCommentsInModal(); 
 
-  }, [setComments, tempComment ]);
+  }, [setComments, tempComment]);
 
   function doRefresh(event: CustomEvent<RefresherEventDetail>) {
     setComments([]);
@@ -153,7 +154,7 @@ const ShowComments: React.FC<ContainerProps> = ({
   const closeModal = useCallback(() => {
     setTempComment(1)
     setshowCommentsModal(false);
-  }, [false]);
+  }, []);
 
   const onClickShowUserProfil = useCallback(
     async (username: any) => {

@@ -150,7 +150,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
       await setLastComment(dataImage);
     })();
 
-  },[setComments, tempComment]);
+  },[setComments, tempComment, image.likes]);
 
   //set last Comment
   const setLastComment = useCallback(async (commentData: any) => {
@@ -273,7 +273,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   const onReadCommentClick = useCallback(() => {
     setTempComment(2);
     setshowCommentsModal(true);
-  }, [true]);
+  }, []);
 
   const showUserProfil = useCallback(
     async (username: any) => {
