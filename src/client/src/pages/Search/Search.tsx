@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
 import {
   IonContent,
   IonHeader,
@@ -15,6 +15,7 @@ import {
   IonImg,
   IonPopover,
   IonModal,
+  useIonViewWillEnter,
 } from "@ionic/react";
 import { db } from "../../helper/firebase";
 import { Image } from "../../model/Image";
@@ -26,7 +27,11 @@ import { fetchImages } from "../../hooks/fetchImages";
 
 const { Geolocation } = Plugins;
 
-const Search: React.FC = () => {
+const Search: React.FC<{  temp: number;
+  setTemp: Dispatch<SetStateAction<number>>;}> = ({  
+  setTemp,
+  temp,
+}) => {
   const [filter, setFilter] = useState("Location");
   const [images, setImages] = useState<Array<Image>>([]);
   const [showPopup, setShowPopup] = useState(false);
@@ -34,7 +39,9 @@ const Search: React.FC = () => {
   // Geoinformation
   const [location, setLocation] = useState<GeolocationPosition>();
 
-  useEffect(() => {
+  useIonViewWillEnter(() => {
+    if(temp === 2){
+      console.log("temp", temp);
     (async () => {
       // push location to state
       Geolocation.getCurrentPosition().then((s) => {
@@ -47,7 +54,8 @@ const Search: React.FC = () => {
         });
       });
     })();
-  }, [GeolocationPositionError]);
+  }
+  }, [temp, GeolocationPositionError]);
 
   // async function fetchImages(l?: any): Promise<Image[]> {
   //   // fetch images from firebase

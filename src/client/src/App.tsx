@@ -1,12 +1,14 @@
 import { Redirect, Route } from "react-router-dom";
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import Upload from "./pages/Upload/Upload";
 import {
   IonAlert,
   IonApp,
+  IonButton,
   IonFab,
   IonFabButton,
   IonIcon,
+  IonItem,
   IonLabel,
   IonLoading,
   IonRouterOutlet,
@@ -72,16 +74,28 @@ const PrivateRoutes = () => {
   const [showActionSheet, setShowActionSheet] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showAlertNotVerified, setShowAlertNotVerified] = useState(false);
+  const [temp, setTemp] = useState<number>(0);
+
+
+  const onExploratonTabClick = useCallback(()=>{
+      setTemp(1);
+      console.log("tempeee", temp);
+  },[])
+
+  const onSearchTabClick = useCallback(()=>{
+    setTemp(2);
+    console.log("tempss", temp);
+},[])
 
   return (
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
           <Route exact path="/explore">
-            <Exploration setLoading={setLoading} />
+            <Exploration temp={temp} setTemp={setTemp} setLoading={setLoading} />
           </Route>
           <Route exact path="/search">
-            <Search />
+            <Search temp={temp} setTemp={setTemp} />
           </Route>
           <Route path="/profile">
             <Profile setLoading={setLoading} />
@@ -101,7 +115,7 @@ const PrivateRoutes = () => {
             )}
           />
 
-          <Route exact path="/login">
+          <Route exact path="/login">            
             <Redirect to="/explore" />
           </Route>
           <Route exact path="/register">
@@ -110,15 +124,19 @@ const PrivateRoutes = () => {
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
           {/* Explore Tab - Benita */}
-          <IonTabButton tab="explore" href="/explore">
-            <IonIcon icon={home} />
-            <IonLabel>Explore</IonLabel>
+          <IonTabButton  tab="explore" href="/explore" >          
+            <IonIcon onClick={onExploratonTabClick} icon={home} />
+            <IonLabel onClick={onExploratonTabClick}>Explore</IonLabel>
           </IonTabButton>
           {/* Search Tab - Benita */}
-          <IonTabButton tab="search" href="/search">
-            <IonIcon icon={search} />
-            <IonLabel>Search</IonLabel>
+          
+            
+          <IonTabButton  tab="search" href="/search" >
+           
+            <IonIcon onClick={onSearchTabClick} icon={search} />
+            <IonLabel onClick={onSearchTabClick}> Search</IonLabel>
           </IonTabButton>
+                    
           {/* Profile Tab - Jonas */}
           <IonTabButton tab="profile" href="/profile">
             <IonIcon icon={personCircleOutline} />

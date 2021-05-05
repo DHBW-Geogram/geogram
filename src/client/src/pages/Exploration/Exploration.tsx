@@ -38,8 +38,11 @@ import { useStateWithPromise } from "../../hooks/useStateWithPromise";
 
 const { Geolocation } = Plugins;
 
-const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
+const Explore: React.FC<{  temp: number;
+  setTemp: Dispatch<SetStateAction<number>>; setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   setLoading,
+  setTemp,
+  temp,
 }) => {
   // Geoinformation
   const [location, setLocation] = useStateWithPromise();
@@ -62,6 +65,8 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   const user = useContext(UserContext);
 
   useEffect(() => {
+    if(temp === 0 || temp === 1){
+      console.log("temp", temp);
     (async () => {
       checkAuthEmailWithUserCollectionEmail(user);
 
@@ -74,7 +79,8 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
         });
       });
     })();
-  }, []);
+  }
+  }, [temp]);
 
   async function fetchImages(i?: number, l?: any): Promise<Image[]> {
     // fetch images from firebase
