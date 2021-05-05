@@ -134,8 +134,11 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
      dataImage =  dataImage?.filter((f: any) => f.timestamp === temp);
 
-      console.log("t", dataImage);
+      
       await setLastComment(dataImage);
+
+      if(setLoading !== undefined)
+      setLoading(false)
     })();
 
   },[setComments, tempComment, image.likes]);
