@@ -66,7 +66,7 @@ const Explore: React.FC<{  temp: number;
 
   useEffect(() => {
     if(temp === 0 || temp === 1){
-      console.log("temp", temp);
+      console.log("tempexplo", temp);
     (async () => {
       checkAuthEmailWithUserCollectionEmail(user);
 

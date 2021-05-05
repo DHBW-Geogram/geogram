@@ -78,14 +78,12 @@ const PrivateRoutes = () => {
 
 
   const onExploratonTabClick = useCallback(()=>{
-      setTemp(1);
-      console.log("tempeee", temp);
-  },[])
+      setTemp(1);      
+  },[temp])
 
   const onSearchTabClick = useCallback(()=>{
-    setTemp(2);
-    console.log("tempss", temp);
-},[])
+    setTemp(2);    
+},[temp])
 
   return (
     <IonReactRouter>

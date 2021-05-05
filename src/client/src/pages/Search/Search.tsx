@@ -39,9 +39,9 @@ const Search: React.FC<{  temp: number;
   // Geoinformation
   const [location, setLocation] = useState<GeolocationPosition>();
 
-  useIonViewWillEnter(() => {
+  useEffect(() => {
     if(temp === 2){
-      console.log("temp", temp);
+      console.log("tempserch", temp);
     (async () => {
       // push location to state
       Geolocation.getCurrentPosition().then((s) => {
