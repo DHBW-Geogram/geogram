@@ -69,7 +69,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
   const [comments, setComments] = useState<any[] | undefined>([]);
 
-  const [temp, setTemp] = useState<number>(0);
+  const [tempComment, setTempComment] = useState<number>(0);
     
   //effect likes
   useEffect(() => {
@@ -150,7 +150,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
       await setLastComment(dataImage);
     })();
 
-  },[setComments, temp]);
+  },[setComments, tempComment]);
 
   //set last Comment
   const setLastComment = useCallback(async (commentData: any) => {
@@ -271,7 +271,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   }, [user, image, comment]);
 
   const onReadCommentClick = useCallback(() => {
-    setTemp(2);
+    setTempComment(2);
     setshowCommentsModal(true);
   }, [true]);
 
@@ -440,8 +440,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         active={showCommentsModal}
         setshowCommentsModal={setshowCommentsModal}
         setLoading={setLoading}
-        temp={temp}
-        setTemp={setTemp}
+        tempComment={tempComment}
+        setTempComment={setTempComment}
       />
 
       {redirect !== "" && <Redirect to={`/${redirect}`}></Redirect>}

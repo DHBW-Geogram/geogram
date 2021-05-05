@@ -38,8 +38,8 @@ interface ContainerProps {
   active: boolean;
   setshowCommentsModal: Dispatch<SetStateAction<boolean>>;
   setLoading?: Dispatch<SetStateAction<boolean>>;
-  temp: number; 
-  setTemp: Dispatch<SetStateAction<number>>;
+  tempComment: number; 
+  setTempComment: Dispatch<SetStateAction<number>>;
 }
 
 const ShowComments: React.FC<ContainerProps> = ({
@@ -47,8 +47,8 @@ const ShowComments: React.FC<ContainerProps> = ({
   active,
   setshowCommentsModal,
   setLoading,
-  temp,
-  setTemp,
+  tempComment,
+  setTempComment,
 }) => {
   const onCommentChange = useCallback((e) => setComment(e.detail?.value), []);
   const [comment, setComment] = useState<any>("");
@@ -65,7 +65,7 @@ const ShowComments: React.FC<ContainerProps> = ({
 
     setCommentsInModal(); 
 
-  }, [setComments, temp ]);
+  }, [setComments, tempComment ]);
 
   function doRefresh(event: CustomEvent<RefresherEventDetail>) {
     setComments([]);
@@ -151,7 +151,7 @@ const ShowComments: React.FC<ContainerProps> = ({
   }, [comment]);
 
   const closeModal = useCallback(() => {
-    setTemp(1)
+    setTempComment(1)
     setshowCommentsModal(false);
   }, [false]);
 
@@ -181,7 +181,7 @@ const ShowComments: React.FC<ContainerProps> = ({
     <IonModal
       isOpen={active}
       cssClass="modalComment"
-      onWillDismiss={() => {setTemp(1); setshowCommentsModal(false)}}
+      onWillDismiss={() => {setTempComment(1); setshowCommentsModal(false)}}
     >
       <div className="closeButton">
         <IonButton fill="clear" color="primary" onClick={closeModal}>
