@@ -66,7 +66,7 @@ const ShowComments: React.FC<ContainerProps> = ({
     setComments([]);
     setCommentsInModal(); 
 
-  }, [setComments, tempComment]);
+  }, [setComments, tempComment, image.likes]);
 
   function doRefresh(event: CustomEvent<RefresherEventDetail>) {
     setComments([]);
