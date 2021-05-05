@@ -94,9 +94,6 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
   useEffect(() => {
-console.log("useeffect - Profile 1")
-    
-
     if (auth.currentUser?.emailVerified) {
       setVerified("none");
     } else {
@@ -108,7 +105,8 @@ console.log("useeffect - Profile 1")
         .doc(auth.currentUser?.uid)
         .update({
           email: auth.currentUser?.email,
-        }).then(() => {
+        })
+        .then(() => {
           db.collection("users")
             .where("email", "==", auth.currentUser?.email)
             .get()
@@ -122,7 +120,9 @@ console.log("useeffect - Profile 1")
                 setFirstName(doc.data().userFirstName);
                 setLastName(doc.data().userLastName);
                 setBio(doc.data().biography);
-                setFullName(doc.data().userFirstName + " " + doc.data().userLastName);
+                setFullName(
+                  doc.data().userFirstName + " " + doc.data().userLastName
+                );
               });
             });
         });
@@ -130,9 +130,6 @@ console.log("useeffect - Profile 1")
   }, [EditProfile]);
 
   useEffect(() => {
-
-    console.log("useeffect - Profile 2")
-
     refreshLikesPostsImages();
   }, []);
 
@@ -142,7 +139,8 @@ console.log("useeffect - Profile 1")
         .doc(auth.currentUser?.uid)
         .update({
           email: auth.currentUser?.email,
-        }).then(() => {
+        })
+        .then(() => {
           db.collection("users")
             .where("email", "==", auth.currentUser?.email)
             .get()
@@ -173,7 +171,9 @@ console.log("useeffect - Profile 1")
                     imageListListCounter[i] = [];
                     for (var j = 0; j < 3; j++) {
                       if (imageListCounter.length > 0) {
-                        imageListListCounter[i].push(imageListCounter.pop() as string);
+                        imageListListCounter[i].push(
+                          imageListCounter.pop() as string
+                        );
                       }
                     }
                   }
@@ -192,64 +192,72 @@ console.log("useeffect - Profile 1")
       setVerified("");
     }
 
-    auth.currentUser?.reload().then(() => {
-      db.collection("users")
-        .doc(auth.currentUser?.uid)
-        .update({
-          email: auth.currentUser?.email,
-        }).then(async () => {
-          await db
-            .collection("users")
-            .where("email", "==", auth.currentUser?.email)
-            .get()
-            .then((querySnapshot) => {
-              querySnapshot.forEach((doc) => {
-                if (doc.data().profilepic != null) {
-                  setProfilepic(doc.data().profilepic);
-                }
-                setUsername(doc.data().username);
-                setEmail(doc.data().email);
-                setFirstName(doc.data().userFirstName);
-                setLastName(doc.data().userLastName);
-                setBio(doc.data().biography);
-                postsUsername = doc.data().username;
-                setFullName(doc.data().userFirstName + " " + doc.data().userLastName);
-              });
-            })
-            .then(() => {
-              db.collection("images")
-                .where("user", "==", postsUsername)
-                .get()
-                .then((querySnapshot) => {
-                  setPosts(querySnapshot.size);
-                  counterLikes = 0;
-                  imageListCounter = [];
-                  querySnapshot.forEach((doc) => {
-                    if (!(doc.data().likes == null)) {
-                      counterLikes = counterLikes + doc.data().likes;
-                    }
-                    imageListCounter.push(doc.data().url as string);
-                  });
-                  setLikes(counterLikes);
+    auth.currentUser
+      ?.reload()
+      .then(() => {
+        db.collection("users")
+          .doc(auth.currentUser?.uid)
+          .update({
+            email: auth.currentUser?.email,
+          })
+          .then(async () => {
+            await db
+              .collection("users")
+              .where("email", "==", auth.currentUser?.email)
+              .get()
+              .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                  if (doc.data().profilepic != null) {
+                    setProfilepic(doc.data().profilepic);
+                  }
+                  setUsername(doc.data().username);
+                  setEmail(doc.data().email);
+                  setFirstName(doc.data().userFirstName);
+                  setLastName(doc.data().userLastName);
+                  setBio(doc.data().biography);
+                  postsUsername = doc.data().username;
+                  setFullName(
+                    doc.data().userFirstName + " " + doc.data().userLastName
+                  );
+                });
+              })
+              .then(() => {
+                db.collection("images")
+                  .where("user", "==", postsUsername)
+                  .get()
+                  .then((querySnapshot) => {
+                    setPosts(querySnapshot.size);
+                    counterLikes = 0;
+                    imageListCounter = [];
+                    querySnapshot.forEach((doc) => {
+                      if (!(doc.data().likes == null)) {
+                        counterLikes = counterLikes + doc.data().likes;
+                      }
+                      imageListCounter.push(doc.data().url as string);
+                    });
+                    setLikes(counterLikes);
 
-                  imageListListCounter = [];
+                    imageListListCounter = [];
 
-                  for (var i = 0; imageListCounter.length > 0; i++) {
-                    imageListListCounter[i] = [];
-                    for (var j = 0; j < 3; j++) {
-                      if (imageListCounter.length > 0) {
-                        imageListListCounter[i].push(imageListCounter.pop() as string);
+                    for (var i = 0; imageListCounter.length > 0; i++) {
+                      imageListListCounter[i] = [];
+                      for (var j = 0; j < 3; j++) {
+                        if (imageListCounter.length > 0) {
+                          imageListListCounter[i].push(
+                            imageListCounter.pop() as string
+                          );
+                        }
                       }
                     }
-                  }
 
-                  setImageList(imageListListCounter);
-                });
-            })
-        })
-    }).then(() => {
-      event.detail.complete();
-    });
+                    setImageList(imageListListCounter);
+                  });
+              });
+          });
+      })
+      .then(() => {
+        event.detail.complete();
+      });
   }
 
   return (
@@ -345,22 +353,26 @@ console.log("useeffect - Profile 1")
           </IonRow>
           <IonRow>
             <IonGrid>
-              {
-                imageList.map((image, id) => {
-                  return <IonRow key={id}>
-                    {
-                      image.map((img, id) => {
-                        return <IonCol key={id} size="4">
-                          <IonImg src={img} style={{ height: "100%", objectFit: "cover" }} onClick={() => {
-                            setImageState(img as string);
-                            setShowActionSheet(true);
-                          }} />
+              {imageList.map((image, id) => {
+                return (
+                  <IonRow key={id}>
+                    {image.map((img, id) => {
+                      return (
+                        <IonCol key={id} size="4">
+                          <IonImg
+                            src={img}
+                            style={{ height: "100%", objectFit: "cover" }}
+                            onClick={() => {
+                              setImageState(img as string);
+                              setShowActionSheet(true);
+                            }}
+                          />
                         </IonCol>
-                      })
-                    }
+                      );
+                    })}
                   </IonRow>
-                })
-              }
+                );
+              })}
             </IonGrid>
           </IonRow>
         </IonGrid>
@@ -368,47 +380,48 @@ console.log("useeffect - Profile 1")
           isOpen={showActionSheet}
           onDidDismiss={() => setShowActionSheet(false)}
           header="Image Settings"
-          buttons={[{
-            text: 'Info',
-            icon: information,
-            handler: () => {
-              console.log('Info clicked');
-              setShowActionSheet(false);
+          buttons={[
+            {
+              text: "Info",
+              icon: information,
+              handler: () => {
+                console.log("Info clicked");
+                setShowActionSheet(false);
 
-              db.collection("images")
-                .where("url", "==", imageState as string)
-                .get()
-                .then((querySnapshot) => {
-                  querySnapshot.forEach(doc => {
-                    setPopPic(doc.data() as Image);
+                db.collection("images")
+                  .where("url", "==", imageState as string)
+                  .get()
+                  .then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                      setPopPic(doc.data() as Image);
+                    });
+                  })
+                  .then(() => {
+                    setShowPopup(true);
                   });
-                })
-                .then(() => {
-                  setShowPopup(true);
-                });
-            }
-          }, {
-            text: 'Delete',
-            role: 'destructive',
-            icon: trash,
-            handler: () => {
-              console.log('Delete clicked');
-              setShowActionSheet(false);
-              setShowAlertDelete(true);
-            }
-          },
-          {
-            text: 'Cancel',
-            icon: close,
-            role: 'cancel',
-            handler: () => {
-              console.log('Cancel clicked');
-              setShowActionSheet(false);
-            }
-          }
+              },
+            },
+            {
+              text: "Delete",
+              role: "destructive",
+              icon: trash,
+              handler: () => {
+                console.log("Delete clicked");
+                setShowActionSheet(false);
+                setShowAlertDelete(true);
+              },
+            },
+            {
+              text: "Cancel",
+              icon: close,
+              role: "cancel",
+              handler: () => {
+                console.log("Cancel clicked");
+                setShowActionSheet(false);
+              },
+            },
           ]}
-        >
-        </IonActionSheet>
+        ></IonActionSheet>
         <IonModal
           cssClass="my-pop-over"
           isOpen={showPopup}
@@ -421,9 +434,7 @@ console.log("useeffect - Profile 1")
         <IonAlert
           isOpen={showAlertDelete}
           header={"Are you sure?"}
-          message={
-            "Are you sure you want to delete the image?"
-          }
+          message={"Are you sure you want to delete the image?"}
           buttons={[
             {
               text: "Cancel",

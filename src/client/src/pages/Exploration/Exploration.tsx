@@ -62,23 +62,17 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   const user = useContext(UserContext);
 
   useEffect(() => {
-    
-    console.log("useeffect - Exploration");
-
     (async () => {
       checkAuthEmailWithUserCollectionEmail(user);
 
       // push location to state
-      Geolocation.getCurrentPosition().then(s => {
-
+      Geolocation.getCurrentPosition().then((s) => {
         setLocation(s);
 
         fetchImages(filter, s).then((images) => {
           setImages(images);
         });
-
-      })
-
+      });
     })();
   }, []);
 
@@ -96,8 +90,6 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
       return sortImageArray(a, b);
     });
 
-    
-
     if (location !== undefined) {
       if (i) {
         t = evaluateLocation(
@@ -109,14 +101,9 @@ const Explore: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
         setLoading(false);
         return t;
       }
-    }else{
+    } else {
       if (i) {
-        t = evaluateLocation(
-          i,
-          t,
-          l.coords.latitude,
-          l.coords.longitude
-        );
+        t = evaluateLocation(i, t, l.coords.latitude, l.coords.longitude);
         setLoading(false);
         return t;
       }

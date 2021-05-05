@@ -35,22 +35,19 @@ const Search: React.FC = () => {
   const [location, setLocation] = useState<GeolocationPosition>();
 
   useEffect(() => {
-
-    console.log("useeffect - Search");
-
     (async () => {
       // push location to state
       Geolocation.getCurrentPosition().then((s) => {
         setLocation(s);
 
-        console.log("serach ")
-        
+        console.log("serach ");
+
         fetchImages(s).then((images) => {
           setImages(images);
         });
       });
     })();
-  }, [ GeolocationPositionError]);
+  }, [GeolocationPositionError]);
 
   // async function fetchImages(l?: any): Promise<Image[]> {
   //   // fetch images from firebase
@@ -216,7 +213,6 @@ const Search: React.FC = () => {
           <IonContent>{popPic && <ExploreCard image={popPic} />}</IonContent>
         </IonModal>
       </IonContent>
-      
     </IonPage>
   );
 };
