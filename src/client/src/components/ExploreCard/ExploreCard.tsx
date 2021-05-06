@@ -72,7 +72,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           documentSnapshot.data()?.likes === undefined ||
           documentSnapshot.data()?.likes === 0
         ) {
-          setLikeNumber(0);          
+          setLikeNumber(0);
           setLikeIcon(heartOutline);
           setLikeColor("dark");
           return;
@@ -269,7 +269,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
             if (doc.id === user?.uid) {
               setRedirect("profile");
               return;
-            } else {              
+            } else {
               setNameOfUser(username);
               setuserProfilModel(true);
               //    setshowCommentsModal(false)
@@ -410,14 +410,12 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           })}
       </IonCardContent>
 
-                
       <ShowUserProfil
         nameOfUser={nameOfUser}
         activeShowUserProfil={userProfilModel}
         setuserProfilModel={setuserProfilModel}
         setLoading={setLoading}
-      /> 
-    
+      />
 
       <ShowComments
         image={image}
@@ -431,6 +429,6 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
       {redirect !== "" && <Redirect to={`/${redirect}`}></Redirect>}
     </IonCard>
   );
-}; 
+};
 
 export default ExploreCard;

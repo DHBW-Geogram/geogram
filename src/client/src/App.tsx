@@ -81,7 +81,11 @@ const PrivateRoutes = () => {
       <IonTabs>
         <IonRouterOutlet>
           <Route exact path="/explore">
-            <Exploration temp={temp} setTemp={setTemp} setLoading={setLoading} />
+            <Exploration
+              temp={temp}
+              setTemp={setTemp}
+              setLoading={setLoading}
+            />
           </Route>
           <Route exact path="/search">
             <Search temp={temp} setTemp={setTemp} />
@@ -104,7 +108,7 @@ const PrivateRoutes = () => {
             )}
           />
 
-          <Route exact path="/login">            
+          <Route exact path="/login">
             <Redirect to="/explore" />
           </Route>
           <Route exact path="/register">
@@ -113,19 +117,17 @@ const PrivateRoutes = () => {
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
           {/* Explore Tab - Benita */}
-          <IonTabButton  tab="explore" href="/explore" >          
+          <IonTabButton tab="explore" href="/explore">
             <IonIcon icon={home} />
             <IonLabel>Explore</IonLabel>
           </IonTabButton>
           {/* Search Tab - Benita */}
-          
-            
-          <IonTabButton  tab="search" href="/search" >
-           
-            <IonIcon  icon={search} />
-            <IonLabel > Search</IonLabel>
+
+          <IonTabButton tab="search" href="/search">
+            <IonIcon icon={search} />
+            <IonLabel> Search</IonLabel>
           </IonTabButton>
-                    
+
           {/* Profile Tab - Jonas */}
           <IonTabButton tab="profile" href="/profile">
             <IonIcon icon={personCircleOutline} />

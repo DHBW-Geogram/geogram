@@ -40,12 +40,11 @@ import { useStateWithPromise } from "../../hooks/useStateWithPromise";
 
 const { Geolocation } = Plugins;
 
-const Explore: React.FC<{  temp: number;
-  setTemp: Dispatch<SetStateAction<number>>; setLoading: Dispatch<SetStateAction<boolean>> }> = ({
-  setLoading,
-  setTemp,
-  temp,
-}) => {
+const Explore: React.FC<{
+  temp: number;
+  setTemp: Dispatch<SetStateAction<number>>;
+  setLoading: Dispatch<SetStateAction<boolean>>;
+}> = ({ setLoading, setTemp, temp }) => {
   // Geoinformation
   const [location, setLocation] = useStateWithPromise();
 
@@ -65,31 +64,31 @@ const Explore: React.FC<{  temp: number;
   });
 
   const user = useContext(UserContext);
-  
-  useIonViewWillEnter(()=>{
-    setTemp(1);    
-},[temp])
 
-useIonViewWillLeave(()=>{
-  setTemp(10);    
-},[temp])
+  useIonViewWillEnter(() => {
+    setTemp(1);
+  }, [temp]);
+
+  useIonViewWillLeave(() => {
+    setTemp(10);
+  }, [temp]);
 
   useEffect(() => {
-    if(temp === 1){
+    if (temp === 1) {
       console.log("tempexplo", temp);
-    (async () => {
-      checkAuthEmailWithUserCollectionEmail(user);
+      (async () => {
+        checkAuthEmailWithUserCollectionEmail(user);
 
-      // push location to state
-      Geolocation.getCurrentPosition().then((s) => {
-        setLocation(s);
+        // push location to state
+        Geolocation.getCurrentPosition().then((s) => {
+          setLocation(s);
 
-        fetchImages(filter, s).then((images) => {
-          setImages(images);
+          fetchImages(filter, s).then((images) => {
+            setImages(images);
+          });
         });
-      });
-    })();
-  }
+      })();
+    }
   }, [temp, GeolocationPositionError]);
 
   async function fetchImages(i?: number, l?: any): Promise<Image[]> {

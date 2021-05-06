@@ -1,4 +1,10 @@
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import {
   IonContent,
   IonHeader,
@@ -28,11 +34,10 @@ import { fetchImages } from "../../hooks/fetchImages";
 
 const { Geolocation } = Plugins;
 
-const Search: React.FC<{  temp: number;
-  setTemp: Dispatch<SetStateAction<number>>;}> = ({  
-  setTemp,
-  temp,
-}) => {
+const Search: React.FC<{
+  temp: number;
+  setTemp: Dispatch<SetStateAction<number>>;
+}> = ({ setTemp, temp }) => {
   const [filter, setFilter] = useState("Location");
   const [images, setImages] = useState<Array<Image>>([]);
   const [showPopup, setShowPopup] = useState(false);
@@ -40,31 +45,30 @@ const Search: React.FC<{  temp: number;
   // Geoinformation
   const [location, setLocation] = useState<GeolocationPosition>();
 
-  useIonViewWillEnter(()=>{
-    setTemp(2);    
-},[temp])
+  useIonViewWillEnter(() => {
+    setTemp(2);
+  }, [temp]);
 
-useIonViewWillLeave(()=>{
-  setTemp(20);    
-},[temp])
-
+  useIonViewWillLeave(() => {
+    setTemp(20);
+  }, [temp]);
 
   useEffect(() => {
-    if(temp === 2){
+    if (temp === 2) {
       console.log("tempserch", temp);
-    (async () => {
-      // push location to state
-      Geolocation.getCurrentPosition().then((s) => {
-        setLocation(s);
+      (async () => {
+        // push location to state
+        Geolocation.getCurrentPosition().then((s) => {
+          setLocation(s);
 
-        console.log("serach ");
+          console.log("serach ");
 
-        fetchImages(s).then((images) => {
-          setImages(images);
+          fetchImages(s).then((images) => {
+            setImages(images);
+          });
         });
-      });
-    })();
-  }
+      })();
+    }
   }, [temp, GeolocationPositionError]);
 
   // async function fetchImages(l?: any): Promise<Image[]> {
