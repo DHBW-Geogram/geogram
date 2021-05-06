@@ -16,6 +16,7 @@ import {
   IonPopover,
   IonModal,
   useIonViewWillEnter,
+  useIonViewWillLeave,
 } from "@ionic/react";
 import { db } from "../../helper/firebase";
 import { Image } from "../../model/Image";
@@ -42,6 +43,11 @@ const Search: React.FC<{  temp: number;
   useIonViewWillEnter(()=>{
     setTemp(2);    
 },[temp])
+
+useIonViewWillLeave(()=>{
+  setTemp(20);    
+},[temp])
+
 
   useEffect(() => {
     if(temp === 2){

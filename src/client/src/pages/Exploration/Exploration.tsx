@@ -15,6 +15,7 @@ import {
   IonListHeader,
   IonRange,
   useIonViewWillEnter,
+  useIonViewWillLeave,
 } from "@ionic/react";
 import {
   Dispatch,
@@ -69,8 +70,12 @@ const Explore: React.FC<{  temp: number;
     setTemp(1);    
 },[temp])
 
+useIonViewWillLeave(()=>{
+  setTemp(10);    
+},[temp])
+
   useEffect(() => {
-    if(temp === 0 || temp === 1){
+    if(temp === 1){
       console.log("tempexplo", temp);
     (async () => {
       checkAuthEmailWithUserCollectionEmail(user);
