@@ -73,6 +73,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           documentSnapshot.data()?.likes === 0
         ) {
           setLikeNumber(0);
+          setLikeIcon(heartOutline);
+                setLikeColor("dark");
           return;
         }
         //image have likes
@@ -112,7 +114,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     //set last Comment
     (async () => {
       setComments([]);
-
+      console.log("exp");
       const refImage = db.collection("images");
 
       let dataImage: Comment[] = [];
@@ -132,7 +134,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
       if (setLoading !== undefined) setLoading(false);
     })();
-  }, [setComments, tempComment, image.likes]);
+  }, [setComments, tempComment, image.comments]);
 
   //set last Comment
   const setLastComment = useCallback(async (commentData: any) => {

@@ -14,6 +14,7 @@ import {
   IonList,
   IonListHeader,
   IonRange,
+  useIonViewWillEnter,
 } from "@ionic/react";
 import {
   Dispatch,
@@ -63,6 +64,10 @@ const Explore: React.FC<{  temp: number;
   });
 
   const user = useContext(UserContext);
+  
+  useIonViewWillEnter(()=>{
+    setTemp(1);    
+},[temp])
 
   useEffect(() => {
     if(temp === 0 || temp === 1){
@@ -80,7 +85,7 @@ const Explore: React.FC<{  temp: number;
       });
     })();
   }
-  }, [temp]);
+  }, [temp, GeolocationPositionError]);
 
   async function fetchImages(i?: number, l?: any): Promise<Image[]> {
     // fetch images from firebase

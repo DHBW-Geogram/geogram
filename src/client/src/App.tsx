@@ -76,15 +76,6 @@ const PrivateRoutes = () => {
   const [showAlertNotVerified, setShowAlertNotVerified] = useState(false);
   const [temp, setTemp] = useState<number>(0);
 
-
-  const onExploratonTabClick = useCallback(()=>{
-      setTemp(1);      
-  },[temp])
-
-  const onSearchTabClick = useCallback(()=>{
-    setTemp(2);    
-},[temp])
-
   return (
     <IonReactRouter>
       <IonTabs>
@@ -123,16 +114,16 @@ const PrivateRoutes = () => {
         <IonTabBar slot="bottom">
           {/* Explore Tab - Benita */}
           <IonTabButton  tab="explore" href="/explore" >          
-            <IonIcon onClick={onExploratonTabClick} icon={home} />
-            <IonLabel onClick={onExploratonTabClick}>Explore</IonLabel>
+            <IonIcon icon={home} />
+            <IonLabel>Explore</IonLabel>
           </IonTabButton>
           {/* Search Tab - Benita */}
           
             
           <IonTabButton  tab="search" href="/search" >
            
-            <IonIcon onClick={onSearchTabClick} icon={search} />
-            <IonLabel onClick={onSearchTabClick}> Search</IonLabel>
+            <IonIcon  icon={search} />
+            <IonLabel > Search</IonLabel>
           </IonTabButton>
                     
           {/* Profile Tab - Jonas */}
