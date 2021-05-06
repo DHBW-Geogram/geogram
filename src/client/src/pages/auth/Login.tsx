@@ -55,7 +55,7 @@ const Login: React.FC = () => {
 
         <IonGrid>
           <IonRow>
-            <IonTitle className="Title">Geogram</IonTitle>
+            <IonTitle className="Title">GeoShare</IonTitle>
           </IonRow>
           <IonRow>
             <IonCol
