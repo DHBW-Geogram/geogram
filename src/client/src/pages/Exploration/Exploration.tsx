@@ -213,12 +213,7 @@ const Explore: React.FC<{
         </IonHeader>
         {images.length > 0 &&
           images.map((image, id) => {
-            return (
-              <ExploreCard
-                key={id}
-                image={image}               
-              />
-            );
+            return <ExploreCard key={id} image={image} />;
           })}
       </IonContent>
     </IonPage>

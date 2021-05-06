@@ -348,12 +348,12 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           </IonButton>
         </IonItem>
 
-        <IonItem>
-          <IonTextarea
+        <IonItem >
+          <IonTextarea 
             placeholder="Comment"
             maxlength={160}
             rows={1}
-            autoGrow={true}
+            autoGrow={false}
             value={comment}
             inputmode="text"
             onIonChange={onCommentChange}
