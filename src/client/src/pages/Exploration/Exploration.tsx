@@ -188,7 +188,7 @@ const Explore: React.FC<{
                   }}
                 >
                   <IonLabel slot="start">0</IonLabel>
-                  <IonLabel slot="end">30</IonLabel>
+                  <IonLabel slot="end">30+</IonLabel>
                 </IonRange>
               </IonItem>
             </IonList>
