@@ -44,6 +44,8 @@ interface ContainerProps {
   activeShowUserProfil: boolean;
   setuserProfilModel: Dispatch<SetStateAction<boolean>>;
   setLoading?: Dispatch<SetStateAction<boolean>>;
+  tempComment: number;
+  setTempComment: Dispatch<SetStateAction<number>>;
 }
 
 const { Geolocation } = Plugins;
@@ -53,6 +55,8 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   activeShowUserProfil,
   setuserProfilModel,
   setLoading,
+  tempComment,
+  setTempComment,
 }) => {
   const [username, setUsername] = useState<string>();
   const [firstName, setFirstName] = useState<string>();
@@ -62,7 +66,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   // let postsUsername: string = "";
   let counterLikes: number = 0;
 
-  const [bio, setBio] = useState<string>();
+  const [bio, setBio] = useState<string>(); 
   const [popPic, setPopPic] = useState<Image>();
   const [showPopup, setShowPopup] = useState(false);
 
@@ -80,8 +84,8 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
 
   //effect user profil information
   useEffect(() => {
-
-    if (nameOfUser !== ""){
+    
+    if (nameOfUser !== "" && tempComment === 3){
     console.log("useeffect - ShowUserProfil - profilInformation");
 
     db.collection("users")
@@ -117,7 +121,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
           });
       });
     }
-  },[nameOfUser]);
+  },[nameOfUser, tempComment]);
 
   //effect image from user
   useEffect(() => {    
@@ -141,6 +145,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   }, [nameOfUser, GeolocationPositionError]);
 
   const closeModal = useCallback(() => {
+    setTempComment(1)
     setuserProfilModel(false);
   }, [setuserProfilModel]);
 
@@ -148,7 +153,9 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
     <IonModal
       isOpen={activeShowUserProfil}
       cssClass="modal"
-      onWillDismiss={() => setuserProfilModel(false)}
+      onWillDismiss={() =>{
+        setTempComment(1)
+       setuserProfilModel(false)}}
     >
       <IonHeader>
         <IonToolbar>

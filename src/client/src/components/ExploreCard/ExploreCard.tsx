@@ -107,7 +107,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           setLikeNumber(await documentSnapshot.data()?.likes);
         }
       });
-  }, [setLikeNumber, image.likes]);
+  }, [setLikeNumber, tempComment, image.likes]);
 
   //effect comment
   useEffect(() => {
@@ -260,6 +260,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
   const showUserProfil = useCallback(
     async (username: any) => {
+      setTempComment(3);
       await db
         .collection("users")
         .where("username", "==", username)
@@ -415,6 +416,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         activeShowUserProfil={userProfilModel}
         setuserProfilModel={setuserProfilModel}
         setLoading={setLoading}
+        tempComment={tempComment}
+        setTempComment={setTempComment}
       />
 
       <ShowComments

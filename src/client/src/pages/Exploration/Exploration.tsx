@@ -75,7 +75,6 @@ const Explore: React.FC<{
 
   useEffect(() => {
     if (temp === 1) {
-      console.log("tempexplo", temp);
       (async () => {
         checkAuthEmailWithUserCollectionEmail(user);
 
@@ -215,7 +214,10 @@ const Explore: React.FC<{
         {images.length > 0 &&
           images.map((image, id) => {
             return (
-              <ExploreCard key={id} image={image} setLoading={setLoading} />
+              <ExploreCard
+                key={id}
+                image={image}               
+              />
             );
           })}
       </IonContent>

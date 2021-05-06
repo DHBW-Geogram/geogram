@@ -55,7 +55,6 @@ const Search: React.FC<{
 
   useEffect(() => {
     if (temp === 2) {
-      console.log("tempserch", temp);
       (async () => {
         // push location to state
         Geolocation.getCurrentPosition().then((s) => {

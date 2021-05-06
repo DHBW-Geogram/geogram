@@ -13,13 +13,11 @@ export async function fetchImages(l?: any, username?: any): Promise<Image[]> {
 
   //wenn es ind ShowUSerProfilaufgerufen wird in if 
   //wenn es in search aufgreufen wird in else
-  if (username !== undefined) {
-    console.log("in fetch images if", username);
+  if (username !== undefined) {    
     data.docs
       .filter((doc: any) => doc.data().user === username)
       .forEach((doc: any) => t.push(doc.data()));
-  } else {
-    console.log("in fetch images else");
+  } else {   
     data.docs.forEach((doc: any) => t.push(doc.data()));
   }
 
