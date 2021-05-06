@@ -44,6 +44,9 @@ export function evaluateLocation(
 
     if (distance <= range) {
       pictures.push({...image, distance: distance});
+    } else if(range === 30)
+    {
+      pictures.push({...image, distance: distance});
     }
   });
 
