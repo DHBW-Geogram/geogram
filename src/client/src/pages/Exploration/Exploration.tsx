@@ -219,8 +219,8 @@ const Explore: React.FC<{
             {images.length > 0 &&
               images.map((image, id) => {
                 return (
-                  <IonCol size="12" sizeMd="6" sizeLg="4">
-                    <ExploreCard key={id} image={image} />{" "}
+                  <IonCol key={id} size="12" sizeMd="6" sizeLg="4">
+                    <ExploreCard image={image} />{" "}
                   </IonCol>
                 );
               })}
