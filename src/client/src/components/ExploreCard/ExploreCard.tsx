@@ -35,6 +35,7 @@ import "./ExploreCard.css";
 
 import { Redirect, Route } from "react-router";
 import { timeConverter } from "../../hooks/timeConverter";
+import { saveComments } from "../../hooks/saveComments";
 
 interface ContainerProps {
   image: Image;
@@ -72,7 +73,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           documentSnapshot.data()?.likes === undefined ||
           documentSnapshot.data()?.likes === 0
         ) {
-          setLikeNumber(0);          
+          setLikeNumber(0);
           setLikeIcon(heartOutline);
           setLikeColor("dark");
           return;
@@ -210,7 +211,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     if (setLoading != undefined) setLoading(false);
   }, [likeNumber, image, user, db, flag]);
 
-  //save comment on click in db
+ 
   const onAddCommentClick = useCallback(async () => {
     if (comment === "") {
       return;
@@ -220,8 +221,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
       //setComments empty
       setComments([]);
-      //setLastComments
 
+      //setLastComments
       let commentData: any[] = [];
 
       commentData.push({
@@ -231,21 +232,13 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
         id: uuidv4(),
       });
 
-      await db
-        .collection("images")
-        .doc(image.id)
-        .update({
-          comments: firebase.firestore.FieldValue.arrayUnion({
-            comment: comment,
-            userid: user?.uid,
-            timestamp: Date.now(),
-            id: uuidv4(),
-          }),
-        })
-        .catch((err) => presentAlert(err.message));
+      //call methode to save the Comment in firebase
+      saveComments(image.id, commentData);
 
+      //set InputField empty
       setComment("");
 
+      //show the Last Comment
       await setLastComment(commentData);
 
       //Loading false
@@ -272,8 +265,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
               return;
             } else {
               setNameOfUser(username);
-              setuserProfilModel(true);
-              //    setshowCommentsModal(false)
+              setuserProfilModel(true);              
             }
           });
         });
@@ -348,8 +340,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           </IonButton>
         </IonItem>
 
-        <IonItem >
-          <IonTextarea 
+        <IonItem>
+          <IonTextarea
             placeholder="Comment"
             maxlength={160}
             rows={1}

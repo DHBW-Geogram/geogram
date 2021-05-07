@@ -32,6 +32,7 @@ import { v4 as uuidv4 } from "uuid";
 import "./ShowComments.css";
 import { timeConverter } from "../../hooks/timeConverter";
 import { Redirect } from "react-router";
+import { saveComments } from "../../hooks/saveComments";
 
 interface ContainerProps {
   image: Image;
@@ -127,20 +128,21 @@ const ShowComments: React.FC<ContainerProps> = ({
 
       //setComments empty
       setComments([]);
-      //setComments
-      await db
-        .collection("images")
-        .doc(image.id)
-        .update({
-          comments: firebase.firestore.FieldValue.arrayUnion({
-            comment: comment,
-            userid: user?.uid,
-            timestamp: Date.now(),
-            id: uuidv4(),
-          }),
-        })
-        .catch((err) => presentAlert(err.message));
 
+      //setComments
+      let commentData: any[] = [];
+
+      commentData.push({
+        comment: comment,
+        userid: user?.uid,
+        timestamp: Date.now(),
+        id: uuidv4(),
+      });
+
+      //call methode to save the Comment in firebase
+      saveComments(image.id, commentData);
+
+      //set InputField empty
       setComment("");
 
       //show all comments
