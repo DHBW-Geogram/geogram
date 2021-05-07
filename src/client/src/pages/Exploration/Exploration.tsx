@@ -16,6 +16,9 @@ import {
   IonRange,
   useIonViewWillEnter,
   useIonViewWillLeave,
+  IonGrid,
+  IonRow,
+  IonCol,
 } from "@ionic/react";
 import {
   Dispatch,
@@ -211,10 +214,18 @@ const Explore: React.FC<{
             <IonTitle size="large">Explore</IonTitle>
           </IonToolbar>
         </IonHeader>
-        {images.length > 0 &&
-          images.map((image, id) => {
-            return <ExploreCard key={id} image={image} />;
-          })}
+        <IonGrid>
+          <IonRow>
+            {images.length > 0 &&
+              images.map((image, id) => {
+                return (
+                  <IonCol size="12" sizeMd="6" sizeLg="4">
+                    <ExploreCard key={id} image={image} />{" "}
+                  </IonCol>
+                );
+              })}
+          </IonRow>
+        </IonGrid>
       </IonContent>
     </IonPage>
   );
