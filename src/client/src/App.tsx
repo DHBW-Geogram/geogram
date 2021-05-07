@@ -186,8 +186,8 @@ const PrivateRoutes = () => {
 const App: React.FC = () => {
   const user = useContext(UserContext);
 
-  window.screen
-  .orientation.lock('portrait');
+  // window.screen
+  // .orientation.lock('portrait');
   
   return <IonApp> {user ? <PrivateRoutes /> : <PublicRoutes />}</IonApp>;
 };
