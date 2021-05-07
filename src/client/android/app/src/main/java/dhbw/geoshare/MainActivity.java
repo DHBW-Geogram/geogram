@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package dhbw.geoshare;
 
 import android.os.Bundle;
 

@@ -1,6 +1,6 @@
 {
-  "appId": "io.ionic.starter",
-  "appName": "geogram",
+  "appId": "dhbw.geoshare",
+  "appName": "geoshare",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "build",
