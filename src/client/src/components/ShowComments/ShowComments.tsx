@@ -69,16 +69,6 @@ const ShowComments: React.FC<ContainerProps> = ({
     }
   }, [tempComment, nameOfUser, image.likes]);
 
-  function doRefresh(event: CustomEvent<RefresherEventDetail>) {
-    setComments([]);
-
-    setCommentsInModal();
-
-    setTimeout(() => {
-      event.detail.complete();
-    }, 2000);
-  }
-
   //set comments
   const setCommentsInModal = useCallback(async () => {
     // alle user holen
@@ -175,7 +165,6 @@ const ShowComments: React.FC<ContainerProps> = ({
             } else {
               setNameOfUser(username);
               setuserProfilModel(true);
-              //setshowCommentsModal(false)
             }
           });
         });
@@ -241,16 +230,6 @@ const ShowComments: React.FC<ContainerProps> = ({
                 </IonGrid>
               );
             })}
-
-        <IonRefresher
-          slot="fixed"
-          onIonRefresh={doRefresh}
-          pullFactor={0.5}
-          pullMin={100}
-          pullMax={200}
-        >
-          <IonRefresherContent></IonRefresherContent>
-        </IonRefresher>
       </IonContent>
 
       <ShowUserProfil

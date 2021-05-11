@@ -118,6 +118,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
       const refImage = db.collection("images");
 
+      if (setLoading !== undefined) setLoading(true);
+
       let dataImage: Comment[] = [];
 
       dataImage = (await refImage.doc(image.id).get()).data()?.comments;
@@ -140,7 +142,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
   //set last Comment
   const setLastComment = useCallback(async (commentData: any) => {
     setComments([]);
-
+    
     // alle user holen
     let users: any[] = [];
     const ref = db.collection("users");
@@ -151,7 +153,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     });
 
     if (commentData !== undefined)
-      commentData.map((t: any) => {
+      commentData.map(async(t: any) => {
         let name: string = "";
 
         name = users.find((e) => e.id === t.userid).username;
@@ -165,8 +167,9 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           },
         ];
 
-        setComments(nn);
+      setComments(nn);
       });
+      
   }, []);
 
   const onLikeClick = useCallback(async () => {
