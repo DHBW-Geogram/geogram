@@ -60,9 +60,7 @@ const Search: React.FC<{
         Geolocation.getCurrentPosition().then((s) => {
           setLocation(s);
 
-          console.log("serach ");
-
-          fetchImages(s).then((images) => {
+        fetchImages(s).then((images) => {
             setImages(images);
           });
         });
@@ -95,7 +93,7 @@ const Search: React.FC<{
   function filterItems(searchText: string) {
     searchText = searchText.toLowerCase();
     console.log("filtering", searchText);
-    if (searchText.length <= 3) {
+    if (searchText.length <= 3 && searchText.length >=1) {
       return;
     }
 
@@ -105,19 +103,21 @@ const Search: React.FC<{
       });
     } else if (filter === "Location") {
       fetchImages(location).then((res) => {
+        console.log("Location", res)
         let i: Image[] = [];
         res.forEach((image) => {
-          if (image.location.position?.includes(searchText)) {
+          if (image.location.position?.toLowerCase().includes(searchText)) {
             i.push(image);
           }
         });
         setImages(i);
+        console.log("i",i);
       });
     } else if (filter === "Title") {
       fetchImages(location).then((res) => {
         let i: Image[] = [];
         res.forEach((image) => {
-          if (image.title.includes(searchText)) {
+          if (image.title.toLowerCase().includes(searchText)) {
             i.push(image);
           }
         });
@@ -127,7 +127,7 @@ const Search: React.FC<{
       fetchImages(location).then((res) => {
         let i: Image[] = [];
         res.forEach((image) => {
-          if (image.user.includes(searchText)) {
+          if (image.user.toLowerCase().includes(searchText)) {
             i.push(image);
           }
         });
