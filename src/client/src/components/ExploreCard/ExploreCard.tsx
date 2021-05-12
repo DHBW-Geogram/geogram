@@ -52,7 +52,6 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
   const onCommentChange = useCallback((e) => setComment(e.detail?.value), []);
   const user = useContext(UserContext);
-  const [commentTrue, setCommentTrue] = useState<boolean>(false);
   const [redirect, setRedirect] = useState("");
 
   const [userProfilModel, setuserProfilModel] = useState<boolean>(false);
@@ -112,13 +111,12 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
   //effect comment
   useEffect(() => {
+    setComments([]);
     //set last Comment
     (async () => {
       setComments([]);
-
+      console.log("use");
       const refImage = db.collection("images");
-
-      if (setLoading !== undefined) setLoading(true);
 
       let dataImage: Comment[] = [];
 
@@ -134,15 +132,13 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
       dataImage = dataImage?.filter((f: any) => f.timestamp === temp);
 
       await setLastComment(dataImage);
-
-      if (setLoading !== undefined) setLoading(false);
     })();
-  }, [setComments, tempComment, image.comments]);
+  }, [setComments, tempComment]);
 
   //set last Comment
   const setLastComment = useCallback(async (commentData: any) => {
     setComments([]);
-    
+    console.log("setLast");
     // alle user holen
     let users: any[] = [];
     const ref = db.collection("users");
@@ -153,7 +149,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     });
 
     if (commentData !== undefined)
-      commentData.map(async(t: any) => {
+      commentData.map(async (t: any) => {
         let name: string = "";
 
         name = users.find((e) => e.id === t.userid).username;
@@ -167,9 +163,8 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
           },
         ];
 
-      setComments(nn);
+        setComments(nn);
       });
-      
   }, []);
 
   const onLikeClick = useCallback(async () => {
@@ -214,7 +209,6 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
     if (setLoading != undefined) setLoading(false);
   }, [likeNumber, image, user, db, flag]);
 
- 
   const onAddCommentClick = useCallback(async () => {
     if (comment === "") {
       return;
@@ -268,7 +262,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
               return;
             } else {
               setNameOfUser(username);
-              setuserProfilModel(true);              
+              setuserProfilModel(true);
             }
           });
         });
