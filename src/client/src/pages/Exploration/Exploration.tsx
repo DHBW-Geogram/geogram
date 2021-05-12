@@ -172,7 +172,7 @@ const Explore: React.FC<{
 
               <IonItem>
                 <IonRange
-                  min={0}
+                  min={1}
                   max={30}
                   snaps={true}
                   step={1}
@@ -193,7 +193,7 @@ const Explore: React.FC<{
                     setShowPopup({ open: false, event: undefined });
                   }}
                 >
-                  <IonLabel slot="start">0</IonLabel>
+                  <IonLabel slot="start">1</IonLabel>
                   <IonLabel slot="end">30+</IonLabel>
                 </IonRange>
               </IonItem>
