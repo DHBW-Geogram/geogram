@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">geoshare</string>
-    <string name="title_activity_main">geoshare</string>
+    <string name="app_name">GeoShare</string>
+    <string name="title_activity_main">GeoShare</string>
     <string name="package_name">dhbw.geoshare</string>
     <string name="custom_url_scheme">dhbw.geoshare</string>
 </resources>
