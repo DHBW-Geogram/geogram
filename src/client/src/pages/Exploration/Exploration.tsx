@@ -51,6 +51,8 @@ const Explore: React.FC<{
   // Geoinformation
   const [location, setLocation] = useStateWithPromise();
 
+  const [flag, setFlag] = useState(false);
+
   //images to display
   const [images, setImages] = useState<Array<Image>>([]);
 
@@ -177,14 +179,15 @@ const Explore: React.FC<{
                   pin={true}
                   value={filter}
                   onIonChange={(e) => {
-                    setFilter(e.detail.value as number);
-                    setLoading(true);
-                    fetchImages(e.detail.value as number)
-                      .then((images) => {
-                        setImages(images);
-                        setLoading(false);
-                      })
-                      .catch((e) => setLoading(false));
+                      setFilter(e.detail.value as number);
+                      setLoading(true);
+                      setTimeout(() => 2000);
+                      fetchImages(e.detail.value as number)
+                        .then((images) => {
+                          setImages(images);
+                          setLoading(false);
+                        })
+                        .catch((e) => setLoading(false));
                   }}
                   onLostPointerCapture={(e) => {
                     setShowPopup({ open: false, event: undefined });

@@ -72,10 +72,8 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
   const [presentToast, dismissToast] = useIonToast();
 
   const [showAlertLogin, setShowAlertLogin] = useState<boolean>(false);
-  const [
-    showAlertIncorrectPassword,
-    setShowAlertIncorrectPassword,
-  ] = useState<boolean>(false);
+  const [showAlertIncorrectPassword, setShowAlertIncorrectPassword] =
+    useState<boolean>(false);
   let isShowAlertLogin: boolean = false;
   const [isLoginSuccessfull, setLoginSuccessfull] = useState<boolean>(false);
 
@@ -425,7 +423,7 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
         <IonModal
           cssClass="my-pop-over"
           isOpen={showPopup}
-          onDidDismiss={() => setShowPopup(false)}
+          onWillDismiss={() => setShowPopup(false)}
         >
           <IonContent>
             {popPic && <ExploreCard image={popPic as Image} />}
@@ -496,7 +494,17 @@ const Profile: React.FC<{ setLoading: Dispatch<SetStateAction<boolean>> }> = ({
         >
           <IonRefresherContent></IonRefresherContent>
         </IonRefresher>
-        <IonModal isOpen={EditProfile}>
+        <IonModal
+          isOpen={EditProfile}
+          onWillDismiss={() => {
+            dismissToast();
+            setEditProfile(false);
+            setErrorEmailLabel("");
+            setErrorEmailText("");
+            setErrorUsernameLabel("");
+            setErrorUsernameText("");
+          }}
+        >
           <IonHeader>
             <IonToolbar>
               <IonButtons slot="end">
