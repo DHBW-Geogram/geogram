@@ -11,16 +11,9 @@ import {
   IonItem,
   IonLabel,
   IonModal,
-  IonPage,
-  IonPopover,
   IonRow,
   IonTitle,
   IonToolbar,
-  useIonToast,
-  useIonViewDidEnter,
-  useIonViewDidLeave,
-  useIonViewWillEnter,
-  useIonViewWillLeave,
 } from "@ionic/react";
 import { chevronBackOutline, image } from "ionicons/icons";
 import React, {
@@ -31,12 +24,11 @@ import React, {
   useState,
 } from "react";
 import { Image } from "../../model/Image";
-import { auth, db } from "../../helper/firebase";
+import { db } from "../../helper/firebase";
 import "./ShowUserProfil.css";
 import ExploreCard from "../ExploreCard/ExploreCard";
 
 import { GeolocationPosition, Plugins } from "@capacitor/core";
-import { distanceInKm } from "../../hooks/evaluateDistance";
 import { fetchImages } from "../../hooks/fetchImages";
 
 interface ContainerProps {
@@ -50,7 +42,7 @@ interface ContainerProps {
 
 const { Geolocation } = Plugins;
 
-const ShowUserProfil: React.FC<ContainerProps> = ({  
+const ShowUserProfil: React.FC<ContainerProps> = ({
   nameOfUser,
   activeShowUserProfil,
   setuserProfilModel,
@@ -63,17 +55,14 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   const [lastName, setLastName] = useState<string>();
   const [fullName, setFullName] = useState<string>();
   const [likes, setLikes] = useState<number>(0);
-  // let postsUsername: string = "";
   let counterLikes: number = 0;
 
-  const [bio, setBio] = useState<string>(); 
+  const [bio, setBio] = useState<string>();
   const [popPic, setPopPic] = useState<Image>();
   const [showPopup, setShowPopup] = useState(false);
 
   const [location, setLocation] = useState<GeolocationPosition>();
   const [images, setImages] = useState<Array<Image>>([]);
-
-  
 
   const [profilepic, setProfilepic] = useState(
     "https://im-coder.com/images4/15590312779219.png"
@@ -81,53 +70,52 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
 
   const [posts, setPosts] = useState<number>(0);
 
-
   //effect user profil information
   useEffect(() => {
-    
-    if (nameOfUser !== "" && tempComment === 3){
-    console.log("useeffect - ShowUserProfil - profilInformation");
+    if (nameOfUser !== "" && tempComment === 3) {
+      console.log("useeffect - ShowUserProfil - profilInformation");
 
-    db.collection("users")
-      .where("username", "==", nameOfUser)
-      .get()
-      .then(async (querySnapshot) => {
-        querySnapshot.forEach(async (doc) => {
-          if ((await doc.data().profilepic) != null) {
-            setProfilepic(doc.data().profilepic);
-          }
+      db.collection("users")
+        .where("username", "==", nameOfUser)
+        .get()
+        .then(async (querySnapshot) => {
+          querySnapshot.forEach(async (doc) => {
+            if ((await doc.data().profilepic) != null) {
+              setProfilepic(doc.data().profilepic);
+            }
 
-          setFirstName(doc.data().userFirstName);
-          setLastName(doc.data().userLastName);
-          setBio(doc.data().biography);
-          setFullName(doc.data().userFirstName + " " + doc.data().userLastName);
-        });
-      })
-      .then(() => {
-        db.collection("images")
-          .where("user", "==", nameOfUser)
-          .get()
-          .then((querySnapshot) => {
-            setPosts(querySnapshot.size);
-
-            counterLikes = 0;
-
-            querySnapshot.forEach((doc) => {
-              if (!(doc.data().likes == null)) {
-                counterLikes = counterLikes + doc.data().likes;
-              }
-            });
-            setLikes(counterLikes);
+            setFirstName(doc.data().userFirstName);
+            setLastName(doc.data().userLastName);
+            setBio(doc.data().biography);
+            setFullName(
+              doc.data().userFirstName + " " + doc.data().userLastName
+            );
           });
-      });
+        })
+        .then(() => {
+          db.collection("images")
+            .where("user", "==", nameOfUser)
+            .get()
+            .then((querySnapshot) => {
+              setPosts(querySnapshot.size);
+
+              counterLikes = 0;
+
+              querySnapshot.forEach((doc) => {
+                if (!(doc.data().likes == null)) {
+                  counterLikes = counterLikes + doc.data().likes;
+                }
+              });
+              setLikes(counterLikes);
+            });
+        });
     }
-  },[nameOfUser, tempComment]);
+  }, [nameOfUser, tempComment]);
 
   //effect image from user
-  useEffect(() => {    
-
-    if (nameOfUser !== ""){
-    console.log("useeffect - ShowUserProfil - userimage");
+  useEffect(() => {
+    if (nameOfUser !== "") {
+      console.log("useeffect - ShowUserProfil - userimage");
       //show images of user
       (async () => {
         // push location to state
@@ -145,7 +133,7 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
   }, [nameOfUser, GeolocationPositionError]);
 
   const closeModal = useCallback(() => {
-    setTempComment(1)
+    setTempComment(1);
     setuserProfilModel(false);
   }, [setuserProfilModel]);
 
@@ -153,9 +141,10 @@ const ShowUserProfil: React.FC<ContainerProps> = ({
     <IonModal
       isOpen={activeShowUserProfil}
       cssClass="modal"
-      onWillDismiss={() =>{
-        setTempComment(1)
-       setuserProfilModel(false)}}
+      onWillDismiss={() => {
+        setTempComment(1);
+        setuserProfilModel(false);
+      }}
     >
       <IonHeader>
         <IonToolbar>
