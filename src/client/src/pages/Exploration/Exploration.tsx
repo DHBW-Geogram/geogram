@@ -171,6 +171,8 @@ const Explore: React.FC<{
               <IonListHeader>Range Filter</IonListHeader>
 
               <IonItem>
+
+                
                 <IonRange
                   min={1}
                   max={30}
@@ -178,17 +180,22 @@ const Explore: React.FC<{
                   step={1}
                   pin={true}
                   value={filter}
+                  
                   onIonChange={(e) => {
                       setFilter(e.detail.value as number);
                       setLoading(true);
-                      setTimeout(() => 2000);
-                      fetchImages(e.detail.value as number)
-                        .then((images) => {
-                          setImages(images);
-                          setLoading(false);
-                        })
-                        .catch((e) => setLoading(false));
+                      setTimeout(() => 2000);                      
                   }}
+
+                  onIonBlur={() =>{                    
+                    fetchImages(filter)
+                    .then((images) => {
+                      setImages(images);
+                      setLoading(false);
+                    })
+                    .catch((e) => setLoading(false));                  
+                  }}
+
                   onLostPointerCapture={(e) => {
                     setShowPopup({ open: false, event: undefined });
                   }}
