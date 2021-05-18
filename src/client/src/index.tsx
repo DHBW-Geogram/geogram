@@ -1,34 +1,54 @@
-
-import ReactDOM from 'react-dom';
-import App from './App';
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
-import reportWebVitals from './reportWebVitals';
-import { defineCustomElements } from '@ionic/pwa-elements/loader';
+import ReactDOM from "react-dom";
+import App from "./App";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
+import reportWebVitals from "./reportWebVitals";
+import { defineCustomElements } from "@ionic/pwa-elements/loader";
 import React, { createContext, useEffect, useState } from "react";
-import firebase, { auth } from "./helper/firebase";
-import LoadingPage from './pages/auth/LoadingPage';
+import firebase, { auth, db } from "./helper/firebase";
+import LoadingPage from "./pages/auth/LoadingPage";
 defineCustomElements(window);
 
 export const UserContext = createContext<firebase.User | null>(null);
 
 export const UserProvider: React.FC = ({ children }) => {
-    const [user, setUser] = useState<firebase.User | null>(null);
-    
-useEffect(() => {
-  
-    auth.onAuthStateChanged((userAuth) => setUser(userAuth));
-}, []);
+  const [user, setUser] = useState<firebase.User | null>(null);
 
-return  <UserContext.Provider value={user}> {children}    </UserContext.Provider>;
+  useEffect(() => {
+    auth.onAuthStateChanged((userAuth) => {
+
+      console.log(userAuth);
+
+      db.collection("users").doc(userAuth?.uid).get().then(user => {
+
+        console.log(user.data());
+
+        if(user.data() === undefined && userAuth?.displayName !== undefined && userAuth?.email !== undefined){
+          const data = {
+            username: userAuth?.displayName,
+            userFirstName: "",
+            userLastName: "",
+            email: userAuth?.email,       
+          };
+          db.collection("users").doc(userAuth?.uid).set(data).then(() =>
+            setUser(userAuth)
+          )
+        }else{
+          setUser(userAuth);
+        }
+
+      })
+      
+    });
+  }, []);
+
+  return <UserContext.Provider value={user}> {children} </UserContext.Provider>;
 };
 
-
 ReactDOM.render(
-  
-  <UserProvider>   
+  <UserProvider>
     <App />
   </UserProvider>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change
