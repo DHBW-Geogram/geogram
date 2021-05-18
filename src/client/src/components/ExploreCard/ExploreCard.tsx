@@ -133,7 +133,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
       await setLastComment(dataImage);
     })();
-  }, [setComments, tempComment]);
+  }, [setComments, tempComment, image.comments]);
 
   //set last Comment
   const setLastComment = useCallback(async (commentData: any) => {
