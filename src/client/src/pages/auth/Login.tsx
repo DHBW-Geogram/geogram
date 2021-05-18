@@ -23,6 +23,8 @@ import "firebase/auth";
 import { checkLogin } from "../../hooks/login/checkLogin";
 import { hideShowPassword } from "../../hooks/hideShowPassword";
 import { presentAlert } from "../../hooks/alert";
+import firebase from "firebase";
+import btn_google from "../../assets/btn_google.png"
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -135,6 +137,15 @@ const Login: React.FC = () => {
                 </IonButton>
               </IonCol>
             </IonRow>
+          </div>
+          <br/>
+          <div className="LogInButton">
+            <div style={{cursor: "pointer"}} onClick={() => {
+                  var provider = new firebase.auth.GoogleAuthProvider();
+                  firebase.auth().signInWithRedirect(provider);
+            }}>
+              <IonImg src={btn_google} style={{height:"3rem"}}/>
+            </div>
           </div>
         </IonGrid>
         <IonGrid>
