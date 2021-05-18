@@ -11,13 +11,13 @@ export async function fetchImages(l?: any, username?: any): Promise<Image[]> {
   // load images to typed docs
   let t: Image[] = [];
 
-  //wenn es ind ShowUSerProfilaufgerufen wird in if 
+  //wenn es ind ShowUSerProfilaufgerufen wird in if
   //wenn es in search aufgreufen wird in else
-  if (username !== undefined) {    
+  if (username !== undefined) {
     data.docs
       .filter((doc: any) => doc.data().user === username)
       .forEach((doc: any) => t.push(doc.data()));
-  } else {   
+  } else {
     data.docs.forEach((doc: any) => t.push(doc.data()));
   }
 

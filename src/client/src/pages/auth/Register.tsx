@@ -11,7 +11,6 @@ import {
   IonItem,
   IonLabel,
   IonGrid,
-  IonAlert,
 } from "@ionic/react";
 import {
   chevronBackOutline,
@@ -22,9 +21,11 @@ import React, { useCallback, useState } from "react";
 import { auth } from "../../helper/firebase";
 import "./Register.css";
 import "firebase/auth";
-import { PasswordCheckService } from "../../hooks/pwcheck";
+import {
+  PasswordCheckService,
+  PasswordCheckStrength,
+} from "../../hooks/pwcheck";
 
-import { PasswordCheckStrength } from "../../hooks/pwcheck";
 import { checkRegister } from "../../hooks/register/checkRegister";
 import { presentAlertWithHeader } from "../../hooks/alert";
 import { hideShowPassword } from "../../hooks/hideShowPassword";
@@ -39,35 +40,35 @@ const Register: React.FC = () => {
   const [passwordShowHideIcon, setPasswordShowHideIcon] = useState(eyeOutline);
   const [passwordType, setpasswordType] = useState<any>("password");
   const [indColor, setindColor] = useState("white");
-  const [
-    passwordConfirmShowHideIcon,
-    setPasswordConfirmShowHideIcon,
-  ] = useState(eyeOutline);
-  const [passwordConfirmType, setpasswordConfirmType] = useState<any>(
-    "password"
-  );
+  const [passwordConfirmShowHideIcon, setPasswordConfirmShowHideIcon] =
+    useState(eyeOutline);
+  const [passwordConfirmType, setpasswordConfirmType] =
+    useState<any>("password");
   const [pwStrength, setpwStrength] = useState(PasswordCheckStrength.Notset);
 
   let checker: PasswordCheckService = new PasswordCheckService();
 
   const onEmailNameChange = useCallback((e) => setEmail(e.detail?.value), []);
-  
+
   const onPasswordChange = useCallback((e) => {
     setPassword(e.detail?.value);
     let pwsec = checker.checkPasswordStrength(e.detail?.value);
     setpwStrength(pwsec);
-    if (pwsec === PasswordCheckStrength.Notset){
+    if (pwsec === PasswordCheckStrength.Notset) {
       setindColor("white");
-    } 
-    else if (pwsec === PasswordCheckStrength.Short){
+    } else if (pwsec === PasswordCheckStrength.Short) {
       setindColor("danger");
-    } 
-    else if (pwsec === PasswordCheckStrength.Weak || pwsec === PasswordCheckStrength.Common){
+    } else if (
+      pwsec === PasswordCheckStrength.Weak ||
+      pwsec === PasswordCheckStrength.Common
+    ) {
       setindColor("warning");
-    } 
-    else if (pwsec === PasswordCheckStrength.Strong || pwsec === PasswordCheckStrength.Ok){
+    } else if (
+      pwsec === PasswordCheckStrength.Strong ||
+      pwsec === PasswordCheckStrength.Ok
+    ) {
       setindColor("success");
-    } 
+    }
   }, []);
 
   const onConfirmPasswordChange = useCallback(
@@ -167,13 +168,16 @@ const Register: React.FC = () => {
           </IonItem>
           <br />
           <IonItem>
-            <IonLabel position="floating" color={indColor}>{pwStrength}</IonLabel>
+            <IonLabel position="floating" color={indColor}>
+              {pwStrength}
+            </IonLabel>
             <IonInput
               onIonChange={onPasswordChange}
               type={passwordType}
               value={password}
             ></IonInput>
-            <IonIcon className="LookIcon"
+            <IonIcon
+              className="LookIcon"
               slot="end"
               icon={passwordShowHideIcon}
               onClick={onhideShowPasswordClick}
@@ -187,7 +191,8 @@ const Register: React.FC = () => {
               value={confirmPassword}
               type={passwordConfirmType}
             ></IonInput>
-            <IonIcon className="LookIcon"
+            <IonIcon
+              className="LookIcon"
               slot="end"
               icon={passwordConfirmShowHideIcon}
               onClick={onhideShowPasswordConfirmClick}

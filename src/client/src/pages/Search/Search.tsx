@@ -1,10 +1,4 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   IonContent,
   IonHeader,
@@ -19,15 +13,12 @@ import {
   IonCol,
   IonGrid,
   IonImg,
-  IonPopover,
   IonModal,
   useIonViewWillEnter,
   useIonViewWillLeave,
 } from "@ionic/react";
-import { db } from "../../helper/firebase";
 import { Image } from "../../model/Image";
 import { GeolocationPosition, Plugins } from "@capacitor/core";
-import { distanceInKm } from "../../hooks/evaluateDistance";
 import ExploreCard from "../../components/ExploreCard/ExploreCard";
 import "./Search.css";
 import { fetchImages } from "../../hooks/fetchImages";
@@ -60,7 +51,7 @@ const Search: React.FC<{
         Geolocation.getCurrentPosition().then((s) => {
           setLocation(s);
 
-        fetchImages(s).then((images) => {
+          fetchImages(s).then((images) => {
             setImages(images);
           });
         });
@@ -71,7 +62,7 @@ const Search: React.FC<{
   function filterItems(searchText: string) {
     searchText = searchText.toLowerCase();
     console.log("filtering", searchText);
-    if (searchText.length <= 3 && searchText.length >=1) {
+    if (searchText.length <= 3 && searchText.length >= 1) {
       return;
     }
 
@@ -81,7 +72,7 @@ const Search: React.FC<{
       });
     } else if (filter === "Location") {
       fetchImages(location).then((res) => {
-        console.log("Location", res)
+        console.log("Location", res);
         let i: Image[] = [];
         res.forEach((image) => {
           if (image.location.position?.toLowerCase().includes(searchText)) {
@@ -89,7 +80,7 @@ const Search: React.FC<{
           }
         });
         setImages(i);
-        console.log("i",i);
+        console.log("i", i);
       });
     } else if (filter === "Title") {
       fetchImages(location).then((res) => {

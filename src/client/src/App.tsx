@@ -1,14 +1,12 @@
 import { Redirect, Route } from "react-router-dom";
-import React, { useCallback, useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import Upload from "./pages/Upload/Upload";
 import {
   IonAlert,
   IonApp,
-  IonButton,
   IonFab,
   IonFabButton,
   IonIcon,
-  IonItem,
   IonLabel,
   IonLoading,
   IonRouterOutlet,
@@ -18,16 +16,11 @@ import {
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import {
-  arrowForwardCircle,
   cameraOutline,
   cameraSharp,
-  ellipse,
-  square,
-  triangle,
   personCircleOutline,
   search,
   home,
-  squareOutline,
 } from "ionicons/icons";
 import Profile from "./pages/Profile/Profile";
 
@@ -58,7 +51,6 @@ import Register from "./pages/auth/Register";
 import Exploration from "./pages/Exploration/Exploration";
 import ProfilePic from "./pages/ProfilePic/ProfilePic";
 import { auth } from "./helper/firebase";
-import ShowUserProfil from "./components/ShowUserProfil/ShowUserProfil";
 
 const PublicRoutes = () => {
   return (
@@ -186,9 +178,6 @@ const PrivateRoutes = () => {
 const App: React.FC = () => {
   const user = useContext(UserContext);
 
-  // window.screen
-  // .orientation.lock('portrait');
-  
   return <IonApp> {user ? <PrivateRoutes /> : <PublicRoutes />}</IonApp>;
 };
 

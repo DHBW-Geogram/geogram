@@ -1,3 +1,3 @@
-export function getAddressFromCoords( latitude:number, longitude:number) {
+export function getAddressFromCoords(latitude: number, longitude: number) {
   //Todo
 }

@@ -2,9 +2,6 @@ import { auth, db } from "../../helper/firebase";
 import { presentAlert } from "../alert";
 import { sendEmailVerify } from "./emailVerify";
 
-
-
-
 export async function register(
   password: any,
   email: any,
@@ -12,26 +9,25 @@ export async function register(
   userLastName: any,
   userName: any
 ): Promise<any> {
-
-  await  auth
+  await auth
     .createUserWithEmailAndPassword(email, password)
     .then(async (userCredential) => {
       var user = userCredential.user;
 
-      sendEmailVerify();    
-      
+      sendEmailVerify();
 
       const data = {
         username: userName,
         userFirstName: userFirstName,
         userLastName: userLastName,
-        email: email,       
+        email: email,
       };
-      await db.collection("users")
+      await db
+        .collection("users")
         .doc(auth.currentUser?.uid)
         .set(data)
         .catch((err) => presentAlert(err.message));
-    })    
-    .catch((err) => presentAlert(err.message));    
+    })
+    .catch((err) => presentAlert(err.message));
   return "";
 }
