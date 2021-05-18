@@ -1,12 +1,10 @@
-import { useContext } from "react";
-import { UserContext } from "..";
 import { auth, db } from "../helper/firebase";
 
 import firebase from "firebase/app";
 
-
-export async function checkAuthEmailWithUserCollectionEmail(user: firebase.User | null) {
-    
+export async function checkAuthEmailWithUserCollectionEmail(
+  user: firebase.User | null
+) {
   db.collection("users")
     .doc(user?.uid)
     .get()

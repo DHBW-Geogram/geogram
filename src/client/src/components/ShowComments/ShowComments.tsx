@@ -4,8 +4,6 @@ import {
   IonGrid,
   IonItem,
   IonModal,
-  IonRefresher,
-  IonRefresherContent,
   IonText,
   IonTextarea,
 } from "@ionic/react";
@@ -18,15 +16,11 @@ import React, {
   useState,
 } from "react";
 import { db } from "../../helper/firebase";
-import { presentAlert } from "../../hooks/alert";
 import { Image } from "../../model/Image";
 import { Comment } from "../../model/Comment";
 
-import firebase from "firebase/app";
 import { UserContext } from "../..";
 import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
-
-import { RefresherEventDetail } from "@ionic/core";
 import { v4 as uuidv4 } from "uuid";
 
 import "./ShowComments.css";

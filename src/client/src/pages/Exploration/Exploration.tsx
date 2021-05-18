@@ -27,7 +27,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { GeolocationPosition, Plugins } from "@capacitor/core";
+import { Plugins } from "@capacitor/core";
 import { funnel, image } from "ionicons/icons";
 import React from "react";
 import { RefresherEventDetail } from "@ionic/core";
@@ -36,7 +36,6 @@ import { db } from "../../helper/firebase";
 import { sortImageArray } from "../../hooks/sortImageArray";
 import { evaluateLocation } from "../../hooks/evaluateLocation";
 import ExploreCard from "../../components/ExploreCard/ExploreCard";
-import { wait } from "@testing-library/react";
 import { checkAuthEmailWithUserCollectionEmail } from "../../hooks/checkAuthEmailWithUserCollectionEmail";
 import { UserContext } from "../..";
 import { useStateWithPromise } from "../../hooks/useStateWithPromise";
@@ -50,8 +49,6 @@ const Explore: React.FC<{
 }> = ({ setLoading, setTemp, temp }) => {
   // Geoinformation
   const [location, setLocation] = useStateWithPromise();
-
-  const [flag, setFlag] = useState(false);
 
   //images to display
   const [images, setImages] = useState<Array<Image>>([]);
@@ -179,15 +176,17 @@ const Explore: React.FC<{
                   pin={true}
                   value={filter}
                   onIonChange={(e) => {
-                      setFilter(e.detail.value as number);
-                      setLoading(true);
-                      setTimeout(() => 2000);
-                      fetchImages(e.detail.value as number)
-                        .then((images) => {
-                          setImages(images);
-                          setLoading(false);
-                        })
-                        .catch((e) => setLoading(false));
+                    setFilter(e.detail.value as number);
+                    setLoading(true);
+                    setTimeout(() => 2000);
+                  }}
+                  onIonBlur={() => {
+                    fetchImages(filter)
+                      .then((images) => {
+                        setImages(images);
+                        setLoading(false);
+                      })
+                      .catch((e) => setLoading(false));
                   }}
                   onLostPointerCapture={(e) => {
                     setShowPopup({ open: false, event: undefined });

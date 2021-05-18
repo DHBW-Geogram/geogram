@@ -22,16 +22,11 @@ import {
   FilesystemEncoding,
   Plugins,
 } from "@capacitor/core";
-import { GeogramPosition } from "../../model/GeogramPosition";
 import axios from "axios";
 import { db } from "../../helper/firebase";
 import { Redirect } from "react-router";
 import { UserContext } from "../..";
-import {
-  arrowForward,
-  arrowForwardCircle,
-  arrowForwardCircleSharp,
-} from "ionicons/icons";
+import { arrowForward } from "ionicons/icons";
 
 const { Filesystem } = Plugins;
 
@@ -51,8 +46,7 @@ const ProfilePic: React.FC<any> = (props) => {
   const [redirect, setRedirect] = useState("");
 
   useEffect(() => {
-
-    console.log("useeffect - ProfilPic")
+    console.log("useeffect - ProfilPic");
 
     if (props.location.state !== undefined) {
       setImage(props.location.state.image);

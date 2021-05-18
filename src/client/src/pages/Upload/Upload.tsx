@@ -3,11 +3,8 @@ import {
   IonButton,
   IonCol,
   IonContent,
-  IonFab,
-  IonFabButton,
   IonGrid,
   IonHeader,
-  IonIcon,
   IonImg,
   IonInput,
   IonItem,
@@ -21,8 +18,8 @@ import {
   isPlatform,
 } from "@ionic/react";
 import React, { useContext, useEffect, useState } from "react";
-import { Photo, usePhotoGallery } from "../../hooks/usePhotoGallery";
-import { useFilesystem, base64FromPath } from "@ionic/react-hooks/filesystem";
+import { Photo } from "../../hooks/usePhotoGallery";
+import { base64FromPath } from "@ionic/react-hooks/filesystem";
 import {
   FilesystemDirectory,
   FilesystemEncoding,
@@ -34,14 +31,12 @@ import axios from "axios";
 import { db } from "../../helper/firebase";
 import { v4 as uuidv4 } from "uuid";
 import { Redirect } from "react-router";
-import { useStorage } from "@ionic/react-hooks/storage";
 import { UserContext } from "../..";
 
 const { Geolocation, Filesystem } = Plugins;
 
 const Upload: React.FC<any> = (props) => {
   const user = useContext(UserContext);
-
 
   // image provided by props
   const [image, setImage] = useState<Photo>();
@@ -278,14 +273,12 @@ const Upload: React.FC<any> = (props) => {
                     fill="outline"
                     color="danger"
                     onClick={() => {
-
                       // Set back everything
                       setTitle("");
                       setDescription("");
                       setImage(undefined);
                       setLocation(undefined);
                       setRedirect("explore");
-                      
                     }}
                   >
                     Cancel

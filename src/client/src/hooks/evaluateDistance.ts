@@ -2,7 +2,12 @@ function degreesToRadians(degrees: number) {
   return (degrees * Math.PI) / 180;
 }
 
-export function distanceInKm(lat1: number, lon1: number, lat2: number, lon2: number) {
+export function distanceInKm(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+) {
   var earthRadiusKm = 6371;
 
   var dLat = degreesToRadians(lat2 - lat1);

@@ -26,14 +26,13 @@ import { UserContext } from "../..";
 import { db } from "../../helper/firebase";
 import { presentAlert } from "../../hooks/alert";
 import { Image } from "../../model/Image";
-import firebase from "firebase/app";
 import { delikeFunction, likeFunction } from "../../hooks/like";
 import ShowUserProfil from "../ShowUserProfil/ShowUserProfil";
 import ShowComments from "../ShowComments/ShowComments";
 import { v4 as uuidv4 } from "uuid";
 import "./ExploreCard.css";
 
-import { Redirect, Route } from "react-router";
+import { Redirect } from "react-router";
 import { timeConverter } from "../../hooks/timeConverter";
 import { saveComments } from "../../hooks/saveComments";
 
@@ -133,7 +132,7 @@ const ExploreCard: React.FC<ContainerProps> = ({ image, setLoading }) => {
 
       await setLastComment(dataImage);
     })();
-  }, [setComments, tempComment]);
+  }, [setComments, tempComment, image.comments]);
 
   //set last Comment
   const setLastComment = useCallback(async (commentData: any) => {

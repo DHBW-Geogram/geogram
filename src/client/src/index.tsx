@@ -5,7 +5,7 @@ import reportWebVitals from "./reportWebVitals";
 import { defineCustomElements } from "@ionic/pwa-elements/loader";
 import React, { createContext, useEffect, useState } from "react";
 import firebase, { auth, db } from "./helper/firebase";
-import LoadingPage from "./pages/auth/LoadingPage";
+
 defineCustomElements(window);
 
 export const UserContext = createContext<firebase.User | null>(null);
@@ -15,29 +15,33 @@ export const UserProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     auth.onAuthStateChanged((userAuth) => {
-
       console.log(userAuth);
 
-      db.collection("users").doc(userAuth?.uid).get().then(user => {
+      db.collection("users")
+        .doc(userAuth?.uid)
+        .get()
+        .then((user) => {
+          console.log(user.data());
 
-        console.log(user.data());
-
-        if(user.data() === undefined && userAuth?.displayName !== undefined && userAuth?.email !== undefined){
-          const data = {
-            username: userAuth?.displayName,
-            userFirstName: "",
-            userLastName: "",
-            email: userAuth?.email,       
-          };
-          db.collection("users").doc(userAuth?.uid).set(data).then(() =>
-            setUser(userAuth)
-          )
-        }else{
-          setUser(userAuth);
-        }
-
-      })
-      
+          if (
+            user.data() === undefined &&
+            userAuth?.displayName !== undefined &&
+            userAuth?.email !== undefined
+          ) {
+            const data = {
+              username: userAuth?.displayName,
+              userFirstName: "",
+              userLastName: "",
+              email: userAuth?.email,
+            };
+            db.collection("users")
+              .doc(userAuth?.uid)
+              .set(data)
+              .then(() => setUser(userAuth));
+          } else {
+            setUser(userAuth);
+          }
+        });
     });
   }, []);
 

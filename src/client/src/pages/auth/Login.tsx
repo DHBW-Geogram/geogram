@@ -24,16 +24,15 @@ import { checkLogin } from "../../hooks/login/checkLogin";
 import { hideShowPassword } from "../../hooks/hideShowPassword";
 import { presentAlert } from "../../hooks/alert";
 import firebase from "firebase";
-import btn_google from "../../assets/btn_google.png"
+import btn_google from "../../assets/btn_google.png";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordShowHideIcon, setPasswordShowHideIcon] = useState(eyeOutline);
   const [passwordType, setpasswordType] = useState<any>("password");
-  const [alertPasswordForgotenText, setalertPasswordForgotenText] = useState(
-    false
-  );
+  const [alertPasswordForgotenText, setalertPasswordForgotenText] =
+    useState(false);
 
   const onUsernameNameChange = useCallback(
     (e) => setUsername(e.detail?.value),
@@ -54,7 +53,6 @@ const Login: React.FC = () => {
   return (
     <IonPage>
       <IonContent fullscreen>
-
         <IonGrid>
           <IonRow>
             <IonTitle className="Title">GeoShare</IonTitle>
@@ -138,13 +136,16 @@ const Login: React.FC = () => {
               </IonCol>
             </IonRow>
           </div>
-          <br/>
+          <br />
           <div className="LogInButton">
-            <div style={{cursor: "pointer"}} onClick={() => {
-                  var provider = new firebase.auth.GoogleAuthProvider();
-                  firebase.auth().signInWithRedirect(provider);
-            }}>
-              <IonImg src={btn_google} style={{height:"3rem"}}/>
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                var provider = new firebase.auth.GoogleAuthProvider();
+                firebase.auth().signInWithRedirect(provider);
+              }}
+            >
+              <IonImg src={btn_google} style={{ height: "3rem" }} />
             </div>
           </div>
         </IonGrid>
@@ -182,8 +183,8 @@ const Login: React.FC = () => {
               auth.sendPasswordResetEmail(data.emailPasswordForgoten);
               presentAlert(
                 "A Passowrd reset Email was send to " +
-                data.emailPasswordForgoten +
-                "."
+                  data.emailPasswordForgoten +
+                  "."
               );
             },
           },

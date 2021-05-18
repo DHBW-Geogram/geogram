@@ -1,16 +1,13 @@
 import { auth } from "../../helper/firebase";
-import { presentAlert } from "../alert";
 
-export async function emailVerified(): Promise<boolean> { 
-    
-   
-  if (auth.currentUser?.emailVerified) {       
+export async function emailVerified(): Promise<boolean> {
+  if (auth.currentUser?.emailVerified) {
     return true;
-  } else {       
+  } else {
     return false;
-  }  
+  }
 }
 
 export async function sendEmailVerify() {
-    auth.currentUser?.sendEmailVerification();    
+  auth.currentUser?.sendEmailVerification();
 }

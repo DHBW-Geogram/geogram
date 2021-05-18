@@ -2,7 +2,6 @@ export function timeConverter(timestamp: any) {
   var a = new Date(timestamp);
   var time = "";
 
-  // var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var monthsNummeric = [
     "01",
     "02",
@@ -34,10 +33,8 @@ export function timeConverter(timestamp: any) {
   if (min <= 9) {
     min = "0" + min;
   }
-  // var sec = a.getSeconds();
 
-    time = "- " + date + "." + month + "." + year + " " + hour + ":" + min;
-
+  time = "- " + date + "." + month + "." + year + " " + hour + ":" + min;
 
   return time;
 }

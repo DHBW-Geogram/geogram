@@ -1,4 +1,3 @@
-import firebase from "firebase";
 import { auth, db } from "../../helper/firebase";
 import { presentAlert } from "../alert";
 import { checkUsername } from "../checkUsername";
@@ -18,13 +17,13 @@ export async function signInWithUsernameAndPassword(
             .signInWithEmailAndPassword(doc.data().email, password)
             .catch((err) =>
               presentAlert("Your Login credentials are incorrect")
-            );  
+            );
         });
       });
   } else {
     await auth
       .signInWithEmailAndPassword(username, password)
-      
+
       .catch((err) => presentAlert("Your Login credentials are incorrect"));
   }
 }

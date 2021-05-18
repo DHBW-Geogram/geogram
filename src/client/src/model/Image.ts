@@ -19,7 +19,6 @@ export interface Image {
   user: string;
   distance: number | undefined;
   timestamp: number;
-  id: string;  
+  id: string;
   comments?: Comment[] | undefined;
-  
 }
