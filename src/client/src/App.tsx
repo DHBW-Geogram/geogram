@@ -14,7 +14,7 @@ import {
   IonTabButton,
   IonTabs,
 } from "@ionic/react";
-import { IonReactRouter } from "@ionic/react-router";
+import { IonReactHashRouter } from "@ionic/react-router";
 import {
   cameraOutline,
   cameraSharp,
@@ -54,11 +54,11 @@ import { auth } from "./helper/firebase";
 
 const PublicRoutes = () => {
   return (
-    <IonReactRouter>
+    <IonReactHashRouter>
       <Route path="/login" component={Login} exact={true} />
       <Route path="/register" component={Register} exact={true} />
       <Route path="/" render={() => <Redirect to="/login" />} />
-    </IonReactRouter>
+    </IonReactHashRouter>
   );
 };
 
@@ -69,7 +69,7 @@ const PrivateRoutes = () => {
   const [temp, setTemp] = useState<number>(0);
 
   return (
-    <IonReactRouter>
+    <IonReactHashRouter>
       <IonTabs>
         <IonRouterOutlet>
           <Route exact path="/explore">
@@ -171,7 +171,7 @@ const PrivateRoutes = () => {
         message={"Please wait..."}
         duration={5000}
       />
-    </IonReactRouter>
+    </IonReactHashRouter>
   );
 };
 
